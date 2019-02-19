@@ -6,10 +6,9 @@ The intent of this project is to establish core functionality that is found in t
 The included functionality will have the ability to change multipliers, add conditions, and generally save time by modifying values as opposed to hard-coding values. This will make for quick customization and the ability to turn out encounters quickly so you can rapidly prototype and test new ideas.
 
 It will include modules for usage such as:
- - Attacks
+ - Skills
  - Equipment
  - Inventory
- - Armor
  - Items
  - Effects (Buffs/Debuffs)
  - Experience
@@ -19,4 +18,19 @@ It will include modules for usage such as:
 
  It will also utilize ActiveRecord to handle relationships and data persistence, if you so choose.
  
- 
+### Ideation
+#### Notes on how to implement and sync up the appropriate models to one another
+
+##### Actor
+This model will hold and control the values and transformations for itself. The top-level functionality set is as follows:
+  Base Data:
+   - Name
+   - Level
+   - EXP
+   - Metadata (custom values)
+  Related Data:
+   - Inventory
+   - Skills
+   - Equipment
+   - Effects
+   - Locations
