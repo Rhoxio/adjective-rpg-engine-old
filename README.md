@@ -23,12 +23,13 @@ It will include modules for usage such as:
 
 ##### Actor
 This model will hold and control the values and transformations for itself. The top-level functionality set is as follows:
-  Base Data:
+Base Data:
    - Name
    - Level
    - EXP
    - Metadata (custom values)
-  Related Data:
+
+Related Data:
    - Inventory
    - Skills
    - Equipment
