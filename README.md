@@ -15,8 +15,6 @@ It will include modules for usage such as:
  - Actors (Characters)
  - Encounters
  - Locations
-
- It will also utilize ActiveRecord to handle relationships and data persistence, if you so choose.
  
 ### Ideation
 #### Notes on how to implement and sync up the appropriate models to one another
