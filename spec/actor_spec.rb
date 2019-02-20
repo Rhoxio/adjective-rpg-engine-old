@@ -2,20 +2,15 @@ require 'spec_helper'
 
 RSpec.describe Actor do
 
-  before(:example) do 
-    @default_actor = Actor.new(
-      { name: "Mike" }
-    ) 
+  before(:example) do
+    @exp_table = exp_table = Table.new('main', 'config/exp_table.yml')
+    @default_actor = Actor.new("", { exp_table: @exp_table }) 
   end
 
   context "is namable" do 
     it "can set name" do
+      @default_actor.name = "Mike"
       expect(@default_actor.name).to eq("Mike")
-    end
-
-    it "can change name" do 
-      @default_actor.name = "Jill"
-      expect(@default_actor.name).to_not eq("Mike")
     end
   end
 
@@ -24,7 +19,7 @@ RSpec.describe Actor do
       expect(@default_actor.hitpoints).to eq(1)
     end
 
-    it "is alive" do 
+    it "is alive" do
       expect(@default_actor.alive?).to eq(true)
     end   
 
@@ -83,10 +78,9 @@ RSpec.describe Actor do
   end
 
   context "when exp table is loaded" do 
-
-    it "contains values" do 
-      expect(@default_actor.exp_table).to_not eq(nil)
-    end
+    # it "contains values" do 
+    #   expect(@default_actor.exp_table).to_not eq(nil)
+    # end
   end
 
 end
