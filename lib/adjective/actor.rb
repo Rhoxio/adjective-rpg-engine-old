@@ -3,29 +3,57 @@ require_relative './table.rb'
 
 class Actor
   attr_accessor :name, :hitpoints, :experience, :level
-  attr_reader :exp_table
+  attr_reader :exp_table, :exp_table_name
 
   def initialize(name, params = {})
+
     # Default values
     @name = name
     @hitpoints = 1
     @experience = 0
     @level = 1
-    @exp_table = params[:exp_table].data
 
     # Params that take actual input and flexibility for other attributes.
     # These will override the ones defined above if passed through in params.
-    # ** NOT TESTED YET. GETTING the filesystem reads and base functionality finished first.**
     params.each do |key, value|
       instance_variable_set("@#{key}", value)
-    end    
+    end
+
+    @exp_table_name = params.key?(:exp_table_name) ? params[:exp_table_name] : "main"
+    @exp_table = params[:exp_table].data[@exp_table_name]
 
     # For extra initialization code later.
     # yield block if block
   end
 
-  def level_up
-    # This is going to be based on a table lookup for exp values in a separate file.
+  def level_up(num)
+    # Will grant levels and set the experience value to that level's requirements.
+    # return amended self
+  end  
+
+  def can_level_up?
+    # Checks to se if level up threshold is met.
+    # return boolean
+  end
+
+  def level_up!
+    # Grant a singular level and only check if threshold is met.
+    # Do not amend the experience values.
+    # return amended self
+  end
+
+  def experience_to_next_level
+    # Difference between next level and current one.
+  end
+
+  def grant_experience(exp)
+    # Grant a set amount of experience. 
+    # Will update values in the object itself.
+    # return amended self
+  end
+
+  def set_experience_table(name)
+    # Will swap one exp table to another.
   end
 
   def take_damage(damage)
@@ -52,11 +80,9 @@ class Actor
 
   # I can see special types of attacks bringing an actor below 0 until they are resurrected with
   # a specific type of ability, but would probably best be handled by a Status of 'grievous injury' or
-  # 'decimated' or something like that. That would require a check further up the chain in the 
+  # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt..
   def normalize_hitpoints
-    if @hitpoints < 0
-      @hitpoints = 0
-    end
+    @hitpoints = 0 if @hitpoints < 0
   end
 
 end

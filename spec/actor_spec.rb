@@ -3,8 +3,15 @@ require 'spec_helper'
 RSpec.describe Actor do
 
   before(:example) do
-    @exp_table = exp_table = Table.new('main', 'config/exp_table.yml')
-    @default_actor = Actor.new("", { exp_table: @exp_table }) 
+    @exp_table = Table.new('config/exp_table.yml', 'main')
+    @alt_exp_table = Table.new('config/exp_table.yml', "alt")
+
+    @default_actor = Actor.new("", 
+      { 
+        exp_table: @exp_table, 
+        exp_table_name: @exp_table.name 
+      }
+    ) 
   end
 
   context "is namable" do 
@@ -42,7 +49,7 @@ RSpec.describe Actor do
       expect(@default_actor.dead?).to eq(true)
     end
 
-    it "is alive if hitpoints are >= 1" do 
+    it "is alive if hitpoints are > 1" do 
       @default_actor.hitpoints = 1
       expect(@default_actor.alive?).to eq(true)
     end
@@ -78,9 +85,21 @@ RSpec.describe Actor do
   end
 
   context "when exp table is loaded" do 
-    # it "contains values" do 
-    #   expect(@default_actor.exp_table).to_not eq(nil)
-    # end
+    it "contains data" do 
+      expect(@default_actor.exp_table).to_not eq(nil)
+    end
+
+    it "will default to 'main' table if no 'exp_table_name' option is passed" do
+      expect(@default_actor.exp_table_name).to eq("main")
+      expect(@default_actor.exp_table).to be_a_kind_of(Array)
+    end
+
+    it "will use a custom defined exp table if the 'exp_table_name' option is passed" do 
+      @alt_actor = Actor.new("Altman the Testificate", { exp_table: @alt_exp_table, exp_table_name: @alt_exp_table.name }) 
+      expect(@alt_actor.exp_table_name).to eq("alt")
+      expect(@alt_actor.exp_table).to be_a_kind_of(Array)
+    end
+
   end
 
 end
