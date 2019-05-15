@@ -26,30 +26,50 @@ class Actor
     # yield block if block
   end
 
-  def level_up(num)
-    # Will grant levels and set the experience value to that level's requirements.
-    # return amended self
+  def can_level_up?
+    @experience >= @exp_table[@level]
   end  
 
-  def can_level_up?
-    # Checks to se if level up threshold is met.
-    # return boolean
+  def level_up_to(num)
+    # Will grant levels and set the experience value to that level's requirements.
+    # return amended self
   end
 
+  def grant_levels(num, opts = {})
+    # This intentionally doesn't advance to the associated EXP value. 
+    # It can be used as a buffer for certain events and encounters.
+
+    @level += num
+
+    if !opts[:constrain_exp] 
+      @experience = @exp_table[@level]
+    end
+  end 
+
   def level_up!
-    # Grant a singular level and only check if threshold is met.
-    # Do not amend the experience values.
-    # return amended self
+    if can_level_up?
+      @level += 1
+      return true
+    else
+      return false
+    end
   end
 
   def experience_to_next_level
     # Difference between next level and current one.
   end
 
-  def grant_experience(exp)
-    # Grant a set amount of experience. 
-    # Will update values in the object itself.
-    # return amended self
+  def grant_experience(exp_to_grant)
+    # Only takes positive integers. 
+    if exp_to_grant < 0
+      raise RuntimeError, "Provided value in grant_experience (#{exp_to_grant}) is not a positive integer."
+    else
+      @experience += exp_to_grant
+    end   
+  end
+
+  def subtract_experience(exp)
+
   end
 
   def set_experience_table(name)

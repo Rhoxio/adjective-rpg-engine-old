@@ -102,4 +102,58 @@ RSpec.describe Actor do
 
   end
 
+  context "when experience is gained" do 
+    it "will properly grant experience" do 
+      @default_actor.grant_experience(10)
+      expect(@default_actor.experience).to eq(10)
+    end
+
+    it "can level up if experience is exactly threshold value" do 
+      @default_actor.grant_experience(200)
+      expect(@default_actor.can_level_up?).to eq(true)
+    end
+
+    it "can level up if experience is above threshold value" do 
+      @default_actor.grant_experience(201)
+      expect(@default_actor.can_level_up?).to eq(true)
+    end    
+
+    it "can NOT level up if experience is below threshold value" do 
+      @default_actor.grant_experience(199)
+      expect(@default_actor.can_level_up?).to eq(false)
+    end 
+
+  end
+
+  context "when levels are awarded" do 
+    it "will grant a single level" do 
+      @default_actor.grant_experience(200)
+      expect(@default_actor.level_up!).to eq(true)
+      expect(@default_actor.level).to eq(2)
+    end  
+
+    it "will NOT grant a level if can_level_up? does not pass" do
+      @default_actor.grant_experience(199)
+      expect(@default_actor.level_up!).to eq(false)
+      expect(@default_actor.level).to eq(1)
+    end
+
+    it "will grant multiple levels" do 
+      @default_actor.grant_levels(3)
+      expect(@default_actor.level).to eq(4)
+    end
+
+    it "will grant experience when granted levels" do 
+      @default_actor.grant_levels(3)
+      expect(@default_actor.level).to eq(4)
+      expect(@default_actor.experience).to eq(500)
+    end
+
+    it "will NOT grant exp if option is passed" do 
+      @default_actor.grant_levels(3, { constrain_exp: true })
+      expect(@default_actor.level).to eq(4)
+      expect(@default_actor.experience).to eq(0)
+    end
+  end
+
 end

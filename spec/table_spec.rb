@@ -4,7 +4,7 @@ RSpec.describe Table do
     @exp_table = Table::Experience.new('config/exp_table.yml', 'main')
   end
 
-  context "when initialized" do 
+  context "when initialized" do
 
     it "loads yml file" do
       expect(@exp_table.data).to_not eq(nil)
@@ -65,7 +65,7 @@ RSpec.describe Table::Experience do
         expect(@exp_table.at_level(-1)).to eq(1000)
       end
 
-      it "does not accept datatypes outside of Fixnum" do 
+      it "does not accept common datatypes outside of Fixnum" do 
         expect{@exp_table.at_level("0")}.to raise_error(RuntimeError)
         expect{@exp_table.at_level([1])}.to raise_error(RuntimeError)
         expect{@exp_table.at_level({"1": 1})}.to raise_error(RuntimeError)
