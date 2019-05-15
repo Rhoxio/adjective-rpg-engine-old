@@ -149,7 +149,7 @@ RSpec.describe Actor do
       expect(@default_actor.experience).to eq(500)
     end
 
-    it "will NOT grant exp if option is passed" do 
+    it "will NOT grant exp if constrain_exp option is passed" do 
       @default_actor.grant_levels(3, { constrain_exp: true })
       expect(@default_actor.level).to eq(4)
       expect(@default_actor.experience).to eq(0)

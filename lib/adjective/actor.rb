@@ -36,11 +36,7 @@ class Actor
   end
 
   def grant_levels(num, opts = {})
-    # This intentionally doesn't advance to the associated EXP value. 
-    # It can be used as a buffer for certain events and encounters.
-
     @level += num
-
     if !opts[:constrain_exp] 
       @experience = @exp_table[@level]
     end
