@@ -55,26 +55,51 @@ class Actor
     end
   end
 
+  # Just like above, you can call this recursively to level an actor down to the experience-appropriate level.
+  def level_down!
+    if experience < @exp_table[@level]
+      @level -=1
+      return true
+    else
+      return false
+    end
+  end
+
   def experience_to_next_level
     # Difference between next level and current one.
   end
 
-  def grant_experience(exp_to_grant)
+  def grant_experience(exp_to_grant, opts = {})
     # Only takes positive integers - should avoid bugs this way.
     if exp_to_grant < 0
       raise RuntimeError, "Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
     else
       @experience += exp_to_grant
+      normalize_experience
+
+      if !opts[:suppress_levels]
+        until !level_up!
+          level_up!
+        end
+      end
+
     end   
   end
 
-  def subtract_experience(exp_to_subtract)
+  def subtract_experience(exp_to_subtract, opts = {})
     # Only takes positive integers - should avoid bugs this way. 
     if exp_to_subtract < 0
       raise RuntimeError, "Provided value in #subtract_experience (#{exp_to_subtract}) is not a positive integer."
     else
       @experience -= exp_to_subtract
       normalize_experience
+
+      if !opts[:suppress_levels]
+        until !level_down!
+          level_down!
+        end
+      end
+
     end 
   end
 

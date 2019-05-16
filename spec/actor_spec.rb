@@ -110,22 +110,30 @@ RSpec.describe Actor do
 
     it "can level up if experience is exactly threshold value" do 
       @default_actor.grant_experience(200)
-      expect(@default_actor.can_level_up?).to eq(true)
+      expect(@default_actor.level).to eq(2)
+      expect(@default_actor.can_level_up?).to eq(false)
     end
 
     it "can level up if experience is above threshold value" do 
-      @default_actor.grant_experience(201)
-      expect(@default_actor.can_level_up?).to eq(true)
+      @default_actor.grant_experience(301)
+      expect(@default_actor.level).to eq(3)
+      expect(@default_actor.can_level_up?).to eq(false)
     end    
 
     it "can NOT level up if experience is below threshold value" do 
       @default_actor.grant_experience(199)
+      expect(@default_actor.level).to eq(1)
       expect(@default_actor.can_level_up?).to eq(false)
     end 
 
     it "will not take negative numbers as an argument" do 
       @default_actor.experience = 20
       expect{ @default_actor.grant_experience(-10) }.to raise_error(RuntimeError)
+    end
+
+    it "will NOT grant levels if the supress_levels option is passed" do 
+      @default_actor.grant_experience(400, {suppress_levels: true})
+      expect(@default_actor.level).to eq(1)
     end    
 
   end
@@ -141,12 +149,18 @@ RSpec.describe Actor do
       @default_actor.experience = 20
       expect{ @default_actor.subtract_experience(-10) }.to raise_error(RuntimeError)
     end
+
+    it "will NOT remove levels if the supress_levels option is passed" do 
+      @default_actor.grant_experience(400)
+      @default_actor.subtract_experience(300, {suppress_levels: true})
+      expect(@default_actor.level).to eq(4)
+    end       
   end
 
   context "when levels are awarded" do 
-    it "will grant a single level" do 
+    it "will grant levels until corret threshold is met" do 
       @default_actor.grant_experience(200)
-      expect(@default_actor.level_up!).to eq(true)
+      expect(@default_actor.level_up!).to eq(false)
       expect(@default_actor.level).to eq(2)
     end  
 
