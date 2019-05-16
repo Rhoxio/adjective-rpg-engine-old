@@ -66,7 +66,14 @@ class Actor
   end
 
   def experience_to_next_level
-    # Difference between next level and current one.
+    if @exp_table.length == @level
+      # They are max level.
+      return 0
+    elsif @exp_table.length < (@level+1)
+      raise RangeError, "Next level out of experience table range from 0 to #{@exp_table.length}, (#{@level+1})"
+    else
+      return @exp_table[@level+1] - @exp_table[@level]
+    end
   end
 
   def grant_experience(exp_to_grant, opts = {})
