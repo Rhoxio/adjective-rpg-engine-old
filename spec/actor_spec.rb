@@ -207,7 +207,7 @@ RSpec.describe Actor do
     end
   end
 
-  context "when experience levels are checked" do 
+  context "when next level experience is checked" do 
     it "will give back the appropriate value" do 
       @default_actor.grant_experience(300)
       expect(@default_actor.experience_to_next_level).to eq(100)
@@ -218,7 +218,7 @@ RSpec.describe Actor do
       expect(@default_actor.experience_to_next_level).to eq(0)
     end
 
-    it "will throw a RangeError if attempting to access a level index not present in the exp_table" do 
+    it "will throw a RangeError if attempting to access a level index not present in the actor's #exp_table" do 
       @default_actor.level = 11
       expect{ @default_actor.experience_to_next_level }.to raise_error(RangeError)
     end
