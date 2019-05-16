@@ -30,9 +30,11 @@ class Actor
     @experience >= @exp_table[@level]
   end  
 
-  def level_up_to(num)
-    # Will grant levels and set the experience value to that level's requirements.
-    # return amended self
+  def set_level(num, opts = {})
+    @level = num
+    if !opts[:constrain_exp]
+      @experience = @exp_table[num]
+    end
   end
 
   def grant_levels(num, opts = {})
@@ -42,6 +44,8 @@ class Actor
     end
   end 
 
+  # You can call this recursively to have your character 'level up' 
+  # multiple times if they have enough experience for multiple level ups. 
   def level_up!
     if can_level_up?
       @level += 1
@@ -56,16 +60,22 @@ class Actor
   end
 
   def grant_experience(exp_to_grant)
-    # Only takes positive integers. 
+    # Only takes positive integers - should avoid bugs this way.
     if exp_to_grant < 0
-      raise RuntimeError, "Provided value in grant_experience (#{exp_to_grant}) is not a positive integer."
+      raise RuntimeError, "Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
     else
       @experience += exp_to_grant
     end   
   end
 
-  def subtract_experience(exp)
-
+  def subtract_experience(exp_to_subtract)
+    # Only takes positive integers - should avoid bugs this way. 
+    if exp_to_subtract < 0
+      raise RuntimeError, "Provided value in #subtract_experience (#{exp_to_subtract}) is not a positive integer."
+    else
+      @experience -= exp_to_subtract
+      normalize_experience
+    end 
   end
 
   def set_experience_table(name)
@@ -75,7 +85,6 @@ class Actor
   def take_damage(damage)
     @hitpoints -= damage
     normalize_hitpoints
-
     return self
   end
 
@@ -99,6 +108,10 @@ class Actor
   # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt..
   def normalize_hitpoints
     @hitpoints = 0 if @hitpoints < 0
+  end
+
+  def normalize_experience
+    @experience = 0 if @experience < 0
   end
 
 end

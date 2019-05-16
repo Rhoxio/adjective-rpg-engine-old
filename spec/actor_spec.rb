@@ -123,6 +123,24 @@ RSpec.describe Actor do
       expect(@default_actor.can_level_up?).to eq(false)
     end 
 
+    it "will not take negative numbers as an argument" do 
+      @default_actor.experience = 20
+      expect{ @default_actor.grant_experience(-10) }.to raise_error(RuntimeError)
+    end    
+
+  end
+
+  context "when experience is lost" do 
+    it "will properly remove experience" do 
+      @default_actor.experience = 20
+      @default_actor.subtract_experience(10)
+      expect(@default_actor.experience).to eq(10)
+    end
+
+    it "will not take negative numbers as an argument" do 
+      @default_actor.experience = 20
+      expect{ @default_actor.subtract_experience(-10) }.to raise_error(RuntimeError)
+    end
   end
 
   context "when levels are awarded" do 
@@ -152,6 +170,25 @@ RSpec.describe Actor do
     it "will NOT grant exp if constrain_exp option is passed" do 
       @default_actor.grant_levels(3, { constrain_exp: true })
       expect(@default_actor.level).to eq(4)
+      expect(@default_actor.experience).to eq(0)
+    end
+  end
+
+  context "when levels are set" do 
+    it "will set the actor's level" do 
+      @default_actor.set_level(5)
+      expect(@default_actor.level).to eq(5)
+    end
+
+    it "will set the actors experience in accordance with the level that was set" do 
+      @default_actor.set_level(5)
+      expect(@default_actor.level).to eq(5)
+      expect(@default_actor.experience).to eq(600)
+    end
+
+    it "will NOT set the actor's experience if the constrain_exp option is passed" do 
+      @default_actor.set_level(5, { constrain_exp: true })
+      expect(@default_actor.level).to eq(5)
       expect(@default_actor.experience).to eq(0)
     end
   end
