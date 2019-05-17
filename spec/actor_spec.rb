@@ -12,6 +12,7 @@ RSpec.describe Actor do
         exp_set_name: @exp_table.name 
       }
     ) 
+    @custom_actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 }) 
   end
 
   context "is namable" do 
@@ -231,4 +232,70 @@ RSpec.describe Actor do
     end
   end
 
+  context "when additional data parameters are passed" do 
+    it "will reply with the intended value when called" do 
+      expect(@custom_actor.mana).to eq(100)
+    end
+
+    it "will allow for a custom value to be set after initialization" do 
+      @custom_actor.mana = 200
+      expect(@custom_actor.mana).to eq(200) 
+    end
+  end
+
+  context "when additional attributes are added after initialization" do 
+    # Need indivisual instances as the getter/setters are messed with and return nil
+    # as intended if the same instance is used over and over again, which it would be
+    # in these cases. 
+
+    it "will add the appropriate attribute" do
+      @custom_actor_1 = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 }) 
+      @custom_actor_1.add_attribute("energy", 120)
+      p @custom_actor_1
+      p @custom_actor_1.class
+      p @custom_actor_1.methods
+      p "_____________"
+      p @custom_actor_1.energy
+      expect(@custom_actor_1.energy).to eq(120)
+    end
+
+    it "will add the ability to change this attribute" do 
+      @custom_actor_2 = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 }) 
+      @custom_actor_2.add_attribute("energy", 120)
+      @custom_actor_2.energy = 150
+      expect(@custom_actor_2.energy).to eq(150)
+    end
+
+    it "will not allow two of the same attribute names" do
+      @custom_actor_3 = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 })  
+      @custom_actor_3.add_attribute("energy", 120)
+      expect{@custom_actor_3.add_attribute("energy", 130)}.to raise_error(NoMethodError)
+    end
+  end
+
+  context "when additional attributes are removed after initialization" do 
+    it "will remove the getters and setter methods" do 
+      @custom_actor.add_attribute("energy", 120)
+      @custom_actor.remove_attribute("energy")
+      expect{@custom_actor.energy}.to raise_error(NoMethodError)
+    end
+
+    it "will reset the value even if the same attribute is set again" do 
+      @custom_actor.add_attribute("energy", 120)
+      @custom_actor.remove_attribute("energy")
+      expect{@custom_actor.add_attribute("energy", 130)}.to raise_error(RuntimeError)
+      
+    end
+
+  end
+
 end
+
+
+
+
+
+
+
+
+
