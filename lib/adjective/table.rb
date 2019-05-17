@@ -13,6 +13,10 @@ class Table
     @data = YAML.load_file(dir)
   end
 
+  def set_exists?(name)
+    @data.key?(name) ? true : false
+  end
+
   private
 
   def file_existence_catch(dir)

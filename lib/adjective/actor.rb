@@ -3,7 +3,7 @@ require_relative './table.rb'
 
 class Actor
   attr_accessor :name, :hitpoints, :experience, :level
-  attr_reader :exp_table, :exp_table_name
+  attr_reader :exp_sets, :exp_set_name, :active_exp_set
 
   def initialize(name, params = {})
 
@@ -19,28 +19,29 @@ class Actor
       instance_variable_set("@#{key}", value)
     end
 
-    @exp_table_name = params.key?(:exp_table_name) ? params[:exp_table_name] : "main"
-    @exp_table = params[:exp_table].data[@exp_table_name]
+    @exp_sets = params[:exp_sets]
+    @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
+    @active_exp_set = params[:exp_sets].data[@exp_set_name]
 
     # For extra initialization code later.
     # yield block if block
   end
 
   def can_level_up?
-    @experience >= @exp_table[@level]
+    @experience >= @active_exp_set[@level]
   end  
 
   def set_level(num, opts = {})
     @level = num
     if !opts[:constrain_exp]
-      @experience = @exp_table[num]
+      @experience = @active_exp_set[num]
     end
   end
 
   def grant_levels(num, opts = {})
     @level += num
     if !opts[:constrain_exp] 
-      @experience = @exp_table[@level]
+      @experience = @active_exp_set[@level]
     end
   end 
 
@@ -57,7 +58,7 @@ class Actor
 
   # Just like above, you can call this recursively to level an actor down to the experience-appropriate level.
   def level_down!
-    if experience < @exp_table[@level]
+    if experience < @active_exp_set[@level]
       @level -=1
       return true
     else
@@ -66,13 +67,13 @@ class Actor
   end
 
   def experience_to_next_level
-    if @exp_table.length == @level
+    if @active_exp_set.length == @level
       # They are max level.
       return 0
-    elsif @exp_table.length < (@level+1)
-      raise RangeError, "Next level out of experience table range from 0 to #{@exp_table.length}, (#{@level+1})"
+    elsif @active_exp_set.length < (@level+1)
+      raise RangeError, "Next level out of experience table range from 0 to #{@active_exp_set.length}, (#{@level+1})"
     else
-      return @exp_table[@level+1] - @exp_table[@level]
+      return @active_exp_set[@level+1] - @active_exp_set[@level]
     end
   end
 
@@ -110,8 +111,15 @@ class Actor
     end 
   end
 
-  def set_experience_table(name)
-    # Will swap one exp table to another.
+  def use_experience_set(name)
+    # This is going to swap around the table pulled from, not the file it is pulled from explicitly.
+    if @exp_sets.set_exists?(name)
+      @exp_set_name = name
+      @active_exp_set = @exp_sets.data[name]
+      return true
+    else
+      raise ArgumentError, "The provided set name was not found: #{name}"
+    end
   end
 
   def take_damage(damage)
@@ -148,9 +156,9 @@ class Actor
 
 end
 
-exp_table = Table.new('config/exp_table.yml', 'main')
-# p exp_table.file
-actor = Actor.new("Mike", { exp_table: exp_table })
+# exp_table = Table.new('config/exp_table.yml', 'main')
+# # p exp_table.file
+# actor = Actor.new("Mike", { exp_table: exp_table })
 
 
 

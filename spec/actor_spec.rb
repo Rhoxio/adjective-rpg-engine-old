@@ -3,13 +3,13 @@ require 'spec_helper'
 RSpec.describe Actor do
 
   before(:example) do
-    @exp_table = Table.new('config/exp_table.yml', 'main')
-    @alt_exp_table = Table.new('config/exp_table.yml', "alt")
+    @exp_table = Table::Experience.new('config/exp_table.yml', 'main')
+    @alt_exp_table = Table::Experience.new('config/exp_table.yml', "alt")
 
     @default_actor = Actor.new("", 
       { 
-        exp_table: @exp_table, 
-        exp_table_name: @exp_table.name 
+        exp_sets: @exp_table, 
+        exp_set_name: @exp_table.name 
       }
     ) 
   end
@@ -86,18 +86,18 @@ RSpec.describe Actor do
 
   context "when exp table is loaded" do 
     it "contains data" do 
-      expect(@default_actor.exp_table).to_not eq(nil)
+      expect(@default_actor.active_exp_set).to_not eq(nil)
     end
 
     it "will default to 'main' table if no 'exp_table_name' option is passed" do
-      expect(@default_actor.exp_table_name).to eq("main")
-      expect(@default_actor.exp_table).to be_a_kind_of(Array)
+      expect(@default_actor.exp_set_name).to eq("main")
+      expect(@default_actor.active_exp_set).to be_a_kind_of(Array)
     end
 
     it "will use a custom defined exp table if the 'exp_table_name' option is passed" do 
-      @alt_actor = Actor.new("Altman the Testificate", { exp_table: @alt_exp_table, exp_table_name: @alt_exp_table.name }) 
-      expect(@alt_actor.exp_table_name).to eq("alt")
-      expect(@alt_actor.exp_table).to be_a_kind_of(Array)
+      @alt_actor = Actor.new("Altman the Testificate", { exp_sets: @alt_exp_table, exp_set_name: @alt_exp_table.name }) 
+      expect(@alt_actor.exp_set_name).to eq("alt")
+      expect(@alt_actor.active_exp_set).to be_a_kind_of(Array)
     end
 
   end
@@ -131,7 +131,7 @@ RSpec.describe Actor do
       expect{ @default_actor.grant_experience(-10) }.to raise_error(RuntimeError)
     end
 
-    it "will NOT grant levels if the supress_levels option is passed" do 
+    it "will NOT grant levels if the suppress_levels option is passed" do 
       @default_actor.grant_experience(400, {suppress_levels: true})
       expect(@default_actor.level).to eq(1)
     end    
@@ -150,7 +150,7 @@ RSpec.describe Actor do
       expect{ @default_actor.subtract_experience(-10) }.to raise_error(RuntimeError)
     end
 
-    it "will NOT remove levels if the supress_levels option is passed" do 
+    it "will NOT remove levels if the suppress_levels option is passed" do 
       @default_actor.grant_experience(400)
       @default_actor.subtract_experience(300, {suppress_levels: true})
       expect(@default_actor.level).to eq(4)
@@ -221,6 +221,13 @@ RSpec.describe Actor do
     it "will throw a RangeError if attempting to access a level index not present in the actor's #exp_table" do 
       @default_actor.level = 11
       expect{ @default_actor.experience_to_next_level }.to raise_error(RangeError)
+    end
+  end
+
+  context "when experience table sets are swapped" do 
+    it "will swap to the correct set within its original table" do 
+      @default_actor.use_experience_set("alt")
+      expect(@default_actor.exp_set_name).to eq("alt")
     end
   end
 
