@@ -33,16 +33,12 @@ class Actor
 
   def set_level(num, opts = {})
     @level = num
-    if !opts[:constrain_exp]
-      @experience = @active_exp_set[num]
-    end
+    @experience = @active_exp_set[num] if !opts[:constrain_exp]
   end
 
   def grant_levels(num, opts = {})
     @level += num
-    if !opts[:constrain_exp] 
-      @experience = @active_exp_set[@level]
-    end
+    @experience = @active_exp_set[@level] if !opts[:constrain_exp] 
   end 
 
   # You can call this recursively to have your character 'level up' 
