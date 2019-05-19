@@ -17,10 +17,11 @@ class Actor
     # These will override the ones defined above if passed through in params.
 
     params.each do |key, value|
-      # Variable set.
       instance_variable_set("@#{key}", value)
+
       # Setter
       define_singleton_method("#{key}=") { |val| params[value] = val }
+      
       # Getter
       define_singleton_method(key) { attributes[key] }
     end
