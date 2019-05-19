@@ -52,5 +52,5 @@ warrior = Actor.new("Gimli", {strength: 11, wisdom: 3})
 
 The archer class instance will only respond to getter/setters of #agility, ranger class instance to #strength, and warrior to #strength and #wisdom. If they have code that requires them to check multiple attributes for special moves or something, they can still assign those values and run their own checks against it.
 
-This solution circumvents namespace pollution, as assigning the getter/setters in :attr_accessor changes the Actor class's internal variables (attributes that are removed still had references present with :attr_accessor) and eliminates the need to 'purge' attributes before using the Actor class to create another type of actor (Legolas vs. Gimli, from the example above).
+This solution circumvents namespace pollution, as assigning the getter/setters in :attr_accessor changes the Actor class's internal variables (attributes that are removed still had references present with :attr_accessor and attr_accessor doesn't let you assign singleton methods) and eliminates the need to 'purge' attributes before using the Actor class to create another type of actor (Legolas vs. Gimli, from the example above).
 
