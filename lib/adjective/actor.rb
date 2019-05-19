@@ -13,17 +13,8 @@ class Actor
     @experience = 0
     @level = 1
 
-    # Params that take actual input and flexibility for other attributes.
-    # These will override the ones defined above if passed through in params.
-
     params.each do |key, value|
-      instance_variable_set("@#{key}", value)
-
-      # Setter
-      define_singleton_method("#{key}=") { |val| params[value] = val }
-      
-      # Getter
-      define_singleton_method(key) { attributes[key] }
+      add_attribute(key, value) if !exp_table_exceptions.include?(key) 
     end
 
     @exp_sets = params[:exp_sets]
@@ -140,24 +131,23 @@ class Actor
   end
 
   def add_attribute(name, value)
-
-    # if !self.methods.include?("#{name}".to_sym)
-    #   instance_variable_set("@#{name}", value)
-    #   # self.class.send(:define_method, ":#{name}".to_sym, {self.call "#{name}" })
-    #   self.singleton_class.define_method("#{name}") { self.class.send "#{name}" }
-    #   self.singleton_class.define_method("#{name}=") { self.class.send "#{name}=" }
-    #   # self.define_singleton_method(":#{name}=".to_sym) {self.call "#{name}=" }
-      
-    # else
-    #   raise RuntimeError, "Attempted to add an attribute that already exists: #{name}"
-    # end
+    if !instance_variable_defined?("@#{name}")
+      instance_variable_set("@#{name}", value)
+      define_singleton_method("#{name}=") { |val| value = val }
+      define_singleton_method(name) { value }
+    else
+      raise RuntimeError, "Attribute '#{name}' is already defined."
+    end
   end
 
   def remove_attribute(name)
-    # This exists because it would seem to be a better practice to have code that throws NoMethodError when 
-    # asking for attributes that don't exist rather than simply removng the value and giving them back nil while maintaining the getter/setters.
-    # self.instance_eval { self.class.send(:undef_method, "#{name}".to_sym) }
-    # self.instance_eval { self.class.send(:undef_method, "#{name}=".to_sym) }
+    if instance_variable_defined?("@#{name}")
+      remove_instance_variable("@#{name}".to_sym)
+      metaclass.send(:remove_method, name.to_sym)
+      metaclass.send(:remove_method, "#{name}=".to_sym)
+    else
+      raise RuntimeError, "Attribute '#{name} does not exist."
+    end
   end
 
   private 
@@ -169,13 +159,24 @@ class Actor
 
   # I can see special types of attacks bringing an actor below 0 until they are resurrected with
   # a specific type of ability, but would probably best be handled by a Status of 'grievous injury' or
-  # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt..
+  # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt.
+
   def normalize_hitpoints
     @hitpoints = 0 if @hitpoints < 0
   end
 
   def normalize_experience
     @experience = 0 if @experience < 0
+  end
+
+  def metaclass
+    return class << self
+      self 
+    end
+  end
+
+  def exp_table_exceptions
+    [:exp_sets, :exp_set_name, :active_exp_set]
   end
 
 end
