@@ -245,9 +245,6 @@ RSpec.describe Actor do
   end
 
   context "when additional attributes are added after initialization" do 
-    # Need indivisual instances as the getter/setters are messed with and return nil
-    # as intended if the same instance is used over and over again, which it would be
-    # in these cases. 
 
     it "will add the appropriate attribute" do
       @custom_actor.add_attribute("energy", 120)
