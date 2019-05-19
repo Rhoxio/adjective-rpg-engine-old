@@ -34,7 +34,7 @@ Related Data:
    - Effects
    - Locations
 
-## Actors as Singletons
+## Actors and their Singleton Methods
 
 The Actor class has a nuance in order to keep unwanted errors from propogating across models with custom data attributes when designing and writing logic. 
 
