@@ -40,7 +40,7 @@ The Actor class has a nuance in order to keep unwanted errors from propogating a
 
 The intent is to be able to take any named attribute and corresponding value. The Actor class needs to be directly inhertiable from and take the child class's arguments as well. 
 
-This means that a singleton must be used to keep attributes from coming up nil when the end-user is trying to code against it. This curcumvents them potentially nil/falsey checking everything and instead throws a NoMethodError. 
+This means that singleton methods must be used to keep attributes from coming up nil when the end-user is trying to code against it. This curcumvents them potentially nil/falsey checking everything and instead throws a NoMethodError.
 
 This is solved with a little bit of metaprogramming by dynamically assigning a getter, setter, and instance variable. For example:
 
@@ -50,5 +50,5 @@ ranger = Actor.new("Aragorn", {strength: 11})
 warrior = Actor.new("Gimli", {strength: 11, wisdom: 3})
 ```
 
-The archer class instance will only respond to getter/setters of #agility, ranger class instance to #strength, and warrior to #strength and #wisdom.
+The archer class instance will only respond to getter/setters of #agility, ranger class instance to #strength, and warrior to #strength and #wisdom. If they have code that requires them to check multiple attributes for special moves or something, they can still assign those values and run their own checks against it.
 
