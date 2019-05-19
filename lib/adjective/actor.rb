@@ -17,8 +17,12 @@ class Actor
     # These will override the ones defined above if passed through in params.
 
     params.each do |key, value|
+      # Variable set.
       instance_variable_set("@#{key}", value)
-      self.class.__send__(:attr_accessor, "#{key}")
+      # Setter
+      define_singleton_method("#{key}=") { |val| params[value] = val }
+      # Getter
+      define_singleton_method(key) { attributes[key] }
     end
 
     @exp_sets = params[:exp_sets]
@@ -136,23 +140,23 @@ class Actor
 
   def add_attribute(name, value)
 
-    if !self.methods.include?("#{name}".to_sym)
-      instance_variable_set("@#{name}", value)
-      # self.class.send(:define_method, ":#{name}".to_sym, {self.call "#{name}" })
-      self.singleton_class.define_method("#{name}") { self.class.send "#{name}" }
-      self.singleton_class.define_method("#{name}=") { self.class.send "#{name}=" }
-      # self.define_singleton_method(":#{name}=".to_sym) {self.call "#{name}=" }
+    # if !self.methods.include?("#{name}".to_sym)
+    #   instance_variable_set("@#{name}", value)
+    #   # self.class.send(:define_method, ":#{name}".to_sym, {self.call "#{name}" })
+    #   self.singleton_class.define_method("#{name}") { self.class.send "#{name}" }
+    #   self.singleton_class.define_method("#{name}=") { self.class.send "#{name}=" }
+    #   # self.define_singleton_method(":#{name}=".to_sym) {self.call "#{name}=" }
       
-    else
-      raise RuntimeError, "Attempted to add an attribute that already exists: #{name}"
-    end
+    # else
+    #   raise RuntimeError, "Attempted to add an attribute that already exists: #{name}"
+    # end
   end
 
   def remove_attribute(name)
     # This exists because it would seem to be a better practice to have code that throws NoMethodError when 
     # asking for attributes that don't exist rather than simply removng the value and giving them back nil while maintaining the getter/setters.
-    self.instance_eval { self.class.send(:undef_method, "#{name}".to_sym) }
-    self.instance_eval { self.class.send(:undef_method, "#{name}=".to_sym) }
+    # self.instance_eval { self.class.send(:undef_method, "#{name}".to_sym) }
+    # self.instance_eval { self.class.send(:undef_method, "#{name}=".to_sym) }
   end
 
   private 
