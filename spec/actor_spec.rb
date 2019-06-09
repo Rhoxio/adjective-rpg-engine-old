@@ -232,61 +232,92 @@ RSpec.describe Actor do
     end
   end
 
-  context "when additional data parameters are passed" do 
-    it "will reply with the intended value when called" do 
-      expect(@custom_actor.mana).to eq(100)
+  context "when custom values are passed in to set pre-defined attrs on initialization" do 
+
+    it "will accept custom values on initialization" do 
+      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
+      expect(actor.hitpoints).to eq(200)
+      expect(actor.experience).to eq(1909)
+      expect(actor.level).to eq(3)
     end
 
-    it "will allow for a custom value to be set after initialization" do 
-      @custom_actor.mana = 200
-      @custom_actor.mana
-      expect(@custom_actor.mana).to eq(200) 
-    end
-  end
-
-  context "when additional attributes are added after initialization" do 
-
-    it "will add the appropriate attribute" do
-      @custom_actor.add_attribute("energy", 120)
-      expect(@custom_actor.energy).to eq(120)
+    it "will not interfere with setter methods" do 
+      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
+      actor.hitpoints = 400
+      actor.level = 19
+      expect(actor.hitpoints).to eq(400)
+      expect(actor.level).to eq(19)
     end
 
-    it "will set the appropriate attribute" do 
-      @custom_actor.add_attribute("energy", 120)
-      @custom_actor.energy = 150
-      expect(@custom_actor.energy).to eq(150)
+    it "will reject attributes that are not defined in #initial_attributes" do 
+      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, moxy: 900 }) 
+      expect{actor.moxy}.to raise_error(NoMethodError)
     end
 
-    it "will not allow two of the same attribute names" do
-      @custom_actor.add_attribute("energy", 120)
-      expect{@custom_actor.add_attribute("energy", 130)}.to raise_error(RuntimeError)
-    end
-  end
-
-  context "when additional attributes are removed after initialization" do 
-    it "will remove the getter method" do 
-      @custom_actor.add_attribute("energy", 120)
-      @custom_actor.remove_attribute(:energy)
-      expect{@custom_actor.energy}.to raise_error(NoMethodError)
-    end
-
-    it "will remove the setter method" do 
-      @custom_actor.add_attribute("energy", 120)
-      @custom_actor.remove_attribute(:energy)
-      expect{@custom_actor.energy = 100}.to raise_error(NoMethodError)
-    end
-
-    it "will will remove the instance variable" do
-      @custom_actor.add_attribute("energy", 120)
-      @custom_actor.remove_attribute(:energy)
-      expect(@custom_actor.instance_variable_defined?("@energy")).to be(false)
-    end
-
-    it "will error out if attempting to remove a nonexistent attribute" do 
-      expect{@custom_actor.remove_attribute(:xyt)}.to raise_error(RuntimeError)
+    it "will not reject attributes defined in #exp_table_exceptions" do 
+      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name }) 
+      expect(actor.exp_set_name).to eq('main')
     end
 
   end
+
+  # DEPRECATED - CHANGED PARADIGM FOR INHERITANCE INSTEAD OF DIRECT EXTENSION
+
+  # context "when additional data parameters are passed" do 
+  #   it "will reply with the intended value when called" do 
+  #     expect(@custom_actor.mana).to eq(100)
+  #   end
+
+  #   it "will allow for a custom value to be set after initialization" do 
+  #     @custom_actor.mana = 200
+  #     @custom_actor.mana
+  #     expect(@custom_actor.mana).to eq(200) 
+  #   end
+  # end
+
+  # context "when additional attributes are added after initialization" do 
+
+  #   it "will add the appropriate attribute" do
+  #     @custom_actor.add_attribute("energy", 120)
+  #     expect(@custom_actor.energy).to eq(120)
+  #   end
+
+  #   it "will set the appropriate attribute" do 
+  #     @custom_actor.add_attribute("energy", 120)
+  #     @custom_actor.energy = 150
+  #     expect(@custom_actor.energy).to eq(150)
+  #   end
+
+  #   it "will not allow two of the same attribute names" do
+  #     @custom_actor.add_attribute("energy", 120)
+  #     expect{@custom_actor.add_attribute("energy", 130)}.to raise_error(RuntimeError)
+  #   end
+  # end
+
+  # context "when additional attributes are removed after initialization" do 
+  #   it "will remove the getter method" do 
+  #     @custom_actor.add_attribute("energy", 120)
+  #     @custom_actor.remove_attribute(:energy)
+  #     expect{@custom_actor.energy}.to raise_error(NoMethodError)
+  #   end
+
+  #   it "will remove the setter method" do 
+  #     @custom_actor.add_attribute("energy", 120)
+  #     @custom_actor.remove_attribute(:energy)
+  #     expect{@custom_actor.energy = 100}.to raise_error(NoMethodError)
+  #   end
+
+  #   it "will will remove the instance variable" do
+  #     @custom_actor.add_attribute("energy", 120)
+  #     @custom_actor.remove_attribute(:energy)
+  #     expect(@custom_actor.instance_variable_defined?("@energy")).to be(false)
+  #   end
+
+  #   it "will error out if attempting to remove a nonexistent attribute" do 
+  #     expect{@custom_actor.remove_attribute(:xyt)}.to raise_error(RuntimeError)
+  #   end
+
+  # end
 
 end
 
