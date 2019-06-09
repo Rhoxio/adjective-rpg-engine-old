@@ -1,10 +1,34 @@
 class Inventory
-  attr_reader :items
+  attr_accessor :items, :grouped_items
 
-  def initialize(items = [])
-    # Must take an initial payload of items. 
-    @items = items
+  def initialize(items = []) 
+    # Initially takes a set of all items as separate instances.
+    # As long as it responds to #id, it should all work out fine.
+    # @items = items
+    @items = group_items(items)
+  end
 
+  private
+
+  def group_items(items)
+    # This is where a slight tie-in to the item class will exist.
+    # The only thing this should rely on is the id of items. 
+    return {} if items.length == 0 
+
+    if (items.any? {|item| !item.respond_to?(:id)} || items.any? {|item| item.nil? })
+      raise RuntimeError, "Given item is invalid. Ensure that the item has an id assigned and is not nil: #{items}" 
+    end
+
+    grouped_items = {}
+    items.each do |item|
+      if !grouped_items.key?(item.id)
+        grouped_items[item.id] = [item]
+      elsif grouped_items.key?(item.id)
+        grouped_items[item.id] << item
+      end
+    end
+
+    return grouped_items
   end
 
   # def sort_by(attribute)
