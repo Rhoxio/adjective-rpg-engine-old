@@ -14,14 +14,16 @@ class Actor
     @level = 1
 
     params.each do |key, value|
-      add_attribute(key, value) if !exp_table_exceptions.include?(key) 
+      self.instance_variable_set("@#{key}", value) if (!exp_table_exceptions.include?(key) || initial_attributes.include?(key))
     end
+
+    # May eventually implement a way to directly override the exp table used with a simple array. 
+    # Will have to see if use-cases some up or not.
 
     @exp_sets = params[:exp_sets]
     @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
     @active_exp_set = params[:exp_sets].data[@exp_set_name]
 
-    # For extra initialization code later.
     # yield block if block
   end
 
@@ -39,8 +41,6 @@ class Actor
     @experience = @active_exp_set[@level] if !opts[:constrain_exp] 
   end 
 
-  # You can call this recursively to have your character 'level up' 
-  # multiple times if they have enough experience for multiple level ups. 
   def level_up!
     if can_level_up?
       @level += 1
@@ -50,7 +50,6 @@ class Actor
     end
   end
 
-  # Just like above, you can call this recursively to level an actor down to the experience-appropriate level.
   def level_down!
     if experience < @active_exp_set[@level]
       @level -=1
@@ -79,12 +78,14 @@ class Actor
       @experience += exp_to_grant
       normalize_experience
 
+      # This has a weaness in that it will always count over 
       if !opts[:suppress_levels]
-        until !level_up!
+        until !can_level_up?
           level_up!
         end
       end
 
+      return { :exp_granted => exp_to_grant, :total_exp => @experience }
     end   
   end
 
@@ -130,25 +131,28 @@ class Actor
     @hitpoints == 0
   end
 
-  def add_attribute(name, value)
-    if !instance_variable_defined?("@#{name}")
-      instance_variable_set("@#{name}", value)
-      define_singleton_method("#{name}=") { |val| value = val }
-      define_singleton_method(name) { value }
-    else
-      raise RuntimeError, "Attribute '#{name}' is already defined."
-    end
-  end
+  # Ended up foregoing this solution as these classes need to be directly inheritable from. 
+  # They are not meant to be the base class to be worked against and directly amended.
 
-  def remove_attribute(name)
-    if instance_variable_defined?("@#{name}")
-      remove_instance_variable("@#{name}".to_sym)
-      metaclass.send(:remove_method, name.to_sym)
-      metaclass.send(:remove_method, "#{name}=".to_sym)
-    else
-      raise RuntimeError, "Attribute '#{name} does not exist."
-    end
-  end
+  # def add_attribute(name, value)
+  #   if !instance_variable_defined?("@#{name}")
+  #     instance_variable_set("@#{name}", value)
+  #     define_singleton_method("#{name}=") { |val| value = val }
+  #     define_singleton_method(name) { value }
+  #   else
+  #     raise RuntimeError, "Attribute '#{name}' is already defined."
+  #   end
+  # end
+
+  # def remove_attribute(name)
+  #   if instance_variable_defined?("@#{name}")
+  #     remove_instance_variable("@#{name}".to_sym)
+  #     metaclass.send(:remove_method, name.to_sym)
+  #     metaclass.send(:remove_method, "#{name}=".to_sym)
+  #   else
+  #     raise RuntimeError, "Attribute '#{name} does not exist."
+  #   end
+  # end
 
   private 
 
@@ -177,6 +181,10 @@ class Actor
 
   def exp_table_exceptions
     [:exp_sets, :exp_set_name, :active_exp_set]
+  end
+
+  def initial_attributes
+    [:hitpoints, :experience, :level]
   end
 
 end
