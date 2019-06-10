@@ -5,14 +5,43 @@ class Inventory
     # Initially takes a set of all items as separate instances.
     # As long as it responds to #id, it should all work out fine.
     # @items = items
-    @items = group_items(items)
+    @items = items
+    @grouped_items = group_items(items)
+  end
+
+  def find_by_id(id)
+    @grouped_items[id]
+  end
+
+  def sort
+    return @items.sort_by { |item| item.id }
+  end
+
+  def sort_by(attribute)
+    raise RuntimeError, "'#{attribute}' is not present on an item set: #{items}" if items.any? {|item| !item.respond_to?(attribute)} 
+    return @items.sort_by { |item| item.send(attribute) }
+  end
+
+  def sort!
+    @items = @items.sort_by { |item| item.id }
+  end
+
+  def sort_by!(attribute)
+    raise RuntimeError, "'#{attribute}' is not present on an item set: #{items}" if items.any? {|item| !item.respond_to?(attribute)} 
+    @items = @items.sort_by { |item| item.send(attribute) }
+  end
+
+  def sort_grouped_items_by(attribute)
+    # This is meant to be a nested sort that takes the grouped_items and sorts them 
+    # by a certain attribute. This attribute can be anything, as long as the 
+    # code itself reponds to the method.
+    raise RuntimeError, "'#{attribute}' is not present on an item set: #{items}" if items.any? {|item| !item.respond_to?(attribute)} 
+
   end
 
   private
 
   def group_items(items)
-    # This is where a slight tie-in to the item class will exist.
-    # The only thing this should rely on is the id of items. 
     return {} if items.length == 0 
 
     if (items.any? {|item| !item.respond_to?(:id)} || items.any? {|item| item.nil? })
