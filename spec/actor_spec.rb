@@ -1,18 +1,18 @@
 require 'spec_helper'
 
-RSpec.describe Actor do
+RSpec.describe Adjective::Actor do
 
   before(:example) do
-    @exp_table = Table::Experience.new('config/exp_table.yml', 'main')
-    @alt_exp_table = Table::Experience.new('config/exp_table.yml', "alt")
+    @exp_table = Adjective::Table::Experience.new('config/exp_table.yml', 'main')
+    @alt_exp_table = Adjective::Table::Experience.new('config/exp_table.yml', "alt")
 
-    @default_actor = Actor.new("", 
+    @default_actor = Adjective::Actor.new("", 
       { 
         exp_sets: @exp_table, 
         exp_set_name: @exp_table.name 
       }
     ) 
-    @custom_actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 }) 
+    @custom_actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 }) 
   end
 
   context "is namable" do 
@@ -96,7 +96,7 @@ RSpec.describe Actor do
     end
 
     it "will use a custom defined exp table if the 'exp_table_name' option is passed" do 
-      @alt_actor = Actor.new("Altman the Testificate", { exp_sets: @alt_exp_table, exp_set_name: @alt_exp_table.name }) 
+      @alt_actor = Adjective::Actor.new("Altman the Testificate", { exp_sets: @alt_exp_table, exp_set_name: @alt_exp_table.name }) 
       expect(@alt_actor.exp_set_name).to eq("alt")
       expect(@alt_actor.active_exp_set).to be_a_kind_of(Array)
     end
@@ -235,14 +235,14 @@ RSpec.describe Actor do
   context "when custom values are passed in to set pre-defined attrs on initialization" do 
 
     it "will accept custom values on initialization" do 
-      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
+      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
       expect(actor.hitpoints).to eq(200)
       expect(actor.experience).to eq(1909)
       expect(actor.level).to eq(3)
     end
 
     it "will not interfere with setter methods" do 
-      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
+      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
       actor.hitpoints = 400
       actor.level = 19
       expect(actor.hitpoints).to eq(400)
@@ -250,12 +250,12 @@ RSpec.describe Actor do
     end
 
     it "will reject attributes that are not defined in #initial_attributes" do 
-      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, moxy: 900 }) 
+      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, moxy: 900 }) 
       expect{actor.moxy}.to raise_error(NoMethodError)
     end
 
     it "will not reject attributes defined in #exp_table_exceptions" do 
-      actor = Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name }) 
+      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name }) 
       expect(actor.exp_set_name).to eq('main')
     end
 

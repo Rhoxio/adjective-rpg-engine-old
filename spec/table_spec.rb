@@ -1,7 +1,7 @@
-RSpec.describe Table do
+RSpec.describe Adjective::Table do
 
   before(:example) do
-    @exp_table = Table::Experience.new('config/exp_table.yml', 'main')
+    @exp_table = Adjective::Table::Experience.new('config/exp_table.yml', 'main')
   end
 
   context "when initialized" do
@@ -11,16 +11,16 @@ RSpec.describe Table do
     end
 
     it "throws RuntimeError if the file path is invalid" do 
-      expect{ Table.new('config/bad_table.yml', 'invalid') }.to raise_error(RuntimeError)
+      expect{ Adjective::Table.new('config/bad_table.yml', 'invalid') }.to raise_error(RuntimeError)
     end
 
     it "can be initialized with a name" do 
-      @table = Table.new('config/exp_table.yml', "main")
+      @table = Adjective::Table.new('config/exp_table.yml', "main")
       expect(@table.name).to eq("main")
     end
 
     it "can be initialized without a name" do
-      @table = Table.new('config/exp_table.yml')
+      @table = Adjective::Table.new('config/exp_table.yml')
       expect(@table.name).to eq(nil)
     end
 
@@ -33,15 +33,15 @@ RSpec.describe Table do
 
 end
 
-RSpec.describe Table::Experience do
+RSpec.describe Adjective::Table::Experience do
 
   before(:example) do
-    @exp_table = Table::Experience.new('config/exp_table.yml', 'main')
+    @exp_table = Adjective::Table::Experience.new('config/exp_table.yml', 'main')
   end
 
   context "when initialized" do 
     it "only allows sequential exp values" do 
-      expect{ Table::Experience.new('config/exp_table.yml', 'wrong') }.to raise_error(RuntimeError)
+      expect{ Adjective::Table::Experience.new('config/exp_table.yml', 'wrong') }.to raise_error(RuntimeError)
     end
 
     it "sets thresholds" do 
@@ -53,7 +53,7 @@ RSpec.describe Table::Experience do
     end
 
     it "throws a RuntimeError if thresholds is NOT an Array" do 
-      expect{ Table::Experience.new('config/exp_table.yml', 'unseeded') }.to raise_error(RuntimeError)
+      expect{ Adjective::Table::Experience.new('config/exp_table.yml', 'unseeded') }.to raise_error(RuntimeError)
     end
   end
 
