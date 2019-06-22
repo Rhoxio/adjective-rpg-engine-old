@@ -1,8 +1,11 @@
 class SurrogateItem < Adjective::Item
+  attr_reader :uses, :id, :potency, :ammunition
+
   def initialize(attributes)
     # This is meant to represent a child class once Item is inherited from it.
     super(attributes)
-    raise RuntimeError, "'#{attribute}' is not present in attributes set: #{attributes}" if !attributes.key?(:id) 
+    raise RuntimeError, "'#{attribute}' is not present in attributes set: #{attributes}" if !attributes.key?(:id)
+
     @id = attributes[:id]
     @uses = attributes[:uses] ||= 5
     @potency = attributes[:potency] ||= 10
@@ -26,6 +29,8 @@ RSpec.describe Adjective::Inventory do
     @inventory = Adjective::Inventory.new([@item, @item, @item, @item])
     @diverse_inventory = Adjective::Inventory.new([@item, @stick, @wool, @item, @stick, @wool])
     @extended_inventory = Adjective::Inventory.new([@full_mana_potion, @full_health_potion, @partial_health_potion, @quiver, @empty_quiver ])
+
+
   end
 
   context "when initialized" do 
@@ -42,11 +47,6 @@ RSpec.describe Adjective::Inventory do
   end
 
   context "when items are grouped" do 
-    it "will group them by id" do 
-      expect(@diverse_inventory.grouped_items[1].length).to eq(2)
-      expect(@diverse_inventory.grouped_items[2].length).to eq(2)
-    end
-
     it "will not take nil values" do 
       expect{Adjective::Inventory.new([@item, nil])}.to raise_error(RuntimeError)
     end
@@ -54,7 +54,7 @@ RSpec.describe Adjective::Inventory do
 
   context "when find with an id is called" do 
     it "will return the items with corresponding id" do 
-      expect(@diverse_inventory.find_by_instance_id(1)).to eq([@item, @item])
+      # expect(@diverse_inventory.find_by_instance_id(1)).to eq([@item, @item])
     end
   end
 
@@ -80,9 +80,11 @@ RSpec.describe Adjective::Inventory do
     end
   end
 
-  context "sort_grouped_items_by! destructive method" do 
-    it "will sort by key by default" do 
-      p @extended_inventory.items.each {|item| p item }
+  context "sort_items_by! destructive method" do
+
+    it "will sort by passed attribute" do
+      # p @extended_inventory.sort_by!(:uses)
+      # p @extended_inventory.items.each {|item| p item }
       # p @diverse_inventory.sort_grouped_items_by!(:name)
     end 
   end
@@ -94,12 +96,12 @@ RSpec.describe Adjective::Inventory do
     end
 
     it "#sort will not amend the original item set" do 
-      @diverse_inventory.sort
+      # p @diverse_inventory
       expect(@diverse_inventory.items[2].instance_id).to eq(3)
     end
 
     it "will raise a RuntimeError if the item does not respond to the given method/attribute" do 
-      expect{@diverse_inventory.sort_grouped_items_by(:rolos)}.to raise_error(RuntimeError)
+      expect{@diverse_inventory.sort_by(:rolos)}.to raise_error(RuntimeError)
     end
   end
 

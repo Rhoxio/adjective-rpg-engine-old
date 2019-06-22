@@ -7,6 +7,7 @@ module Adjective
       file_existence_catch(dir)
       @name = name
       @data = YAML.load_file(dir)
+      @_created_at = Time.now
     end
 
     def load(dir)
