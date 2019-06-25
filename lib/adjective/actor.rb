@@ -13,6 +13,7 @@ module Adjective
       @hitpoints = 1
       @experience = 0
       @level = 1
+      @_created_at = Time.now
 
       params.each do |key, value|
         self.instance_variable_set("@#{key}", value) if (!exp_table_exceptions.include?(key) || initial_attributes.include?(key))
@@ -160,6 +161,7 @@ module Adjective
     # The reason for setting this up so actors can not go below 0 hp is
     # primarily to ensure consistency to preemptively ensure that healing 
     # abilities are not having to be edge-cased out if they are at 0 hitpoints.
+    # Instead, they can trust the #alive? method for their checks. 
     # I may change this if I can think of particular use-cases. 
 
     # I can see special types of attacks bringing an actor below 0 until they are resurrected with
