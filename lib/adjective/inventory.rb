@@ -6,7 +6,7 @@ module Adjective
     def initialize(items = []) 
       validate_incoming_items(items)
 
-      @items = items
+      @item = items
       @initialized_at = Time.now
     end
 
