@@ -33,6 +33,7 @@ RSpec.describe Adjective::Inventory do
 
   end
 
+
   context "when initialized" do 
 
     it "will initialize if items argument isn't passed" do 
@@ -59,16 +60,21 @@ RSpec.describe Adjective::Inventory do
   end
 
   context "when sorting items using dangerous methods" do 
+
     context "when calling #sort!" do 
-      it "will sort items by instance_id by default" do 
+      it "will sort items by created_at by default" do 
+        @diverse_inventory.items = @diverse_inventory.items.shuffle
         @diverse_inventory.sort!
         expect(@diverse_inventory.items[0].instance_id).to eq(1)
         expect(@diverse_inventory.items[-1].instance_id).to eq(3)
       end
+
     end
 
     context "when calling #sort_by!" do 
+
       it "will sort items by the given attribute" do 
+        @diverse_inventory.items = @diverse_inventory.items.shuffle
         @diverse_inventory.sort_by!(:name)
         expect(@diverse_inventory.items[0].name).to eq("Potato")
         expect(@diverse_inventory.items[-1].name).to eq("Wool")
@@ -77,31 +83,49 @@ RSpec.describe Adjective::Inventory do
       it "will throw a RuntimeError if the given attribute/method is not present in the item set" do 
         expect{@diverse_inventory.sort_by!(:rolos)}.to raise_error(RuntimeError)
       end
+
     end
-  end
-
-  context "sort_items_by! destructive method" do
-
-    it "will sort by passed attribute" do
-      # p @extended_inventory.sort_by!(:uses)
-      # p @extended_inventory.items.each {|item| p item }
-      # p @diverse_inventory.sort_grouped_items_by!(:name)
-    end 
   end
 
   context "when items are sorted with non-dangerous methods" do 
-    it "will #sort by id by default" do 
-      expect(@diverse_inventory.sort[0].instance_id).to eq(1)
-      expect(@diverse_inventory.sort[-1].instance_id).to eq(3)
+
+    context "when calling #sort" do 
+      it "will #sort by #created_at" do 
+        @diverse_inventory.items = @diverse_inventory.items.shuffle
+        expect(@diverse_inventory.sort[0].instance_id).to eq(1)
+        expect(@diverse_inventory.sort[-1].instance_id).to eq(3)
+      end
+
+      it "#sort will not amend the original item set" do 
+        @diverse_inventory.sort
+        expect(@diverse_inventory.items[2].instance_id).to eq(3)
+      end
+
     end
 
-    it "#sort will not amend the original item set" do 
-      # p @diverse_inventory
-      expect(@diverse_inventory.items[2].instance_id).to eq(3)
-    end
+    context "when calling sort_by" do 
+      it "will sort by the given attribute" do 
+        @diverse_inventory.items = @diverse_inventory.items.shuffle
+        inventory = @diverse_inventory.sort_by(:name)
+        expect(inventory[0].name).to eq("Potato")
+        expect(inventory[-1].name).to eq("Wool")
+      end
 
-    it "will raise a RuntimeError if the item does not respond to the given method/attribute" do 
-      expect{@diverse_inventory.sort_by(:rolos)}.to raise_error(RuntimeError)
+      it "will not amend the original item set" do 
+        @diverse_inventory.sort_by(:name)
+        expect(@diverse_inventory.items[2].instance_id).to eq(3)
+      end
+
+      it "will raise a RuntimeError if the item does not respond to the given method/attribute" do 
+        expect{@diverse_inventory.sort_by(:rolos)}.to raise_error(RuntimeError)
+      end 
+
+    end
+  end
+
+  context "when #dump! methods are called" do 
+    it "will just tes for the moment" do 
+      @diverse_inventory.dump_by!(:name, "Wool")
     end
   end
 

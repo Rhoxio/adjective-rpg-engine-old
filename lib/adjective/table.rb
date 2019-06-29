@@ -57,7 +57,7 @@ module Adjective
       # general convention is that you pass through whole integers to grab data that is 
       # more reliable within the structure of the code itself. Going to just keep to
       # convention for the moment.
-      raise RuntimeError, "Level provided is not a Fixnum: #{level}" if !level.is_a?(Fixnum)
+      raise RuntimeError, "Level provided is not an Integer: #{level}" if !level.is_a?(Integer)
       return @thresholds[level]
     end
 
