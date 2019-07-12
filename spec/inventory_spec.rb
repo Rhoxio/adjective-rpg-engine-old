@@ -124,8 +124,39 @@ RSpec.describe Adjective::Inventory do
   end
 
   context "when #dump! methods are called" do 
-    it "will just tes for the moment" do 
+    it "will just test for the moment" do 
       @diverse_inventory.dump_by!(:name, "Wool")
+    end
+
+    it "will #dump_by! the correct items by attribute" do 
+      expect(@diverse_inventory.items.length).to eq(6)
+
+      dumped_items = @diverse_inventory.dump_by!(:name, "Wool")
+
+      expect(dumped_items.select {|item| item.name == "Wool"}.length).to eq(2)
+      expect(@diverse_inventory.items.select {|item| item.name != "Wool"}.length).to eq(4)
+    end
+
+    it "will #dump! and transfer the inventory completely" do 
+      ground = @diverse_inventory.dump!
+      expect(@diverse_inventory.items.length).to eq(0)
+      expect(ground.length).to eq(6)
+    end
+
+    it "will " do 
+
+    end
+            
+  end
+
+  context "when empty? is called" do 
+    it "will return true if the inventory has no items" do 
+      @diverse_inventory.items = []
+      expect(@diverse_inventory.empty?).to eq(true)
+    end
+
+    it "will return false if the inventory has items" do 
+      expect(@diverse_inventory.empty?).to eq(false)
     end
   end
 

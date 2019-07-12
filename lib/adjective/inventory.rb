@@ -70,7 +70,9 @@ module Adjective
     end
 
     def dump!
-      # clears the whole inventory and returns the items
+      outbound_items = @items
+      @items = []
+      return outbound_items
     end
 
     def dump_up_to!(index)
@@ -78,7 +80,6 @@ module Adjective
     end
 
     def dump_by!(attribute, value)
-      # find_by block,
       matching_indices = []
       @items.each_with_index do |item, index| 
         if item.respond_to?(attribute) && item.send(attribute) === value 
