@@ -1,3 +1,9 @@
+# Adjective::GlobalManager.initialize_globals(:default, "config/globals.yml") do |manager|
+#   p manager
+#   $item_instance_reference = 10
+#   $actor_instance_reference = 22
+# end
+
 class SurrogateItem < Adjective::Item
   attr_reader :uses, :id, :potency, :ammunition
 
@@ -144,7 +150,7 @@ RSpec.describe Adjective::Inventory do
     end
 
     it "will " do 
-
+      # p $item_instance_reference
     end
             
   end
