@@ -4,7 +4,7 @@ module Adjective
 
   module GlobalManager
 
-    def self.initialize_globals
+    def self.initialize
       # Adjective-specific variables.
       $item_instance_reference, $actor_instance_reference, $inventory_instance_reference = 0,0,0
       $global_file_reference = 'config/globals.yml'
@@ -17,47 +17,58 @@ module Adjective
           global_file_reference: $global_file_reference
         },
         use_default_settings: true,
+        load_from_file: true,
         custom_values: {},
         save_on_start: true
       }
 
       yield(settings) if block_given? 
 
-      if settings[:use_default_settings]
-        globals_to_set_and_save = settings[:adjective].merge(settings[:custom_values])
-        self.load_globals({raw_data: globals_to_set_and_save})
-        self.save_globals!({raw_data: globals_to_set_and_save}) if settings[:save_on_start]
+      if settings[:use_default_settings] && !settings[:load_from_file]
+        globals_to_set = settings[:adjective].merge(settings[:custom_values])
+        self.load_globals({data: globals_to_set})
+        self.save_globals!({data: globals_to_set}) if settings[:save_on_start]
+      elsif settings[:use_default_settings] && settings[:load_from_file]
+        globals = self.load_globals({
+          path: settings[:adjective][:global_file_reference], 
+          data: settings[:custom_values]
+        })
       end
 
     end
 
     def self.load_globals(opts = {})
-      if opts.key?(:raw_data)
-        globals = opts[:raw_data]
-      elsif opts.key?(:path)
+      globals = Hash.new
+
+      if opts.key?(:data)
+        globals.merge!(opts[:data])
+      end
+
+      if opts.key?(:path)
         raise RuntimeError, "Please provide a valid file path when loading global variables: #{opts[:path]}" if !File.exist?(opts[:path])
-        globals = YAML.load(File.read(opts[:path]))
-      else
-        globals = {}
+
+        globals.merge!(YAML.load(File.read(opts[:path]))[:data])
+
+        if ($global_file_reference == globals[:global_file_reference]) && (opts[:path] != globals[:global_file_reference])
+          $global_file_reference = opts[:path]
+          globals[:global_file_reference] = opts[:path]
+        end
+        
       end
 
       yield(globals) if block_given? 
 
-      globals.each do |name, value|
-        eval("$#{name} = #{value.inspect}")
-      end
+      globals.each {|name, value| eval("$#{name} = #{value.inspect}") }
 
       return globals
     end
 
     def self.save_globals!(globals)
-
-      if !$global_file_reference.nil?
-        yield(globals) if block_given? 
-        globals = File.open($global_file_reference, "w") { |file| file.write(globals.to_yaml) }
-      end
-
-      return !!globals
+      raise RuntimeError, "Please provide a valid file path when saving global variables: #{$global_file_reference}" if !File.exist?($global_file_reference)
+      yield(globals) if block_given?
+      File.open($global_file_reference, "w"){}
+      write_action = File.open($global_file_reference, "w") { |file| file.write(globals.to_yaml) }
+      return globals
     end
 
     def self.clear_globals!

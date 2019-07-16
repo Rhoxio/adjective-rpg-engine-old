@@ -11,8 +11,6 @@ Gem::Specification.new do |s|
     'http://rubygems.org/gems/adhective-rpg-engine'
   s.license       = 'MIT'
 
-  s.add_dependency "activerecord", ">= 5.2.2"
-
-  s.add_development_dependency "rspec", ">= 3.8.0"
+  s.add_development_dependency "awesome_print"
 
 end

@@ -6,3 +6,4 @@
   :global_file_reference: config/globals.yml
   :key: 0
   :other_global: 0
+  :different: xyz

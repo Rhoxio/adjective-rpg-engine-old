@@ -14,6 +14,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require_relative "../lib/adjective.rb"
+require 'awesome_print'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
