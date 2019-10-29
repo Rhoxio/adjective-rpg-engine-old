@@ -24,7 +24,7 @@ module Adjective
 
       @exp_sets = params[:exp_sets]
       @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
-      @active_exp_set = params[:exp_sets].data[@exp_set_name]
+      @active_exp_set = @exp_sets.data[@exp_set_name]
 
       # yield block if block
     end
@@ -43,7 +43,7 @@ module Adjective
       @experience = @active_exp_set[@level] if !opts[:constrain_exp] 
     end 
 
-    def level_up!
+    def level_up
       if can_level_up?
         @level += 1
         return true
@@ -52,7 +52,7 @@ module Adjective
       end
     end
 
-    def level_down!
+    def level_down
       if experience < @active_exp_set[@level]
         @level -=1
         return true
@@ -62,18 +62,20 @@ module Adjective
     end
 
     def experience_to_next_level
-      if @active_exp_set.length == @level
+      set_length = @active_exp_set.length
+      next_level = @level+1
+      if set_length == @level
         # They are max level.
         return 0
-      elsif @active_exp_set.length < (@level+1)
-        raise RangeError, "Next level out of experience table range from 0 to #{@active_exp_set.length}, (#{@level+1})"
+      elsif set_length < (next_level)
+        raise RangeError, "Next level out of experience table range from 0 to #{set_length}, (#{next_level})"
       else
-        return @active_exp_set[@level+1] - @active_exp_set[@level]
+        return @active_exp_set[next_level] - @active_exp_set[@level]
       end
     end
 
     def grant_experience(exp_to_grant, opts = {})
-      # Only takes positive integers - should avoid bugs this way.
+      # Only takes positive integers - should avoid bugs and underflow this way.
       if exp_to_grant < 0
         raise RuntimeError, "Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
       else
@@ -82,7 +84,7 @@ module Adjective
  
         if !opts[:suppress_levels]
           until !can_level_up?
-            level_up!
+            level_up
           end
         end
 
@@ -91,7 +93,7 @@ module Adjective
     end
 
     def subtract_experience(exp_to_subtract, opts = {})
-      # Only takes positive integers - should avoid bugs this way.
+      # Only takes positive integers - should avoid bugs and underflow this way.
       if exp_to_subtract < 0
         raise RuntimeError, "Provided value in #subtract_experience (#{exp_to_subtract}) is not a positive integer."
       else
@@ -99,8 +101,8 @@ module Adjective
         normalize_experience
 
         if !opts[:suppress_levels]
-          until !level_down!
-            level_down!
+          until !level_down
+            level_down
           end
         end
 

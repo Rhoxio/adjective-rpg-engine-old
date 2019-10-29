@@ -1,12 +1,11 @@
 module Adjective
+  
   class Inventory
 
     attr_reader :initialized_at
     attr_accessor :items
 
     def initialize(items = [], opts= {}) 
-      # Descriptive comment
-      validate_incoming_items(items)
 
       @items = items
       @initialized_at = Time.now
@@ -24,7 +23,7 @@ module Adjective
     end    
 
     def sort_by(attribute, order = :asc)
-      raise RuntimeError, "#{attribute} is not present on an item set: #{@items}" if items.any? {|item| !item.respond_to?(attribute)} 
+      validate_attributes(attribute)
       sorted = @items.sort_by(&attribute)
       if order == :asc
         return sorted
@@ -34,7 +33,7 @@ module Adjective
     end
 
     def sort_by!(attribute, order = :asc)
-      raise RuntimeError, "#{attribute} is not present on an item set: #{@items}" if items.any? {|item| !item.respond_to?(attribute)} 
+      validate_attributes(attribute) 
       sorted = @items.sort_by(&attribute)
       if order == :asc
         @items = sorted
@@ -98,7 +97,7 @@ module Adjective
     #   # Will clear inventory until a specific index and return the items
     # end
 
-    def dump_by!(attribute, value)
+    def dump_by(attribute, value)
       matching_indices = []
       @items.each_with_index do |item, index| 
         if item.respond_to?(attribute) && item.send(attribute) === value 
@@ -143,24 +142,19 @@ module Adjective
 
     private
 
-    def item_attrs
-      vars = {}
-      @items.map do |item| 
-        if !vars.key?(item.name)
-          vars[item.name] = item.instance_variables.map {|ivar| item.instance_variable_get(ivar).to_s.downcase }
-        end
-      end
-      return vars.each {|ary| ary.flatten! }
+    def validate_attributes(attribute)
+      raise RuntimeError, "#{attribute} is not present on an item set: #{@items}" if @items.any? {|item| !item.respond_to?(attribute)} 
     end
 
-    def validate_incoming_items(items)
-      return true if items.length === 0
-
-      not_valid = items.any? {|item| item.nil? }
-      raise RuntimeError, "Provided item array contains nil values." if not_valid
-
-      return true
-    end
+    # def item_attrs
+    #   vars = {}
+    #   @items.map do |item| 
+    #     if !vars.key?(item.name)
+    #       vars[item.name] = item.instance_variables.map {|ivar| item.instance_variable_get(ivar).to_s.downcase }
+    #     end
+    #   end
+    #   return vars.each {|ary| ary.flatten! }
+    # end
 
   end
 end

@@ -161,13 +161,13 @@ RSpec.describe Adjective::Actor do
   context "when levels are awarded" do 
     it "will grant levels until corret threshold is met" do 
       @default_actor.grant_experience(200)
-      expect(@default_actor.level_up!).to eq(false)
+      expect(@default_actor.level_up).to eq(false)
       expect(@default_actor.level).to eq(2)
     end  
 
     it "will NOT grant a level if can_level_up? does not pass" do
       @default_actor.grant_experience(199)
-      expect(@default_actor.level_up!).to eq(false)
+      expect(@default_actor.level_up).to eq(false)
       expect(@default_actor.level).to eq(1)
     end
 
