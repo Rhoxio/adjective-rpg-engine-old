@@ -49,33 +49,50 @@ module Adjective
     end
 
     def get(instance_id)
+
       # Fetch functionality
-      # This will cover the unique identifier 
+      # Should only return one object.
+      
     end
 
-    def get_by(attribute)
-      # Specific fetch functionality
+    def get_by(attribute, value = nil)
+      # results = []
+      # ap attribute
+      # ap value
+      # @items.each do |item|
+      #   ap item.respond_to?(attribute)
+      #   ap item.name
+      #   if item.respond_to?(attribute)
+      #     ap 'responds to it'
+      #     attribute = item.send(attribute)
+      #     ap attribute
+      #     if value.nil?
+      #       ap 'NIL'
+      #       results << item
+      #     elsif attribute == value && !value.nil?
+      #       ap "NN"
+      #       results << item
+      #     end
+      #   end
+      # end
+      # return results
     end    
 
-    def put(item)
+    def store(item)
       # Put functionality
     end
 
-    def post(items)
-      # post functionality
-    end
-
-    def deposit
+    def deposit(items)
       # alias for #put
     end
 
-    def dump!
+    def dump
       outbound_items = @items
       @items = []
       return outbound_items
     end
 
-    def dump_up_to!(index)
+    def dump_until(index)
       # Will clear inventory until a specific index and return the items
     end
 
@@ -94,7 +111,7 @@ module Adjective
 
     end
 
-    def remove()
+    def remove
 
     end
 
@@ -111,9 +128,28 @@ module Adjective
 
     def query(term)
       # Scan utility to check for string matches within item attributes.
+      results = []
+      item_attrs.each do |item_name, data|
+        data.each do |datum|
+          if datum.include?(term.downcase)
+            results << get_by(:name, item_name)
+          end
+        end
+      end
+      return results
     end
 
     private
+
+    def item_attrs
+      vars = {}
+      @items.map do |item| 
+        if !vars.key?(item.name)
+          vars[item.name] = item.instance_variables.map {|ivar| item.instance_variable_get(ivar).to_s.downcase }
+        end
+      end
+      return vars.each {|ary| ary.flatten! }
+    end
 
     def validate_incoming_items(items)
       return true if items.length === 0

@@ -101,3 +101,30 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 end
+
+class SurrogateItem < Adjective::Item
+  attr_accessor :uses, :id, :potency, :ammunition
+
+  def initialize(attributes = {})
+    # This is meant to represent a child class once Item is inherited from it.
+    super(attributes)
+
+    # I assume they would override #id in their model somewhere. If not, it tells them to supply it.
+    raise RuntimeError, "'#{attribute}' is not present in attributes set: #{attributes}" if !attributes.key?(:id)
+
+    @id = attributes[:id] ||= id
+    @uses = attributes[:uses] ||= 5
+    @potency = attributes[:potency] ||= 10
+    @ammunition = attributes[:ammunition] ||= 100
+  end
+end
+
+def reset_adj_globals
+  Adjective::GlobalManager.load_globals({
+    data:{
+      "item_instance_ref": 1, 
+      "actor_instance_ref": 1,
+      "inventory_instance_ref": 1
+    }
+  })
+end

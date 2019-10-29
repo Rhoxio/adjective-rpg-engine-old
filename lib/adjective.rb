@@ -6,23 +6,25 @@ module Adjective
 
     def self.initialize
       # Adjective-specific variables.
-      $item_instance_reference = 0
-      $actor_instance_reference = 0
-      $inventory_instance_reference = 0
+      $item_instance_ref = 1
+      $actor_instance_ref = 1
+      $inventory_instance_ref = 1
       @@globals = []
+
 
       settings = {
         adjective: {
-          item_instance_reference: $item_instance_reference,
-          actor_instance_reference: $actor_instance_reference,
-          inventory_instance_reference: $inventory_instance_reference,
+          item_instance_ref: $item_instance_ref,
+          actor_instance_ref: $actor_instance_ref,
+          inventory_instance_ref: $inventory_instance_ref,
         },
-        custom_values: {}
+        custom: {}
       }
 
+      # 'settings' passed here for load in initialization file
       yield(settings) if block_given? 
 
-      globals_to_set = settings[:adjective].merge(settings[:custom_values])
+      globals_to_set = settings[:adjective].merge(settings[:custom])
       self.load_globals({data: globals_to_set})
 
     end
@@ -33,8 +35,9 @@ module Adjective
       yield(globals) if block_given? 
 
       globals.each do |name, value| 
-        eval("$#{name} = #{value.inspect}")
+        eval("$#{name} = #{value}")
         @@globals.push("#{name}")
+        @@globals.uniq!
       end
       return globals
     end
@@ -48,13 +51,25 @@ module Adjective
       return true 
     end
 
-    def self.view_globals
+    def self.get_globals
       return_value = {}
       @@globals.each do |var|
         return_value[var] = "#{eval "$#{var}.inspect"}"
       end
       return return_value
     end
+
+    def self.increment_items
+      $item_instance_ref += 1
+    end
+
+    def self.increment_actors
+      $actor_instance_ref += 1
+    end
+
+    def self.increment_inventories
+      $inventory_instance_ref += 1
+    end    
 
   end
 
