@@ -33,4 +33,7 @@ Related Data:
    - Equipment
    - Effects
    - Locations
+   
+## Global Management
+This project will also include a global management system and auto-incrementing instance ids on a per-model basis. Essentially, you can set globals at startup and have important adjective-specific ones be automatically managed in runtime.
 
