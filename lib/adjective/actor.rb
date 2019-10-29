@@ -79,8 +79,7 @@ module Adjective
       else
         @experience += exp_to_grant
         normalize_experience
-
-        # This has a weaness in that it will always count over 
+ 
         if !opts[:suppress_levels]
           until !can_level_up?
             level_up!

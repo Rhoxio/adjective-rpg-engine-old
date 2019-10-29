@@ -1,108 +1,141 @@
-class SurrogateItem < Adjective::Item
-  attr_reader :uses, :id, :potency, :ammunition
-
-  def initialize(attributes)
-    # This is meant to represent a child class once Item is inherited from it.
-    super(attributes)
-    raise RuntimeError, "'#{attribute}' is not present in attributes set: #{attributes}" if !attributes.key?(:id)
-
-    @id = attributes[:id]
-    @uses = attributes[:uses] ||= 5
-    @potency = attributes[:potency] ||= 10
-    @ammunition = attributes[:ammunition] ||= 100
-  end
-end  
-
 RSpec.describe Adjective::Inventory do
 
   before(:example) do
-    @item = Adjective::Item.new({instance_id: 1, name: "Potato"})
-    @stick = Adjective::Item.new({instance_id: 2, name: "Stick"})
-    @wool = Adjective::Item.new({instance_id: 3, name: "Wool"})
+    # Clear globals as we need to track specific items by their instance_id to test them appropriately.
+    reset_adj_globals
 
-    @full_health_potion = SurrogateItem.new({id: 1, instance_id: 5, name: "Healing Potion"})
-    @full_mana_potion = SurrogateItem.new({id: 2, instance_id: 6, name: "Mana Potion", uses: 2, potency: 8})
-    @partial_health_potion = SurrogateItem.new({id: 1, instance_id: 7, name: "Healing Potion", uses: 1, potency: 8})
-    @quiver = SurrogateItem.new({id: 3, instance_id: 8, name: "Quiver"})
-    @empty_quiver = SurrogateItem.new({id: 3, instance_id: 9, name: "Quiver", ammunition: 0})
+    @item = Adjective::Item.new({ name: "Potato"}) #1
+    @stick = Adjective::Item.new({ name: "Stick"}) #2
+    @wool = Adjective::Item.new({ name: "Wool"}) #3
+
+    @full_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion"}) #4
+    @full_mana_potion = SurrogateItem.new({id: 2,  name: "Mana Potion", uses: 2, potency: 8}) #5
+    @partial_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion", uses: 1, potency: 8}) #6
+    @quiver = SurrogateItem.new({id: 3,  name: "Quiver"}) #7
+    @empty_quiver = SurrogateItem.new({id: 3,  name: "Quiver", ammunition: 0}) #8
 
     @inventory = Adjective::Inventory.new([@item, @item, @item, @item])
     @diverse_inventory = Adjective::Inventory.new([@item, @stick, @wool, @item, @stick, @wool])
     @extended_inventory = Adjective::Inventory.new([@full_mana_potion, @full_health_potion, @partial_health_potion, @quiver, @empty_quiver ])
-
-
   end
 
-  context "when initialized" do 
 
-    it "will initialize if items argument isn't passed" do 
+  context "when initialized it" do 
+
+    it "will accept no items as an argument" do 
       expect(Adjective::Inventory.new().items.length).to eq(0)
     end
 
-    it "will initialize if provded with an array of items" do 
+    it "will accept an empty items array as an argument" do 
+      expect(Adjective::Inventory.new([]).items.length).to eq(0)
+    end    
+
+    it "will work when provded with an array argument of items" do 
       inventory = Adjective::Inventory.new([@item, @item])
       expect(inventory.items.length).to be(2)
     end
 
   end
 
-  context "when items are grouped" do 
-    it "will not take nil values" do 
-      expect{Adjective::Inventory.new([@item, nil])}.to raise_error(RuntimeError)
-    end
-  end
+  context "when sorting items" do 
 
-  context "when find with an id is called" do 
-    it "will return the items with corresponding id" do 
-      # expect(@diverse_inventory.find_by_instance_id(1)).to eq([@item, @item])
-    end
-  end
-
-  context "when sorting items using dangerous methods" do 
     context "when calling #sort!" do 
-      it "will sort items by instance_id by default" do 
+      it "will sort items by created_at by default" do 
+        @diverse_inventory.items.shuffle!
         @diverse_inventory.sort!
         expect(@diverse_inventory.items[0].instance_id).to eq(1)
         expect(@diverse_inventory.items[-1].instance_id).to eq(3)
       end
+
     end
 
     context "when calling #sort_by!" do 
+
       it "will sort items by the given attribute" do 
+        @diverse_inventory.items.shuffle!
         @diverse_inventory.sort_by!(:name)
         expect(@diverse_inventory.items[0].name).to eq("Potato")
         expect(@diverse_inventory.items[-1].name).to eq("Wool")
       end
 
       it "will throw a RuntimeError if the given attribute/method is not present in the item set" do 
-        expect{@diverse_inventory.sort_by!(:rolos)}.to raise_error(RuntimeError)
+        expect{@diverse_inventory.sort_by!(:arbitrary)}.to raise_error(RuntimeError)
       end
+
     end
   end
 
-  context "sort_items_by! destructive method" do
+  context "when items are sorted" do 
 
-    it "will sort by passed attribute" do
-      # p @extended_inventory.sort_by!(:uses)
-      # p @extended_inventory.items.each {|item| p item }
-      # p @diverse_inventory.sort_grouped_items_by!(:name)
-    end 
+    context "when calling #sort" do 
+      it "will #sort by #created_at" do 
+        @diverse_inventory.items.shuffle!
+        expect(@diverse_inventory.sort[0].instance_id).to eq(1)
+        expect(@diverse_inventory.sort[-1].instance_id).to eq(3)
+      end
+
+      it "#sort will not amend the original item set" do 
+        @diverse_inventory.sort
+        expect(@diverse_inventory.items[2].instance_id).to eq(3)
+      end
+
+    end
+
+    context "when calling #sort_by" do 
+      it "will sort by the given attribute" do 
+        @diverse_inventory.items.shuffle!
+        inventory = @diverse_inventory.sort_by(:name)
+
+        expect(inventory[0].name).to eq("Potato")
+        expect(inventory[-1].name).to eq("Wool")
+      end
+
+      it "will not amend the original item set" do 
+        @diverse_inventory.sort_by(:name)
+        expect(@diverse_inventory.items[2].instance_id).to eq(3)
+      end
+
+      it "will raise a RuntimeError if the item does not respond to the given method/attribute" do  
+        expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
+      end 
+
+    end
   end
 
-  context "when items are sorted with non-dangerous methods" do 
-    it "will #sort by id by default" do 
-      expect(@diverse_inventory.sort[0].instance_id).to eq(1)
-      expect(@diverse_inventory.sort[-1].instance_id).to eq(3)
+  context "when #dump methods are called" do 
+
+    it "will #dump_by! the correct items by attribute" do 
+      expect(@diverse_inventory.items.length).to eq(6)
+      dumped_items = @diverse_inventory.dump_by!(:name, "Wool")
+
+      expect(dumped_items.select {|item| item.name == "Wool"}.length).to eq(2)
+      expect(@diverse_inventory.items.select {|item| item.name != "Wool"}.length).to eq(4)
     end
 
-    it "#sort will not amend the original item set" do 
-      # p @diverse_inventory
-      expect(@diverse_inventory.items[2].instance_id).to eq(3)
+    it "will #dump and return the inventory completely" do 
+      ground = @diverse_inventory.dump
+
+      expect(@diverse_inventory.items.length).to eq(0)
+      expect(ground.length).to eq(6)
+    end
+            
+  end
+
+  context "when empty? is called" do 
+    it "will return true if the inventory has no items" do 
+      @diverse_inventory.items = []
+      expect(@diverse_inventory.empty?).to eq(true)
     end
 
-    it "will raise a RuntimeError if the item does not respond to the given method/attribute" do 
-      expect{@diverse_inventory.sort_by(:rolos)}.to raise_error(RuntimeError)
+    it "will return false if the inventory has items" do 
+      expect(@diverse_inventory.empty?).to eq(false)
     end
+  end
+
+  context "when querying for items" do 
+    # it "#get will locate an item" do 
+    #   @diverse_inventory.get
+    # end
   end
 
 end
