@@ -91,7 +91,7 @@ module Adjective
     end
 
     def subtract_experience(exp_to_subtract, opts = {})
-      # Only takes positive integers - should avoid bugs this way. 
+      # Only takes positive integers - should avoid bugs this way.
       if exp_to_subtract < 0
         raise RuntimeError, "Provided value in #subtract_experience (#{exp_to_subtract}) is not a positive integer."
       else
@@ -108,7 +108,6 @@ module Adjective
     end
 
     def use_experience_set(name)
-      # This is going to swap around the table pulled from, not the file it is pulled from explicitly.
       if @exp_sets.set_exists?(name)
         @exp_set_name = name
         @active_exp_set = @exp_sets.data[name]
@@ -132,29 +131,6 @@ module Adjective
       @hitpoints == 0
     end
 
-    # Ended up foregoing this solution as these classes need to be directly inheritable from. 
-    # They are not meant to be the base class to be worked against and directly amended.
-
-    # def add_attribute(name, value)
-    #   if !instance_variable_defined?("@#{name}")
-    #     instance_variable_set("@#{name}", value)
-    #     define_singleton_method("#{name}=") { |val| value = val }
-    #     define_singleton_method(name) { value }
-    #   else
-    #     raise RuntimeError, "Attribute '#{name}' is already defined."
-    #   end
-    # end
-
-    # def remove_attribute(name)
-    #   if instance_variable_defined?("@#{name}")
-    #     remove_instance_variable("@#{name}".to_sym)
-    #     metaclass.send(:remove_method, name.to_sym)
-    #     metaclass.send(:remove_method, "#{name}=".to_sym)
-    #   else
-    #     raise RuntimeError, "Attribute '#{name} does not exist."
-    #   end
-    # end
-
     private 
 
     # The reason for setting this up so actors can not go below 0 hp is
@@ -165,7 +141,8 @@ module Adjective
 
     # I can see special types of attacks bringing an actor below 0 until they are resurrected with
     # a specific type of ability, but would probably best be handled by a Status of 'grievous injury' or
-    # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt.
+    # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt
+    # or healing is applied.
 
     def normalize_hitpoints
       @hitpoints = 0 if @hitpoints < 0
