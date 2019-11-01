@@ -104,7 +104,7 @@ RSpec.describe Adjective::Inventory do
 
   context "when #dump methods are called" do 
 
-    it "will #dump_by! the correct items by attribute" do 
+    it "will #dump_by the correct items by attribute" do 
       expect(@diverse_inventory.items.length).to eq(6)
       dumped_items = @diverse_inventory.dump_by(:name, "Wool")
 
