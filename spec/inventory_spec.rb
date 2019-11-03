@@ -4,21 +4,32 @@ RSpec.describe Adjective::Inventory do
     # Clear globals as we need to track specific items by their instance_id to test them appropriately.
     reset_adj_globals
 
-    @item = Adjective::Item.new({ name: "Potato"}) #1
-    @stick = Adjective::Item.new({ name: "Stick"}) #2
-    @wool = Adjective::Item.new({ name: "Wool"}) #3
+    @item = Adjective::Item.new({ id: 54, name: "Potato"}) #1
+    @stick = Adjective::Item.new({ id: 67, name: "Stick"}) #2
+    @wool = Adjective::Item.new({ id: 89, name: "Wool"}) #3
 
     @full_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion"}) #4
     @full_mana_potion = SurrogateItem.new({id: 2,  name: "Mana Potion", uses: 2, potency: 8}) #5
-    @partial_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion", uses: 1, potency: 8}) #6
-    @quiver = SurrogateItem.new({id: 3,  name: "Quiver"}) #7
-    @empty_quiver = SurrogateItem.new({id: 3,  name: "Quiver", ammunition: 0}) #8
+    @partial_health_potion = SurrogateItem.new({id: 4,  name: "Healing Potion", uses: 1, potency: 8}) #6
+    @quiver = SurrogateItem.new({id: 5,  name: "Quiver"}) #7
+    @empty_quiver = SurrogateItem.new({id: 5,  name: "Quiver", ammunition: 0}) #8
 
     @inventory = Adjective::Inventory.new([@item, @item, @item, @item])
     @diverse_inventory = Adjective::Inventory.new([@item, @stick, @wool, @item, @stick, @wool])
     @extended_inventory = Adjective::Inventory.new([@full_mana_potion, @full_health_potion, @partial_health_potion, @quiver, @empty_quiver ])
+
+    @parent_inventory = SurrogateInventory.new("Backpack", 1, [@full_health_potion, @partial_health_potion, @stick, @wool, @quiver])
   end
 
+  context "when using a parent model" do 
+    it "should retain items" do 
+      expect(@parent_inventory.items.length).to eq(5)
+    end
+
+    it "methods should be able to be overidden" do 
+      expect(@parent_inventory.sort.map {|item| item.instance_id}).to eq([4, 6, 7, 2, 3])
+    end
+  end
 
   context "when initialized it" do 
 
@@ -37,7 +48,22 @@ RSpec.describe Adjective::Inventory do
 
   end
 
-  context "when sorting items" do 
+  context "when items are retrieved" do 
+    it "will retrieve using instance_id when retrieve is called" do 
+      sample = @extended_inventory.items.sample
+      expect(@extended_inventory.retrieve(sample.instance_id)).to eq(sample)
+    end
+
+    it "will retrieve_by an attribute and value" do 
+      expect(@diverse_inventory.retrieve_by(:name, "Stick").length).to eq(2)
+    end
+
+    it "will not error out when asked to scan for an attribute that doesn't exist" do 
+      expect(@diverse_inventory.retrieve_by(:arbitrary, "Stick")).to eq([])
+    end
+  end
+
+  context "when sorting items destructively" do 
 
     context "when calling #sort!" do 
       it "will sort items by created_at by default" do 
@@ -46,6 +72,14 @@ RSpec.describe Adjective::Inventory do
         expect(@diverse_inventory.items[0].instance_id).to eq(1)
         expect(@diverse_inventory.items[-1].instance_id).to eq(3)
       end
+
+      it "will throw a RuntimeError if the given attribute/method is not present in the item set" do 
+        expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
+      end
+
+      it "will throw an ArgumentError if there is an invalid order argument" do 
+         expect{@diverse_inventory.sort_by(:name, :arbitrary)}.to raise_error(ArgumentError)
+      end      
 
     end
 
@@ -62,10 +96,14 @@ RSpec.describe Adjective::Inventory do
         expect{@diverse_inventory.sort_by!(:arbitrary)}.to raise_error(RuntimeError)
       end
 
+      it "will throw an ArgumentError if there is an invalid order argument" do 
+         expect{@diverse_inventory.sort_by!(:name, :arbitrary)}.to raise_error(ArgumentError)
+      end
+
     end
   end
 
-  context "when items are sorted" do 
+  context "when items are sorted and return new arrays" do 
 
     context "when calling #sort" do 
       it "will #sort by #created_at" do 
@@ -99,6 +137,10 @@ RSpec.describe Adjective::Inventory do
         expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
       end 
 
+      it "will throw an ArgumentError if there is an invalid order argument" do 
+         expect{@diverse_inventory.sort_by(:name, :arbitrary)}.to raise_error(ArgumentError)
+      end      
+
     end
   end
 
@@ -131,6 +173,28 @@ RSpec.describe Adjective::Inventory do
       expect(@diverse_inventory.empty?).to eq(false)
     end
   end
+
+  context "when storing items" do 
+    it "will store one item" do 
+      @diverse_inventory.store(@item)
+      expect(@diverse_inventory.items.length).to eq(7)
+    end
+
+    it "will store many items" do 
+      @diverse_inventory.store([@item, @item, @item])
+      expect(@diverse_inventory.items.length).to eq(9)
+    end    
+  end
+
+  # context "when retrieving items" do 
+  #   it "retrieve will return one matching item" do 
+  #     expect(@diverse_inventory.retrieve(1)).to eq(@item)
+  #   end
+
+  #   it "retrieve_by will return multiple matches" do 
+  #     @diverse_inventory.retrieve_by(:name, "")
+  #   end
+  # end
 
   context "when querying for items" do 
     # it "#get will locate an item" do 
