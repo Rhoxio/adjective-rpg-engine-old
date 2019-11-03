@@ -102,6 +102,20 @@ RSpec.configure do |config|
 =end
 end
 
+class SurrogateInventory < Adjective::Inventory
+  attr_reader :name, :id
+
+  def initialize(name, id, items = [])
+    @id = id
+    @name = name
+    super(items)
+  end
+
+  def sort
+    @items.sort_by { |item| item.name }
+  end
+end
+
 class SurrogateItem < Adjective::Item
   attr_accessor :uses, :id, :potency, :ammunition
 
