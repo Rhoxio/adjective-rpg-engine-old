@@ -55,7 +55,7 @@ module Adjective
     end    
 
     def sort_by(attribute, order = :asc)
-      raise ArgumentError, "order parameter must be :asc or :desc" if ![:asc, :desc].include?(order)
+      validate_sort_direction(order)
       validate_attribute(attribute)
       sorted = @items.sort_by(&attribute)
       if order == :asc
@@ -66,8 +66,8 @@ module Adjective
     end
 
     def sort_by!(attribute, order = :asc)
-      raise ArgumentError, "order paramter must be :asc or :desc" if ![:asc, :desc].include?(order)
-      validate_attribute(attribute) 
+      validate_sort_direction(order)
+      validate_attribute(attribute)
       sorted = @items.sort_by(&attribute)
       if order == :asc
         @items = sorted
@@ -81,6 +81,10 @@ module Adjective
 
     def validate_attribute(attribute)
       raise RuntimeError, "#{attribute} is not present on an item in set: #{@items}" if @items.any? {|item| !item.respond_to?(attribute)} 
+    end
+
+    def validate_sort_direction(order)
+      raise ArgumentError, "order paraamter must be :asc or :desc" if ![:asc, :desc].include?(order)
     end
 
   end

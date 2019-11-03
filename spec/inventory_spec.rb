@@ -49,13 +49,17 @@ RSpec.describe Adjective::Inventory do
   end
 
   context "when items are retrieved" do 
-    it "will retrieve by instance_id when retrieve is called" do 
+    it "will retrieve using instance_id when retrieve is called" do 
       sample = @extended_inventory.items.sample
       expect(@extended_inventory.retrieve(sample.instance_id)).to eq(sample)
     end
 
     it "will retrieve_by an attribute and value" do 
       expect(@diverse_inventory.retrieve_by(:name, "Stick").length).to eq(2)
+    end
+
+    it "will not error out when asked to scan for an attribute that doesn't exist" do 
+      expect(@diverse_inventory.retrieve_by(:arbitrary, "Stick")).to eq([])
     end
   end
 
@@ -68,6 +72,14 @@ RSpec.describe Adjective::Inventory do
         expect(@diverse_inventory.items[0].instance_id).to eq(1)
         expect(@diverse_inventory.items[-1].instance_id).to eq(3)
       end
+
+      it "will throw a RuntimeError if the given attribute/method is not present in the item set" do 
+        expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
+      end
+
+      it "will throw an ArgumentError if there is an invalid order argument" do 
+         expect{@diverse_inventory.sort_by(:name, :arbitrary)}.to raise_error(ArgumentError)
+      end      
 
     end
 
@@ -91,7 +103,7 @@ RSpec.describe Adjective::Inventory do
     end
   end
 
-  context "when items are sorted and return amended arrays" do 
+  context "when items are sorted and return new arrays" do 
 
     context "when calling #sort" do 
       it "will #sort by #created_at" do 
@@ -174,11 +186,15 @@ RSpec.describe Adjective::Inventory do
     end    
   end
 
-  context "when retrieving items" do 
-    it "retrieve will return one matching item" do 
+  # context "when retrieving items" do 
+  #   it "retrieve will return one matching item" do 
+  #     expect(@diverse_inventory.retrieve(1)).to eq(@item)
+  #   end
 
-    end
-  end
+  #   it "retrieve_by will return multiple matches" do 
+  #     @diverse_inventory.retrieve_by(:name, "")
+  #   end
+  # end
 
   context "when querying for items" do 
     # it "#get will locate an item" do 
