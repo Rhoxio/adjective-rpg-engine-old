@@ -20,6 +20,8 @@ module Adjective
       @items.each do |item|
         attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
         attributes.each do |attribute|
+          # to_s works on most object types and is easy to check substrings against
+          # Can potentially use it to find by similar attribute names in different item sets.
           data = item.send(attribute).to_s
           matching_objects << item if data.include?(term)
         end

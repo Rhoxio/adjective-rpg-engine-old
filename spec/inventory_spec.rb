@@ -31,7 +31,7 @@ RSpec.describe Adjective::Inventory do
     end
   end
 
-  context "when initialized it" do 
+  context "when initialized" do 
 
     it "will accept no items as an argument" do 
       expect(Adjective::Inventory.new().items.length).to eq(0)
@@ -41,7 +41,7 @@ RSpec.describe Adjective::Inventory do
       expect(Adjective::Inventory.new([]).items.length).to eq(0)
     end    
 
-    it "will work when provded with an array argument of items" do 
+    it "will accept an array argument of items" do 
       inventory = Adjective::Inventory.new([@item, @item])
       expect(inventory.items.length).to be(2)
     end
@@ -49,16 +49,16 @@ RSpec.describe Adjective::Inventory do
   end
 
   context "when items are retrieved" do 
-    it "will retrieve using instance_id when retrieve is called" do 
+    it "will #retrieve using instance_id" do 
       sample = @extended_inventory.items.sample
       expect(@extended_inventory.retrieve(sample.instance_id)).to eq(sample)
     end
 
-    it "will retrieve_by an attribute and value" do 
+    it "will #retrieve_by an attribute and value" do 
       expect(@diverse_inventory.retrieve_by(:name, "Stick").length).to eq(2)
     end
 
-    it "will not error out when asked to scan for an attribute that doesn't exist" do 
+    it "#retrieve_by will not error out when asked to work with an attribute that doesn't exist" do 
       expect(@diverse_inventory.retrieve_by(:arbitrary, "Stick")).to eq([])
     end
   end
