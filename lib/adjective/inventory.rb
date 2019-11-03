@@ -15,18 +15,18 @@ module Adjective
     end   
 
     # Simple Search
-    def query(term)
-      matching_objects = []
+    def query(term, scope = :all)
+      validate_query_scopes(scope)
+      matches = []
       @items.each do |item|
         attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
         attributes.each do |attribute|
-          # to_s works on most object types and is easy to check substrings against
-          # Can potentially use it to find by similar attribute names in different item sets.
-          data = item.send(attribute).to_s
-          matching_objects << item if data.include?(term)
+          attribute_name, value = attribute.to_s, item.send(attribute).to_s
+          query_data = construct_query_data(attribute_name, value, scope) 
+          matches << item if query_data.include?(term)
         end
       end
-      return matching_objects
+      return matches
     end     
 
     # Store - Put
@@ -54,7 +54,7 @@ module Adjective
       return outbound_items
     end
 
-    # dump_by - Selective delete
+    # Dump selection - Selective delete
     def dump_by(attribute, value)
       outbound_items = retrieve_by(attribute, value)
       @items = @items.select {|item| !outbound_items.include?(item) }
@@ -86,12 +86,24 @@ module Adjective
 
     private
 
+    def construct_query_data(attribute, item, scope)
+      return {
+        all: attribute + "&:" + item,
+        attributes: attribute,
+        values: item
+      }[scope]
+    end    
+
     def validate_attribute(attribute)
       raise RuntimeError, "#{attribute} is not present on an item in set: #{@items}" if @items.any? {|item| !item.respond_to?(attribute)} 
     end
 
     def validate_sort_direction(order)
-      raise ArgumentError, "order paraamter must be :asc or :desc" if ![:asc, :desc].include?(order)
+      raise ArgumentError, "order parameter must be :asc or :desc" if ![:asc, :desc].include?(order)
+    end
+
+    def validate_query_scopes(scope)
+      raise ArgumentError, "Please provide :full, :attributes, or :values to the scope parameter: #{scope}" if ![:all, :attributes, :values].include?(scope)
     end
 
   end

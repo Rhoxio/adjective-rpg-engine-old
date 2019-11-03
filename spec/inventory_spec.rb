@@ -195,6 +195,12 @@ RSpec.describe Adjective::Inventory do
     it "will return no results if no matches are made" do 
       expect(@parent_inventory.query("arbitrary").length).to eq(0)
     end
+
+    it "will test query" do 
+      p @parent_inventory.query("", :attributes)
+      # p @parent_inventory.pocket.slots
+      # p @parent_inventory.query("pocket")
+    end
   end
 
 end
