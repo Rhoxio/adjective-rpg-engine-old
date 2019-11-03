@@ -15,6 +15,8 @@ module Adjective
       @items.length === 0
     end    
 
+
+    # Store - Put
     def store(items)
       new_items = Array(items)
       new_items.each do |item|
@@ -22,6 +24,7 @@ module Adjective
       end
     end
 
+    # Retrieval - Get
     def retrieve(instance_id)
       item = @items.find {|item| item.instance_id == instance_id }
       return item
@@ -34,18 +37,22 @@ module Adjective
       return matches
     end
 
+
+    # Dump - Delete
     def dump
       outbound_items = @items
       @items = []
       return outbound_items
     end
 
+    # dump_by - Selective delete
     def dump_by(attribute, value)
       outbound_items = retrieve_by(attribute, value)
       @items = @items.select {|item| !outbound_items.include?(item) }
       return outbound_items
     end    
 
+    # Sorting
     def sort
       return @items.sort_by { |item| item.created_at }
     end
