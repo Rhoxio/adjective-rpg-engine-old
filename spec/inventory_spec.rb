@@ -37,6 +37,17 @@ RSpec.describe Adjective::Inventory do
 
   end
 
+  context "when items are retrieved" do 
+    it "will retrieve by instance_id when retrieve is called" do 
+      sample = @extended_inventory.items.sample
+      expect(@extended_inventory.retrieve(sample.instance_id)).to eq(sample)
+    end
+
+    it "will retrieve_by an attribute and value" do 
+      expect(@diverse_inventory.retrieve_by(:name, "Stick").length).to eq(2)
+    end
+  end
+
   context "when sorting items" do 
 
     context "when calling #sort!" do 
@@ -129,6 +140,24 @@ RSpec.describe Adjective::Inventory do
 
     it "will return false if the inventory has items" do 
       expect(@diverse_inventory.empty?).to eq(false)
+    end
+  end
+
+  context "when storing items" do 
+    it "will store one item" do 
+      @diverse_inventory.store(@item)
+      expect(@diverse_inventory.items.length).to eq(7)
+    end
+
+    it "will store many items" do 
+      @diverse_inventory.store([@item, @item, @item])
+      expect(@diverse_inventory.items.length).to eq(9)
+    end    
+  end
+
+  context "when retrieving items" do 
+    it "retrieve will return one matching item" do 
+
     end
   end
 
