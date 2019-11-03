@@ -6,7 +6,6 @@ module Adjective
     attr_accessor :items
 
     def initialize(items = [], opts= {}) 
-
       @items = items
       @initialized_at = Time.now
     end
@@ -14,7 +13,6 @@ module Adjective
     def empty?
       @items.length === 0
     end    
-
 
     # Store - Put
     def store(items)
@@ -37,8 +35,7 @@ module Adjective
       return matches
     end
 
-
-    # Dump - Delete
+    # Dump - Delete all
     def dump
       outbound_items = @items
       @items = []
@@ -82,6 +79,18 @@ module Adjective
         @items = sorted.reverse
       end
       return @items
+    end
+
+    def query(term)
+      matching_objects = []
+      @items.each do |item|
+        attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
+        attributes.each do |attribute|
+          data = item.send(attribute).to_s
+          matching_objects << item if data.include?(term)
+        end
+      end
+      return matching_objects
     end
 
     private

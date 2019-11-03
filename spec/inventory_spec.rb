@@ -186,20 +186,15 @@ RSpec.describe Adjective::Inventory do
     end    
   end
 
-  # context "when retrieving items" do 
-  #   it "retrieve will return one matching item" do 
-  #     expect(@diverse_inventory.retrieve(1)).to eq(@item)
-  #   end
-
-  #   it "retrieve_by will return multiple matches" do 
-  #     @diverse_inventory.retrieve_by(:name, "")
-  #   end
-  # end
-
   context "when querying for items" do 
-    # it "#get will locate an item" do 
-    #   @diverse_inventory.get
-    # end
+    it "will return results" do 
+      expect(@parent_inventory.query("Wool").length).to eq(1)
+      expect(@parent_inventory.query("100").length).to eq(3)
+    end
+
+    it "will return no results if no matches are made" do 
+      expect(@parent_inventory.query("arbitrary").length).to eq(0)
+    end
   end
 
 end
