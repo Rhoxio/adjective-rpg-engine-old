@@ -12,27 +12,37 @@ module Adjective
 
     def empty?
       @items.length === 0
-    end    
+    end   
+
+    # Simple Search
+    def query(term)
+      matching_objects = []
+      @items.each do |item|
+        attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
+        attributes.each do |attribute|
+          data = item.send(attribute).to_s
+          matching_objects << item if data.include?(term)
+        end
+      end
+      return matching_objects
+    end     
 
     # Store - Put
     def store(items)
-      new_items = Array(items)
-      new_items.each do |item|
+      Array(items).each do |item|
         @items << item
       end
     end
 
     # Retrieval - Get
     def retrieve(instance_id)
-      item = @items.find {|item| item.instance_id == instance_id }
-      return item
+      @items.find {|item| item.instance_id == instance_id }
     end
 
     def retrieve_by(attribute, value)
-      matches = @items.select do |item| 
+      @items.select do |item| 
         item if item.respond_to?(attribute) && item.send(attribute) === value 
       end      
-      return matches
     end
 
     # Dump - Delete all
@@ -51,7 +61,7 @@ module Adjective
 
     # Sorting
     def sort
-      return @items.sort_by { |item| item.created_at }
+      @items.sort_by { |item| item.created_at }
     end
 
     def sort!
@@ -62,35 +72,14 @@ module Adjective
       validate_sort_direction(order)
       validate_attribute(attribute)
       sorted = @items.sort_by(&attribute)
-      if order == :asc
-        return sorted
-      else
-        return sorted.reverse
-      end
+      return order == :asc ? sorted : sorted.reverse
     end
 
     def sort_by!(attribute, order = :asc)
       validate_sort_direction(order)
       validate_attribute(attribute)
       sorted = @items.sort_by(&attribute)
-      if order == :asc
-        @items = sorted
-      else
-        @items = sorted.reverse
-      end
-      return @items
-    end
-
-    def query(term)
-      matching_objects = []
-      @items.each do |item|
-        attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
-        attributes.each do |attribute|
-          data = item.send(attribute).to_s
-          matching_objects << item if data.include?(term)
-        end
-      end
-      return matching_objects
+      return order == :asc ? @items = sorted : @items = sorted.reverse
     end
 
     private
