@@ -102,8 +102,16 @@ RSpec.configure do |config|
 =end
 end
 
+# These are test classes, and only meant to model things on the outside. As such, tey are gutted and probably a little
+# unrealistic. I will set up fixtures if I need a bunch of variance, but testing it 1 for 1 
+# has some advantages. At the very least, I will pull these out into their own files soon.
+
+# So in the name of decent test data...
+
+# This is a potentially nested inventory type of system. 
 class SurrogateInventory < Adjective::Inventory
   attr_reader :name, :id
+  attr_reader :pocket
 
   def initialize(name, id, items = [])
     @id = id
@@ -116,20 +124,20 @@ class SurrogateInventory < Adjective::Inventory
   end
 end
 
+# This is meant to represent a child class once Item is inherited from it.
 class SurrogateItem < Adjective::Item
-  attr_accessor :uses, :id, :potency, :ammunition
+  attr_accessor :uses, :id, :potency, :ammunition, :pocket
 
   def initialize(attributes = {})
-    # This is meant to represent a child class once Item is inherited from it.
-    super(attributes)
 
     # I assume they would override #id in their model somewhere. If not, it tells them to supply it.
-    raise RuntimeError, "'#{attribute}' is not present in attributes set: #{attributes}" if !attributes.key?(:id)
-
-    @id = attributes[:id] ||= id
+    raise RuntimeError, "'#{attribute}' is not present in attributes set: #{attributes}" if !attributes.key?(:id) || !respond_to?(:id)
+    @id = self.id ||= attributes[:id]
     @uses = attributes[:uses] ||= 5
     @potency = attributes[:potency] ||= 10
     @ammunition = attributes[:ammunition] ||= 100
+    @pocket = ["", ""]
+    super(attributes)
   end
 end
 

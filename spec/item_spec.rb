@@ -42,4 +42,18 @@ RSpec.describe Adjective::Item do
     end    
   end
 
+  context "when query_string is called" do 
+    it "returns the string expected with default options" do 
+      expect(@item.query_string).to eq("instance_id&:1&:name&:&:created_at&:#{Time.now.to_s}&:")
+    end
+
+    it "returns the string expected with :attributes scope" do 
+      expect(@item.query_string(:attributes)).to eq("instance_id&:name&:created_at&:")
+    end
+
+    it "returns the string expected with :values scope" do 
+      expect(@item.query_string(:values)).to eq("1&:&:#{Time.now.to_s}&:")
+    end
+  end
+
 end
