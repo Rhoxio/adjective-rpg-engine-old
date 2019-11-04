@@ -16,15 +16,10 @@ module Adjective
 
     # Simple Search
     def query(term, scope = :all)
-      validate_query_scopes(scope)
       matches = []
       @items.each do |item|
-        attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
-        attributes.each do |attribute|
-          attribute_name, value = attribute.to_s, item.send(attribute).to_s
-          query_data = construct_query_data(attribute_name, value, scope) 
-          matches << item if query_data.include?(term)
-        end
+        query_string = item.query_string(scope)
+        matches << item if query_string.include?(term)
       end
       return matches
     end     
@@ -84,15 +79,7 @@ module Adjective
       return order == :asc ? @items = sorted : @items = sorted.reverse
     end
 
-    private
-
-    def construct_query_data(attribute, item, scope)
-      return {
-        all: attribute + "&:" + item,
-        attributes: attribute,
-        values: item
-      }[scope]
-    end    
+    private  
 
     def validate_attribute(attribute)
       raise RuntimeError, "#{attribute} is not present on an item in set: #{@items}" if @items.any? {|item| !item.respond_to?(attribute)} 
@@ -100,10 +87,6 @@ module Adjective
 
     def validate_sort_direction(order)
       raise ArgumentError, "order parameter must be :asc or :desc" if ![:asc, :desc].include?(order)
-    end
-
-    def validate_query_scopes(scope)
-      raise ArgumentError, "Please provide :full, :attributes, or :values to the scope parameter: #{scope}" if ![:all, :attributes, :values].include?(scope)
     end
 
   end

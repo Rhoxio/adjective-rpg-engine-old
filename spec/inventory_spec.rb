@@ -196,10 +196,8 @@ RSpec.describe Adjective::Inventory do
       expect(@parent_inventory.query("arbitrary").length).to eq(0)
     end
 
-    it "will test query" do 
-      p @parent_inventory.query("", :attributes)
-      # p @parent_inventory.pocket.slots
-      # p @parent_inventory.query("pocket")
+    it "will throw argument error if an incorrect scope is passed given" do
+      expect{@parent_inventory.query("Quiver", :arbitrary)}.to raise_error(ArgumentError) 
     end
   end
 

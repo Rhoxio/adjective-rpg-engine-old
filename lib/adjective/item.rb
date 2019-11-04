@@ -10,7 +10,32 @@ module Adjective
       @created_at = Time.now()
     end
 
+    def query_string(scope = :all)
+      validate_query_scope(scope)
+      chunks = []
+      attributes = instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
+      attributes.each do |attribute|
+        attribute_name = attribute.to_s 
+        value = send(attribute).to_s
+        chunks.push(construct_query_data(attribute_name, value)[scope])
+      end
+      return chunks.join
+    end
+
     private
+
+    def validate_query_scope(scope)
+      raise ArgumentError, "Please provide :full, :attributes, or :values to the scope parameter: #{scope}" if ![:all, :attributes, :values].include?(scope)
+    end    
+
+    def construct_query_data(attribute, item)
+      # Delimiting with &: to avoid issues with intermingled data
+      return {
+        all: attribute + "&:" + item + "&:",
+        attributes: attribute + "&:",
+        values: item + "&:"
+      }
+    end      
 
     def assign_instance_id
       adj_globals = Adjective::GlobalManager.get_globals
