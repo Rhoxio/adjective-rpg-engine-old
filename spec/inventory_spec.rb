@@ -10,15 +10,18 @@ RSpec.describe Adjective::Inventory do
 
     @full_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion"}) #4
     @full_mana_potion = SurrogateItem.new({id: 2,  name: "Mana Potion", uses: 2, potency: 8}) #5
-    @partial_health_potion = SurrogateItem.new({id: 4,  name: "Healing Potion", uses: 1, potency: 8}) #6
+    @partial_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion", uses: 1, potency: 8}) #6
+
     @quiver = SurrogateItem.new({id: 5,  name: "Quiver"}) #7
     @empty_quiver = SurrogateItem.new({id: 5,  name: "Quiver", ammunition: 0}) #8
 
     @inventory = Adjective::Inventory.new([@item, @item, @item, @item])
     @diverse_inventory = Adjective::Inventory.new([@item, @stick, @wool, @item, @stick, @wool])
     @extended_inventory = Adjective::Inventory.new([@full_mana_potion, @full_health_potion, @partial_health_potion, @quiver, @empty_quiver ])
+    @mixed_attribute_inventory = Adjective::Inventory.new([@item, @item, @quiver, @stick, @full_health_potion])
 
     @child_inventory = SurrogateInventory.new("Backpack", 1, [@full_health_potion, @partial_health_potion, @stick, @wool, @quiver])
+    @limited_inventory = Adjective::Inventory.new([@item, @item, @quiver, @stick, @full_health_potion], {max_size: 8})
   end
 
   context "when using a child model" do 
@@ -44,6 +47,19 @@ RSpec.describe Adjective::Inventory do
     it "will accept an array argument of items" do 
       inventory = Adjective::Inventory.new([@item, @item])
       expect(inventory.items.length).to be(2)
+    end
+
+    it "will set max_size to :unlimited by default" do
+      default_inventory = Adjective::Inventory.new
+      expect(default_inventory.max_size).to eq(:unlimited)
+    end
+
+    it "will set max_size from :max_size option" do 
+      expect(@limited_inventory.max_size).to eq(8)
+    end
+
+    it "will throw an error if the provided items array is longer than the max_size" do 
+      expect{Adjective::Inventory.new([@item, @item, @item, @item],{max_size: 1})}.to raise_error(ArgumentError)
     end
 
   end
@@ -130,7 +146,7 @@ RSpec.describe Adjective::Inventory do
       it "will not amend the original item set" do 
         @diverse_inventory.sort_by(:name)
         expect(@diverse_inventory.items[2].instance_id).to eq(3)
-      end
+      end    
 
       it "will raise a RuntimeError if the item does not respond to the given method/attribute" do  
         expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
@@ -181,7 +197,18 @@ RSpec.describe Adjective::Inventory do
     it "will store many items" do 
       @diverse_inventory.store([@item, @item, @item])
       expect(@diverse_inventory.items.length).to eq(9)
-    end    
+    end   
+
+    it "will store items if the inventory is not full" do
+      expect(@limited_inventory.items.length).to eq(5)
+      @limited_inventory.store([@item, @item, @item])
+      p @limited_inventory.items.length
+      # expect(@limited_inventory.items.length).to eq(8)
+    end 
+
+    it "will return false if inventory is not able to accept more items" do 
+      expect(@limited_inventory.store([@item, @item, @item, @item, @item])).to eq(false)
+    end
   end
 
   context "when querying for items" do 
