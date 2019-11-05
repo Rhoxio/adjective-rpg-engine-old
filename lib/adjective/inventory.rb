@@ -15,6 +15,7 @@ module Adjective
     end   
 
     # Simple Search
+    # options for scope are: :all, :attributes, :values
     def query(term, scope = :all)
       matches = []
       @items.each do |item|

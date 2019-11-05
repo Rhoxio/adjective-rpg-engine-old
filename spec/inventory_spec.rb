@@ -18,16 +18,16 @@ RSpec.describe Adjective::Inventory do
     @diverse_inventory = Adjective::Inventory.new([@item, @stick, @wool, @item, @stick, @wool])
     @extended_inventory = Adjective::Inventory.new([@full_mana_potion, @full_health_potion, @partial_health_potion, @quiver, @empty_quiver ])
 
-    @parent_inventory = SurrogateInventory.new("Backpack", 1, [@full_health_potion, @partial_health_potion, @stick, @wool, @quiver])
+    @child_inventory = SurrogateInventory.new("Backpack", 1, [@full_health_potion, @partial_health_potion, @stick, @wool, @quiver])
   end
 
-  context "when using a parent model" do 
+  context "when using a child model" do 
     it "should retain items" do 
-      expect(@parent_inventory.items.length).to eq(5)
+      expect(@child_inventory.items.length).to eq(5)
     end
 
     it "methods should be able to be overidden" do 
-      expect(@parent_inventory.sort.map {|item| item.instance_id}).to eq([4, 6, 7, 2, 3])
+      expect(@child_inventory.sort.map {|item| item.instance_id}).to eq([4, 6, 7, 2, 3])
     end
   end
 
@@ -123,7 +123,6 @@ RSpec.describe Adjective::Inventory do
       it "will sort by the given attribute" do 
         @diverse_inventory.items.shuffle!
         inventory = @diverse_inventory.sort_by(:name)
-
         expect(inventory[0].name).to eq("Potato")
         expect(inventory[-1].name).to eq("Wool")
       end
@@ -156,7 +155,6 @@ RSpec.describe Adjective::Inventory do
 
     it "will #dump and return the inventory completely" do 
       ground = @diverse_inventory.dump
-
       expect(@diverse_inventory.items.length).to eq(0)
       expect(ground.length).to eq(6)
     end
@@ -188,16 +186,16 @@ RSpec.describe Adjective::Inventory do
 
   context "when querying for items" do 
     it "will return results" do 
-      expect(@parent_inventory.query("Wool").length).to eq(1)
-      expect(@parent_inventory.query("100").length).to eq(3)
+      expect(@child_inventory.query("Wool").length).to eq(1)
+      expect(@child_inventory.query("100").length).to eq(3)
     end
 
     it "will return no results if no matches are made" do 
-      expect(@parent_inventory.query("arbitrary").length).to eq(0)
+      expect(@child_inventory.query("arbitrary").length).to eq(0)
     end
 
     it "will throw argument error if an incorrect scope is passed given" do
-      expect{@parent_inventory.query("Quiver", :arbitrary)}.to raise_error(ArgumentError) 
+      expect{@child_inventory.query("Quiver", :arbitrary)}.to raise_error(ArgumentError) 
     end
   end
 
