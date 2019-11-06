@@ -77,6 +77,24 @@ RSpec.describe Adjective::Inventory do
     it "#retrieve_by will not error out when asked to work with an attribute that doesn't exist" do 
       expect(@diverse_inventory.retrieve_by(:arbitrary, "Stick")).to eq([])
     end
+
+    it "will correctly use alias method get" do 
+      sample = @extended_inventory.items.sample
+      expect(@extended_inventory.get(sample.instance_id)).to eq(sample)      
+    end
+
+    it "will correctly use alias method get_by" do 
+      expect(@diverse_inventory.get_by(:name, "Stick").length).to eq(2)
+    end
+
+    it "will correctly use alias method find" do 
+      sample = @extended_inventory.items.sample
+      expect(@extended_inventory.find(sample.instance_id)).to eq(sample)      
+    end
+
+    it "will correctly use alias method find_by" do 
+      expect(@diverse_inventory.find_by(:name, "Stick").length).to eq(2)
+    end    
   end
 
   context "when sorting items destructively" do 
@@ -169,8 +187,22 @@ RSpec.describe Adjective::Inventory do
       expect(@diverse_inventory.items.select {|item| item.name != "Wool"}.length).to eq(4)
     end
 
+    it "will correctly use alias method clear_by" do 
+      expect(@diverse_inventory.items.length).to eq(6)
+      dumped_items = @diverse_inventory.clear_by(:name, "Wool")
+
+      expect(dumped_items.select {|item| item.name == "Wool"}.length).to eq(2)
+      expect(@diverse_inventory.items.select {|item| item.name != "Wool"}.length).to eq(4)
+    end    
+
     it "will #dump and return the inventory completely" do 
       ground = @diverse_inventory.dump
+      expect(@diverse_inventory.items.length).to eq(0)
+      expect(ground.length).to eq(6)
+    end
+
+    it "will correctly use alias method clear" do 
+      ground = @diverse_inventory.clear
       expect(@diverse_inventory.items.length).to eq(0)
       expect(ground.length).to eq(6)
     end
@@ -194,7 +226,7 @@ RSpec.describe Adjective::Inventory do
       expect(@diverse_inventory.items.length).to eq(7)
     end
 
-    it "will store many items" do 
+    it "will store multiple items" do 
       @diverse_inventory.store([@item, @item, @item])
       expect(@diverse_inventory.items.length).to eq(9)
     end   
@@ -202,13 +234,22 @@ RSpec.describe Adjective::Inventory do
     it "will store items if the inventory is not full" do
       expect(@limited_inventory.items.length).to eq(5)
       @limited_inventory.store([@item, @item, @item])
-      p @limited_inventory.items.length
       expect(@limited_inventory.items.length).to eq(8)
     end 
 
     it "will return false if inventory is not able to accept more items" do 
       expect(@limited_inventory.store([@item, @item, @item, @item, @item])).to eq(false)
     end
+
+    it "will correctly use alias method deposit" do 
+      @diverse_inventory.deposit(@item)
+      expect(@diverse_inventory.items.length).to eq(7)      
+    end
+
+    it "will correctly use alias method put" do 
+      @diverse_inventory.put(@item)
+      expect(@diverse_inventory.items.length).to eq(7)      
+    end    
   end
 
   context "when querying for items" do 
@@ -223,6 +264,11 @@ RSpec.describe Adjective::Inventory do
 
     it "will throw argument error if an incorrect scope is passed given" do
       expect{@child_inventory.query("Quiver", :arbitrary)}.to raise_error(ArgumentError) 
+    end
+
+    it "will correctly interpret alias method of search" do 
+      expect(@child_inventory.search("Wool").length).to eq(1)
+      expect(@child_inventory.search("100").length).to eq(3)
     end
   end
 

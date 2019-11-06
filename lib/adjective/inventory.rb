@@ -34,7 +34,7 @@ module Adjective
         matches << item if item.query_string(scope).include?(term)
       end
       return matches
-    end     
+    end  
 
     # Store - Put
     def store(items)
@@ -57,7 +57,7 @@ module Adjective
       @items.select do |item| 
         item if item.respond_to?(attribute) && item.send(attribute) === value 
       end      
-    end
+    end  
 
     # Dump - Delete all
     def dump
@@ -95,6 +95,16 @@ module Adjective
       sorted = @items.sort_by(&attribute)
       return order == :asc ? @items = sorted : @items = sorted.reverse
     end
+
+    alias_method :deposit, :store
+    alias_method :put, :store
+    alias_method :get, :retrieve
+    alias_method :find, :retrieve  
+    alias_method :get_by, :retrieve_by
+    alias_method :find_by, :retrieve_by        
+    alias_method :clear, :dump
+    alias_method :clear_by, :dump_by
+    alias_method :search, :query
 
     private  
 
