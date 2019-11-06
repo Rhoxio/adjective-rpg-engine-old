@@ -68,7 +68,7 @@ module Adjective
         # They are max level.
         return 0
       elsif set_length < (next_level)
-        raise RangeError, "Next level out of experience table range from 0 to #{set_length}, (#{next_level})"
+        raise RangeError, "#{Time.now}]: Next level out of experience table range from 0 to #{set_length}, (#{next_level})"
       else
         return @active_exp_set[next_level] - @active_exp_set[@level]
       end
@@ -77,7 +77,7 @@ module Adjective
     def grant_experience(exp_to_grant, opts = {})
       # Only takes positive integers - should avoid bugs and underflow this way.
       if exp_to_grant < 0
-        raise RuntimeError, "Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
+        raise RuntimeError, "#{Time.now}]: Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
       else
         @experience += exp_to_grant
         normalize_experience
@@ -95,7 +95,7 @@ module Adjective
     def subtract_experience(exp_to_subtract, opts = {})
       # Only takes positive integers - should avoid bugs and underflow this way.
       if exp_to_subtract < 0
-        raise RuntimeError, "Provided value in #subtract_experience (#{exp_to_subtract}) is not a positive integer."
+        raise RuntimeError, "#{Time.now}]: Provided value in #subtract_experience (#{exp_to_subtract}) is not a positive integer."
       else
         @experience -= exp_to_subtract
         normalize_experience
@@ -115,7 +115,7 @@ module Adjective
         @active_exp_set = @exp_sets.data[name]
         return true
       else
-        raise ArgumentError, "The provided set name was not found: #{name}"
+        raise ArgumentError, "#{Time.now}]: The provided set name was not found: given #{name}"
       end
     end
 
