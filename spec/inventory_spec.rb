@@ -272,4 +272,14 @@ RSpec.describe Adjective::Inventory do
     end
   end
 
+  context "when empty slots is called" do 
+    it "returns the appropriate number" do 
+      expect(@limited_inventory.empty_slots).to eq(3)
+    end
+
+    it "returns :unlimited if no max_size is set" do 
+      expect(@diverse_inventory.empty_slots).to eq(:unlimited)
+    end
+  end
+
 end

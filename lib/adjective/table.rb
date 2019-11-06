@@ -22,7 +22,7 @@ module Adjective
     private
 
     def file_existence_catch(dir)
-      raise RuntimeError, "Invalid path to YAML file: #{dir}" if !File.exist?(dir)
+      raise RuntimeError, "#{Time.now}]: Invalid path to YAML file: #{dir}" if !File.exist?(dir)
     end
 
   end
@@ -46,9 +46,9 @@ module Adjective
       @thresholds = @data[@name]
 
       if !@thresholds.is_a?(Array)
-        raise RuntimeError, "Experience table '#{@name}' is not an Array: #{@exp_thresholds.class}"
+        raise RuntimeError, "#{Time.now}]: Experience table '#{@name}' is not an Array: #{@exp_thresholds.class}"
       elsif threshold_sorted?
-        raise RuntimeError, "Experience table '#{@name}' is not sequential: #{@exp_thresholds}"      
+        raise RuntimeError, "#{Time.now}]: Experience table '#{@name}' is not sequential: #{@exp_thresholds}"      
       end
     end
 
@@ -57,7 +57,7 @@ module Adjective
       # general convention is that you pass through whole integers to grab data that is 
       # more reliable within the structure of the code itself. Going to just keep to
       # convention for the moment.
-      raise RuntimeError, "Level provided is not an Integer: #{level}" if !level.is_a?(Integer)
+      raise RuntimeError, "#{Time.now}]: Level provided is not an Integer: #{level}" if !level.is_a?(Integer)
       return @thresholds[level]
     end
 

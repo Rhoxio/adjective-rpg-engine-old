@@ -12,6 +12,7 @@ module Adjective
       validate_inventory_capacity
     end
 
+    # Utility Methods
     def empty?
       @items.length === 0
     end   
@@ -24,6 +25,10 @@ module Adjective
       return true if @max_size == :unlimited
       return true if (Array(items).length + @items.length) <= @max_size
       return false
+    end
+
+    def empty_slots
+      @max_size == :unlimited ? :unlimited : @max_size - @items.length
     end
 
     # Simple Search
