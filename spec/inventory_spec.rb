@@ -203,7 +203,7 @@ RSpec.describe Adjective::Inventory do
       expect(@limited_inventory.items.length).to eq(5)
       @limited_inventory.store([@item, @item, @item])
       p @limited_inventory.items.length
-      # expect(@limited_inventory.items.length).to eq(8)
+      expect(@limited_inventory.items.length).to eq(8)
     end 
 
     it "will return false if inventory is not able to accept more items" do 

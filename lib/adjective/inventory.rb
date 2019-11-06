@@ -22,8 +22,7 @@ module Adjective
 
     def can_store?(items)
       return true if @max_size == :unlimited
-      p (Array(items).length + @items.length) >= @max_size
-      return true if (Array(items).length + @items.length) >= @max_size
+      return true if (Array(items).length + @items.length) <= @max_size
       return false
     end
 
