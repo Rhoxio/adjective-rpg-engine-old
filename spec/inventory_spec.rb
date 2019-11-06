@@ -140,7 +140,7 @@ RSpec.describe Adjective::Inventory do
   context "when items are sorted and return new arrays" do 
 
     context "when calling #sort" do 
-      it "will #sort by #created_at" do 
+      it "will #sort by #created_at by default" do 
         @diverse_inventory.items.shuffle!
         expect(@diverse_inventory.sort[0].instance_id).to eq(1)
         expect(@diverse_inventory.sort[-1].instance_id).to eq(3)
@@ -149,6 +149,18 @@ RSpec.describe Adjective::Inventory do
       it "#sort will not amend the original item set" do 
         @diverse_inventory.sort
         expect(@diverse_inventory.items[2].instance_id).to eq(3)
+      end
+
+      it "will sort by default_sort attribute" do 
+        inventory = Adjective::Inventory.new([@item, @item, @quiver, @stick, @full_health_potion], {default_sort_method: :name})
+        inventory.items.shuffle!
+        ordered_inventory = inventory.sort
+        expect(ordered_inventory[0].name).to eq("Healing Potion")
+        expect(ordered_inventory[-1].name).to eq("Stick")
+      end
+
+      it "will throw an error if value for default_sort_method does not exist on all items" do 
+        expect{Adjective::Inventory.new([@item, @item, @quiver, @stick, @full_health_potion], {default_sort_method: :arbitrary})}.to raise_error(RuntimeError)
       end
 
     end
