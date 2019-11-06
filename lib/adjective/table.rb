@@ -16,7 +16,7 @@ module Adjective
     end
 
     def set_exists?(name)
-      @data.key?(name) ? true : false
+      @data.key?(name)
     end
 
     private
@@ -42,7 +42,7 @@ module Adjective
 
     def initialize(dir, name = nil)
       # raise ArgumentError
-      super
+      super(dir, name)
       @thresholds = @data[@name]
 
       if !@thresholds.is_a?(Array)

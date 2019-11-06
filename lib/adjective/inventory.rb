@@ -3,13 +3,15 @@ module Adjective
   class Inventory
 
     attr_reader :initialized_at, :max_size
-    attr_accessor :items
+    attr_accessor :items, :default_sort
 
     def initialize(items = [], opts = {}) 
       @items = items
       @initialized_at = Time.now
       @max_size = opts[:max_size] ||= :unlimited
+      @default_sort_method = opts[:default_sort_method] ||= :created_at
       validate_inventory_capacity
+      validate_attribute(opts[:default_sort_method]) if opts[:default_sort_method]
     end
 
     # Utility Methods
@@ -80,7 +82,7 @@ module Adjective
 
     # Sorting
     def sort
-      @items.sort_by { |item| item.created_at }
+      @items.sort_by { |item| item.send(@default_sort_method) }
     end
 
     def sort!
