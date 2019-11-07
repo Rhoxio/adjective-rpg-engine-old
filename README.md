@@ -39,3 +39,31 @@ Related Data:
 ## Global Management
 This project will also include a global management system and auto-incrementing instance ids on a per-model basis. Essentially, you can set globals at startup and have important adjective-specific ones be automatically managed in runtime.
 
+#### Effect
+Parent class for an Effect. 
+Effects are categorized as things that modify (buff or debuff) Items and their dynamic attributes.
+
+#### Status
+Parent class for a Status.
+Statuses are categorized as things that modify an Actor or added when a Skill is used. 
+
+#### Effect::Actor
+Effects will need to be applied to Actors:
+- Applies to specific attribute(s)
+- Execute arbitrary code against attribute specified (proc block something?)
+- Have general types that are able to be changed in init (not after, specifically)
+- Establish top-end duration, if no top-end, specify :unlimited
+- Designate condition for removal
+  - Time-based
+  - Effect-based
+
+#### Statusable
+Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes.
+
+#### Affectable
+Intermediary class that will contain intermediary logic between Effects < Effects::Actors, ::Items, ::Skills etc. 
+
+First we need a base Effect class.
+
+Each class will probably need 
+
