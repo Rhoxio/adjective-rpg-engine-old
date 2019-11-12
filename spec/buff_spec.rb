@@ -1,0 +1,40 @@
+RSpec.describe Adjective::Buff do
+
+  before(:example) do
+    opts = {attributes: [:hitpoints], duration: 10 }
+    @single_attribute_opts = {attributes: :hitpoints }
+    @buff = Adjective::Buff.new("Renew", opts)
+  end
+
+  describe "when buff initializes" do 
+    it "will take in @attributes as an array" do 
+      expect(@buff.attributes).to eq([:hitpoints])
+    end
+
+    it "will take a single symbol for @attributes" do 
+      expect(Adjective::Buff.new("Renew", @single_attribute_opts).attributes).to eq([:hitpoints])
+    end
+  end
+
+  describe "when utility methods are called" do 
+    # it "will "
+  end
+
+  describe "when tick is called" do
+    it "will tick" do 
+      expect(@buff.tick).to eq(true)
+    end
+
+    it "will return false if it is expired upon ticking" do 
+      expired_buff = Adjective::Buff.new("Renew", {duration: 10, remaining: 0})
+      expect(expired_buff.tick).to eq(false)
+    end
+
+    it "will accept a block" do 
+      @buff.tick {|buff| buff.remaining -= 1}
+      expect(@buff.duration).to eq(10)
+      expect(@buff.remaining).to eq(9)
+    end
+  end
+
+end
