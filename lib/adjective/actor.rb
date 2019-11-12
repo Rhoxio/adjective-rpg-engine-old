@@ -125,6 +125,11 @@ module Adjective
       return self
     end
 
+    def heal_for(healing)
+      @hitpoints += healing
+
+    end
+
     def alive?
       @hitpoints > 0
     end
