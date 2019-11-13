@@ -3,31 +3,28 @@ require_relative './table.rb'
 
 module Adjective
   class Actor
-    attr_accessor :name, :hitpoints, :experience, :level
+    attr_accessor :name, :hitpoints, :level
     attr_reader :exp_sets, :exp_set_name, :active_exp_set
 
     include Adjective::Statusable
+    include Adjective::Imbibable
 
     def initialize(name, params = {})
 
       # Default values
-      @name = name
       @hitpoints = 1
-      @experience = 0
       @level = 1
-      @_created_at = Time.now
-
-      params.each do |key, value|
-        self.instance_variable_set("@#{key}", value) if (!exp_table_exceptions.include?(key) || initial_attributes.include?(key))
-      end
 
       # From Statusable
       initialize_status_data
 
+      # From Imbibable
+      initialize_experience(params[:exp_table], params[:initial_exp] ||= 0)
+
       # May eventually implement a way to directly override the exp table used with a simple array. 
-      @exp_sets = params[:exp_sets]
-      @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
-      @active_exp_set = @exp_sets.data[@exp_set_name]
+      # @exp_sets = params[:exp_sets]
+      # @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
+      # @active_exp_set = [0,200,300,400,500,600,700,800,900,1000]
 
       # yield block if block
     end
@@ -112,13 +109,13 @@ module Adjective
       end 
     end
 
-    def use_experience_set(name)
-      if @exp_sets.set_exists?(name)
-        @exp_set_name = name
-        @active_exp_set = @exp_sets.data[name]
+    def use_experience_set(set_name)
+      if @exp_sets.set_exists?(set_name)
+        @exp_set_name = set_name
+        @active_exp_set = @exp_sets.data[set_name]
         return true
       else
-        raise ArgumentError, "#{Time.now}]: The provided set name was not found: given #{name}"
+        raise ArgumentError, "#{Time.now}]: The provided set name was not found: given #{set_name}"
       end
     end
 
@@ -175,7 +172,7 @@ module Adjective
     end
 
     def initial_attributes
-      [:hitpoints, :experience, :level]
+      [:hitpoints, :level]
     end
 
   end

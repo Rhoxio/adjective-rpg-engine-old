@@ -17,16 +17,18 @@ module Adjective
     def initialize_status_data
       @buff_stack = []
       @debuff_stack = []
+      self.class.send(:attr_reader, :buff_stack)
+      self.class.send(:attr_reader, :debuff_stack)      
     end
 
     def apply_buff(status, &block)
       affected_attributes = status.affected_attributes.map{|a| ("@"+a.to_s).to_sym }
       invalids = affected_attributes.select {|a| !instance_variable_defined?(a) }
-      raise RuntimeError, "Attempted to apply buff to model that does not have instance variables of: #{invalids}" if invalids.length > 0
+      # Should be a warning, not an exception. 
+      # I think I have been making this mistake in a few other places. I need to review them. 
+      # raise RuntimeError, "Attempted to apply buff to model that does not have instance variables of: #{invalids}" if invalids.length > 0
 
       @buff_stack.push(status)
-      # Will only apply the buff if the appropriate attribute
-      # is present.
       yield(self) if block_given?
     end
 
