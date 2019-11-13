@@ -12,6 +12,6 @@ class SurrogateActor < Adjective::Actor
     # From Statusable
     initialize_status_data
     # From Imbibable
-    initialize_experience(opts[:exp_table], opts[:initial_exp] ||= 0)    
+    initialize_experience(opts)    
   end
 end
