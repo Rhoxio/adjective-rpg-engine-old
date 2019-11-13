@@ -6,6 +6,8 @@ module Adjective
     attr_accessor :name, :hitpoints, :experience, :level
     attr_reader :exp_sets, :exp_set_name, :active_exp_set
 
+    include Adjective::Statusable
+
     def initialize(name, params = {})
 
       # Default values
@@ -19,9 +21,10 @@ module Adjective
         self.instance_variable_set("@#{key}", value) if (!exp_table_exceptions.include?(key) || initial_attributes.include?(key))
       end
 
-      # May eventually implement a way to directly override the exp table used with a simple array. 
-      # Will have to see if use-cases some up or not.
+      # From Statusable
+      initialize_status_data
 
+      # May eventually implement a way to directly override the exp table used with a simple array. 
       @exp_sets = params[:exp_sets]
       @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
       @active_exp_set = @exp_sets.data[@exp_set_name]
@@ -68,7 +71,7 @@ module Adjective
         # They are max level.
         return 0
       elsif set_length < (next_level)
-        raise RangeError, "#{Time.now}]: Next level out of experience table range from 0 to #{set_length}, (#{next_level})"
+        raise RangeError, "[#{Time.now}]: Next level out of experience table range from 0 to #{set_length}, (#{next_level})"
       else
         return @active_exp_set[next_level] - @active_exp_set[@level]
       end
@@ -77,7 +80,7 @@ module Adjective
     def grant_experience(exp_to_grant, opts = {})
       # Only takes positive integers - should avoid bugs and underflow this way.
       if exp_to_grant < 0
-        raise RuntimeError, "#{Time.now}]: Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
+        raise RuntimeError, "[#{Time.now}]: Provided value in #grant_experience (#{exp_to_grant}) is not a positive integer."
       else
         @experience += exp_to_grant
         normalize_experience
@@ -138,18 +141,11 @@ module Adjective
       @hitpoints == 0
     end
 
-    private 
-
     # The reason for setting this up so actors can not go below 0 hp is
     # primarily to ensure consistency to preemptively ensure that healing 
     # abilities are not having to be edge-cased out if they are at 0 hitpoints.
     # Instead, they can trust the #alive? method for their checks. 
-    # I may change this if I can think of particular use-cases. 
-
-    # I can see special types of attacks bringing an actor below 0 until they are resurrected with
-    # a specific type of ability, but would probably best be handled by a Status of 'grievous injury' or
-    # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt
-    # or healing is applied.
+    # I may change this if I can think of particular use-cases.     
 
     def normalize_hitpoints
       @hitpoints = 0 if @hitpoints < 0
@@ -157,7 +153,16 @@ module Adjective
 
     def normalize_experience
       @experience = 0 if @experience < 0
-    end
+    end    
+
+    private 
+
+    # Can always be overidden if need be.
+
+    # I can see special types of attacks bringing an actor below 0 until they are resurrected with
+    # a specific type of ability, but would probably best be handled by a Status of 'grievous injury' or
+    # 'decimated' or something like that. That would require a check further up the chain before damage is actually dealt
+    # or healing is applied.
 
     def metaclass
       return class << self

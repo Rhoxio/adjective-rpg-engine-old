@@ -234,31 +234,49 @@ RSpec.describe Adjective::Actor do
 
   context "when custom values are passed in to set pre-defined attrs on initialization" do 
 
-    it "will accept custom values on initialization" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
-      expect(actor.hitpoints).to eq(200)
-      expect(actor.experience).to eq(1909)
-      expect(actor.level).to eq(3)
+    # it "will accept custom values on initialization" do 
+    #   actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
+    #   expect(actor.hitpoints).to eq(200)
+    #   expect(actor.experience).to eq(1909)
+    #   expect(actor.level).to eq(3)
+    # end
+
+    # it "will not interfere with setter methods" do 
+    #   actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
+    #   actor.hitpoints = 400
+    #   actor.level = 19
+    #   expect(actor.hitpoints).to eq(400)
+    #   expect(actor.level).to eq(19)
+    # end
+
+    # it "will reject attributes that are not defined in #initial_attributes" do 
+    #   actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, moxy: 900 }) 
+    #   expect{actor.moxy}.to raise_error(NoMethodError)
+    # end
+
+    # it "will not reject attributes defined in #exp_table_exceptions" do 
+    #   actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name }) 
+    #   expect(actor.exp_set_name).to eq('main')
+    # end
+
+    # it "will test what i want" do 
+    #   ap @custom_actor
+    #   # ap @custom_actor
+    # end
+
+  end
+
+  context "when stauses are applied through Statusable" do 
+    it "will attain buff_stack and debuff_stack" do 
+      expect(@custom_actor.instance_variable_get(:@buff_stack)).to eq([])
+      expect(@custom_actor.instance_variable_get(:@debuff_stack)).to eq([])
     end
 
-    it "will not interfere with setter methods" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
-      actor.hitpoints = 400
-      actor.level = 19
-      expect(actor.hitpoints).to eq(400)
-      expect(actor.level).to eq(19)
+    it "sdjfsd" do 
+      opts = { affected_attributes: [:hitpoints, :experience], duration: 10 }
+      buff = Adjective::Buff.new("Renew", opts)
+      @custom_actor.apply_buff(buff)
     end
-
-    it "will reject attributes that are not defined in #initial_attributes" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, moxy: 900 }) 
-      expect{actor.moxy}.to raise_error(NoMethodError)
-    end
-
-    it "will not reject attributes defined in #exp_table_exceptions" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name }) 
-      expect(actor.exp_set_name).to eq('main')
-    end
-
   end
 
   # DEPRECATED - CHANGED PARADIGM FOR INHERITANCE INSTEAD OF DIRECT EXTENSION
