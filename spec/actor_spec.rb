@@ -3,22 +3,15 @@ require 'spec_helper'
 RSpec.describe Adjective::Actor do
 
   before(:example) do
-    @exp_table = Adjective::Table::Experience.new('config/exp_table.yml', 'main')
-    @alt_exp_table = Adjective::Table::Experience.new('config/exp_table.yml', "alt")
-
-    @default_actor = Adjective::Actor.new("", 
-      { 
-        exp_sets: @exp_table, 
-        exp_set_name: @exp_table.name 
-      }
-    ) 
-    @custom_actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, mana: 100 }) 
+    @default_actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) 
+    @custom_actor = SurrogateActor.new("CustomDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000]}) 
+    @s_actor = SurrogateActor.new("Surrogate", {exp_table: [0,200,300,400,500,600,700,800,900,1000]})
   end
 
   context "is namable" do 
     it "can set name" do
-      @default_actor.name = "Mike"
-      expect(@default_actor.name).to eq("Mike")
+      # @default_actor.name = "Mike"
+      expect(@default_actor.name).to eq("DefaultDude")
     end
   end
 
@@ -39,8 +32,8 @@ RSpec.describe Adjective::Actor do
       expect(@default_actor.level).to eq(1)
     end 
 
-    it "has 0 experience" do
-      expect(@default_actor.experience).to eq(0)
+    it "has default experience for given level" do
+      expect(@default_actor.experience).to eq(200)
     end       
   end
 
@@ -89,87 +82,81 @@ RSpec.describe Adjective::Actor do
     it "contains data" do 
       expect(@default_actor.active_exp_set).to_not eq(nil)
     end
-
-    it "will default to 'main' table if no 'exp_table_name' option is passed" do
-      expect(@default_actor.exp_set_name).to eq("main")
-      expect(@default_actor.active_exp_set).to be_a_kind_of(Array)
-    end
-
-    it "will use a custom defined exp table if the 'exp_table_name' option is passed" do 
-      @alt_actor = Adjective::Actor.new("Altman the Testificate", { exp_sets: @alt_exp_table, exp_set_name: @alt_exp_table.name }) 
-      expect(@alt_actor.exp_set_name).to eq("alt")
-      expect(@alt_actor.active_exp_set).to be_a_kind_of(Array)
-    end
-
   end
+
+  context "when utility methods are called" do 
+    it "correctly sets level minimum exp on init" do 
+      expect(@default_actor.level).to eq(1)
+      expect(@default_actor.experience).to eq(200)
+    end
+
+    it "correctly detects if it is below the threshold for level up" do 
+      @default_actor.grant_experience(99)
+      expect(@default_actor.can_level_up?).to eq(false)
+    end      
+
+    it "correctly levels up when single threshold is met" do 
+      @default_actor.grant_experience(101)
+      expect(@default_actor.level).to eq(2)
+    end 
+
+    it "correctly levels up when multiple thresholds are met" do 
+      @default_actor.grant_experience(1000)
+      expect(@default_actor.level).to eq(10)
+    end 
+
+    it "will not grant experience if they are max level" do 
+      @default_actor.grant_experience(1000)
+      expect(@default_actor.level).to eq(10)
+      expect(@default_actor.grant_experience(1)).to eq(false)
+      expect(@default_actor.experience).to eq(1200)
+    end
+
+    it "will not level up if :suppress_levels is passed" do 
+      @default_actor.grant_experience(1000, {suppress_levels: true})
+      expect(@default_actor.level).to eq(1)
+    end
+
+    it "will return the correct experience to next level" do 
+      expect(@default_actor.experience_to_next_level).to eq(100)
+      @default_actor.grant_experience(150)
+      expect(@default_actor.experience_to_next_level).to eq(50)
+      @default_actor.grant_experience(849)
+      expect(@default_actor.experience_to_next_level).to eq(1)
+      @default_actor.grant_experience(1)
+      expect(@default_actor.experience_to_next_level).to eq(nil)
+    end
+  end
+
 
   context "when experience is gained" do 
     it "will properly grant experience" do 
       @default_actor.grant_experience(10)
-      expect(@default_actor.experience).to eq(10)
-    end
-
-    it "can level up if experience is exactly threshold value" do 
-      @default_actor.grant_experience(200)
-      expect(@default_actor.level).to eq(2)
-      expect(@default_actor.can_level_up?).to eq(false)
-    end
-
-    it "can level up if experience is above threshold value" do 
-      @default_actor.grant_experience(301)
-      expect(@default_actor.level).to eq(3)
-      expect(@default_actor.can_level_up?).to eq(false)
-    end    
-
-    it "can NOT level up if experience is below threshold value" do 
-      @default_actor.grant_experience(199)
-      expect(@default_actor.level).to eq(1)
-      expect(@default_actor.can_level_up?).to eq(false)
-    end 
-
-    it "will not take negative numbers as an argument" do 
-      @default_actor.experience = 20
-      expect{ @default_actor.grant_experience(-10) }.to raise_error(RuntimeError)
-    end
-
-    it "will NOT grant levels if the suppress_levels option is passed" do 
-      @default_actor.grant_experience(400, {suppress_levels: true})
-      expect(@default_actor.level).to eq(1)
-    end    
+      expect(@default_actor.experience).to eq(210)
+    end   
 
   end
 
-  context "when experience is lost" do 
-    it "will properly remove experience" do 
-      @default_actor.experience = 20
-      @default_actor.subtract_experience(10)
-      expect(@default_actor.experience).to eq(10)
-    end
+  # context "when experience is lost" do 
+  #   it "will properly remove experience" do 
+  #     @default_actor.grant_experience(20)
+  #     @default_actor.subtract_experience(10)
+  #     expect(@default_actor.experience).to eq(10)
+  #   end
 
-    it "will not take negative numbers as an argument" do 
-      @default_actor.experience = 20
-      expect{ @default_actor.subtract_experience(-10) }.to raise_error(RuntimeError)
-    end
+  #   it "will not take negative numbers as an argument" do 
+  #     @default_actor.grant_experience(20)
+  #     expect{ @default_actor.subtract_experience(-10) }.to raise_error(RuntimeError)
+  #   end
 
-    it "will NOT remove levels if the suppress_levels option is passed" do 
-      @default_actor.grant_experience(400)
-      @default_actor.subtract_experience(300, {suppress_levels: true})
-      expect(@default_actor.level).to eq(4)
-    end       
-  end
+  #   it "will NOT remove levels if the suppress_levels option is passed" do 
+  #     @default_actor.grant_experience(400)
+  #     @default_actor.subtract_experience(300, {suppress_levels: true})
+  #     expect(@default_actor.level).to eq(4)
+  #   end       
+  # end
 
-  context "when levels are awarded" do 
-    it "will grant levels until corret threshold is met" do 
-      @default_actor.grant_experience(200)
-      expect(@default_actor.level_up).to eq(false)
-      expect(@default_actor.level).to eq(2)
-    end  
-
-    it "will NOT grant a level if can_level_up? does not pass" do
-      @default_actor.grant_experience(199)
-      expect(@default_actor.level_up).to eq(false)
-      expect(@default_actor.level).to eq(1)
-    end
+  context "when levels are granted" do 
 
     it "will grant multiple levels" do 
       @default_actor.grant_levels(3)
@@ -185,7 +172,7 @@ RSpec.describe Adjective::Actor do
     it "will NOT grant exp if constrain_exp option is passed" do 
       @default_actor.grant_levels(3, { constrain_exp: true })
       expect(@default_actor.level).to eq(4)
-      expect(@default_actor.experience).to eq(0)
+      expect(@default_actor.experience).to eq(200)
     end
   end
 
@@ -204,120 +191,42 @@ RSpec.describe Adjective::Actor do
     it "will NOT set the actor's experience if the constrain_exp option is passed" do 
       @default_actor.set_level(5, { constrain_exp: true })
       expect(@default_actor.level).to eq(5)
-      expect(@default_actor.experience).to eq(0)
+      expect(@default_actor.experience).to eq(200)
     end
   end
 
-  context "when next level experience is checked" do 
-    it "will give back the appropriate value" do 
-      @default_actor.grant_experience(300)
-      expect(@default_actor.experience_to_next_level).to eq(100)
-    end
-
-    it "will show 0 if character is max level" do 
-      @default_actor.level = 10
-      expect(@default_actor.experience_to_next_level).to eq(0)
-    end
-
-    it "will throw a RangeError if attempting to access a level index not present in the actor's #exp_table" do 
-      @default_actor.level = 11
-      expect{ @default_actor.experience_to_next_level }.to raise_error(RangeError)
-    end
-  end
-
-  context "when experience table sets are swapped" do 
-    it "will swap to the correct set within its original table" do 
-      @default_actor.use_experience_set("alt")
-      expect(@default_actor.exp_set_name).to eq("alt")
-    end
-  end
-
-  context "when custom values are passed in to set pre-defined attrs on initialization" do 
-
-    it "will accept custom values on initialization" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
-      expect(actor.hitpoints).to eq(200)
-      expect(actor.experience).to eq(1909)
-      expect(actor.level).to eq(3)
-    end
-
-    it "will not interfere with setter methods" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
-      actor.hitpoints = 400
-      actor.level = 19
-      expect(actor.hitpoints).to eq(400)
-      expect(actor.level).to eq(19)
-    end
-
-    it "will reject attributes that are not defined in #initial_attributes" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, moxy: 900 }) 
-      expect{actor.moxy}.to raise_error(NoMethodError)
-    end
-
-    it "will not reject attributes defined in #exp_table_exceptions" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name }) 
-      expect(actor.exp_set_name).to eq('main')
-    end
-
-  end
-
-  # DEPRECATED - CHANGED PARADIGM FOR INHERITANCE INSTEAD OF DIRECT EXTENSION
-
-  # context "when additional data parameters are passed" do 
-  #   it "will reply with the intended value when called" do 
-  #     expect(@custom_actor.mana).to eq(100)
+  # context "when next level experience is checked" do 
+  #   it "will give back the appropriate value" do 
+  #     @default_actor.grant_experience(300)
+  #     expect(@default_actor.experience_to_next_level).to eq(100)
   #   end
 
-  #   it "will allow for a custom value to be set after initialization" do 
-  #     @custom_actor.mana = 200
-  #     @custom_actor.mana
-  #     expect(@custom_actor.mana).to eq(200) 
+  #   it "will show 0 if character is max level" do
+  #     @default_actor.grant_experience(1000)
+  #     expect(@default_actor.level).to eq(9)
+  #     p @default_actor.level
+  #     p @default_actor.experience
+  #     # expect(@default_actor.experience_to_next_level).to eq(0)
+  #   end
+
+  #   it "will throw a RangeError if attempting to access a level index not present in the actor's #exp_table" do 
+  #     # @default_actor.level = 11
+  #     # expect{ @default_actor.experience_to_next_level }.to raise_error(RangeError)
   #   end
   # end
 
-  # context "when additional attributes are added after initialization" do 
+  context "when stauses are applied through Statusable" do 
+    it "will attain buff_stack and debuff_stack" do 
+      expect(@custom_actor.instance_variable_get(:@buff_stack)).to eq([])
+      expect(@custom_actor.instance_variable_get(:@debuff_stack)).to eq([])
+    end
 
-  #   it "will add the appropriate attribute" do
-  #     @custom_actor.add_attribute("energy", 120)
-  #     expect(@custom_actor.energy).to eq(120)
-  #   end
-
-  #   it "will set the appropriate attribute" do 
-  #     @custom_actor.add_attribute("energy", 120)
-  #     @custom_actor.energy = 150
-  #     expect(@custom_actor.energy).to eq(150)
-  #   end
-
-  #   it "will not allow two of the same attribute names" do
-  #     @custom_actor.add_attribute("energy", 120)
-  #     expect{@custom_actor.add_attribute("energy", 130)}.to raise_error(RuntimeError)
-  #   end
-  # end
-
-  # context "when additional attributes are removed after initialization" do 
-  #   it "will remove the getter method" do 
-  #     @custom_actor.add_attribute("energy", 120)
-  #     @custom_actor.remove_attribute(:energy)
-  #     expect{@custom_actor.energy}.to raise_error(NoMethodError)
-  #   end
-
-  #   it "will remove the setter method" do 
-  #     @custom_actor.add_attribute("energy", 120)
-  #     @custom_actor.remove_attribute(:energy)
-  #     expect{@custom_actor.energy = 100}.to raise_error(NoMethodError)
-  #   end
-
-  #   it "will will remove the instance variable" do
-  #     @custom_actor.add_attribute("energy", 120)
-  #     @custom_actor.remove_attribute(:energy)
-  #     expect(@custom_actor.instance_variable_defined?("@energy")).to be(false)
-  #   end
-
-  #   it "will error out if attempting to remove a nonexistent attribute" do 
-  #     expect{@custom_actor.remove_attribute(:xyt)}.to raise_error(RuntimeError)
-  #   end
-
-  # end
+    it "sdjfsd" do 
+      opts = { affected_attributes: [:hitpoints, :experience], duration: 10 }
+      buff = Adjective::Buff.new("Renew", opts)
+      @custom_actor.apply_buff(buff)
+    end
+  end
 
 end
 

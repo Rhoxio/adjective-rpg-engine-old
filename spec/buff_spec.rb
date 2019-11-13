@@ -1,18 +1,18 @@
 RSpec.describe Adjective::Buff do
 
   before(:example) do
-    opts = {attributes: [:hitpoints], duration: 10 }
-    @single_attribute_opts = {attributes: :hitpoints }
+    opts = { affected_attributes: [:hitpoints], duration: 10 }
+    @single_attribute_opts = {affected_attributes: :hitpoints }
     @buff = Adjective::Buff.new("Renew", opts)
   end
 
   describe "when buff initializes" do 
     it "will take in @attributes as an array" do 
-      expect(@buff.attributes).to eq([:hitpoints])
+      expect(@buff.affected_attributes).to eq([:hitpoints])
     end
 
     it "will take a single symbol for @attributes" do 
-      expect(Adjective::Buff.new("Renew", @single_attribute_opts).attributes).to eq([:hitpoints])
+      expect(Adjective::Buff.new("Renew", @single_attribute_opts).affected_attributes).to eq([:hitpoints])
     end
   end
 
@@ -35,6 +35,10 @@ RSpec.describe Adjective::Buff do
       expect(@buff.duration).to eq(10)
       expect(@buff.remaining).to eq(9)
     end
+
+    # it "will be a testing ground for me" do 
+    #   actor = Adjective::Actor.new
+    # end
   end
 
 end

@@ -1,12 +1,20 @@
 module Adjective
   class Status
-    attr_reader :name, :duration, :initialized_at
+    attr_reader :name, :duration, :initialized_at, :affected_attributes, :value
     attr_accessor :remaining
 
     def initialize(name, opts = {})
-      @name = name
+      @name = name || nil
+
+      # Tracking
       @duration = opts[:duration] ||= 0
       @remaining = opts[:remaining] ||= @duration
+
+      # Applying to?
+      @value = opts[:value]
+      @affected_attributes = Array(opts[:affected_attributes])
+
+      # Timekeeping
       @initialized_at = Time.now
 
       post_initialize(opts)
@@ -20,7 +28,7 @@ module Adjective
       return expired? ? false : true
     end
 
-    # Utlity methods
+    # Utility methods
 
     def post_initialize(opts)
       raise NotImplementedError, "Attempting to initialize from inintended superclass of 'Status'. Use 'Buff' or 'Debuff' instead."
@@ -36,7 +44,7 @@ module Adjective
     end
 
     def instant?
-      # If the duration is 0, it should apply immediately.
+      # If the duration is 0, it should apply immediately for a single turn.
       @duration == 0
     end
 
@@ -49,31 +57,22 @@ module Adjective
   # Hybrid statuses should be extrapolated out into two different statuses.
 
   class Buff < Status
-    attr_reader :attributes, :value
 
     def post_initialize(opts = {})
       # Will only take positive integers.
-      @value = opts[:value]
-      @attributes = Array(opts[:attributes])
 
       # For each attribute on the target model, the buff will increase the value for a set
-      # number of turns. @duration on the superlcass Status will control this.
+      # number of turns. @duration on the superclass Status will control this.
 
       # This is going to turn out to be more of a data model, but will be linkable to 
-      # other actions in the Battle system, Actors, Items, and potentially inventories.
+      # other actions in the Battle system, Actors, Items, and potentially inventories through Statusable.
       # It should handle and contain utility methods for other pieces to get a grasp on its state.
 
       # Eventually, these will need to go in some order in an array to be checked. (Probably order of application)
       # I am thinking that the buff will need to maintain its own state, as it is simply in association wth a particular model.
 
-
     end
 
-    def thnig
-      # take in proc on iteration and amend value based on what is passed in it
-      # this will be part of a 'tick' mechanic that keeps track of how the data inside of here
-      # is influnced by the outside.
-    end
   end
 
   class Debuff < Status
