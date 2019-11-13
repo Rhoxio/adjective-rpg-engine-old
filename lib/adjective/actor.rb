@@ -6,25 +6,11 @@ module Adjective
     attr_accessor :name, :hitpoints, :level
     attr_reader :exp_sets, :exp_set_name, :active_exp_set
 
-    include Adjective::Statusable
-    include Adjective::Imbibable
-
     def initialize(name, params = {})
 
       # Default values
       @hitpoints = 1
       @level = 1
-
-      # From Statusable
-      initialize_status_data
-
-      # From Imbibable
-      initialize_experience(params[:exp_table], params[:initial_exp] ||= 0)
-
-      # May eventually implement a way to directly override the exp table used with a simple array. 
-      # @exp_sets = params[:exp_sets]
-      # @exp_set_name = params.key?(:exp_set_name) ? params[:exp_set_name] : "main"
-      # @active_exp_set = [0,200,300,400,500,600,700,800,900,1000]
 
       # yield block if block
     end

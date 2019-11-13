@@ -3,13 +3,8 @@ require 'spec_helper'
 RSpec.describe Adjective::Actor do
 
   before(:example) do
-    @exp_table = Adjective::Table::Experience.new('config/exp_table.yml', 'main')
-    @alt_exp_table = Adjective::Table::Experience.new('config/exp_table.yml', "alt")
-
-    @default_actor = Adjective::Actor.new("", 
-      {exp_table: [0,200,300,400,500,600,700,800,900,1000]}
-    ) 
-    @custom_actor = Adjective::Actor.new("", {exp_table: [0,200,300,400,500,600,700,800,900,1000]}) 
+    @default_actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000]}) 
+    @custom_actor = SurrogateActor.new("CustomDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000]}) 
     @s_actor = SurrogateActor.new("Surrogate", {exp_table: [0,200,300,400,500,600,700,800,900,1000]})
   end
 
@@ -209,25 +204,6 @@ RSpec.describe Adjective::Actor do
       @default_actor.level = 11
       expect{ @default_actor.experience_to_next_level }.to raise_error(RangeError)
     end
-  end
-
-  context "when custom values are passed in to set pre-defined attrs on initialization" do 
-
-    it "will accept custom values on initialization" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909, level: 3 }) 
-      expect(actor.hitpoints).to eq(200)
-      expect(actor.experience).to eq(1909)
-      expect(actor.level).to eq(3)
-    end
-
-    it "will not interfere with setter methods" do 
-      actor = Adjective::Actor.new("", { exp_sets: @exp_table, exp_set_name: @exp_table.name, hitpoints: 200, experience: 1909 }) 
-      actor.hitpoints = 400
-      actor.level = 19
-      expect(actor.hitpoints).to eq(400)
-      expect(actor.level).to eq(19)
-    end
-
   end
 
   context "when stauses are applied through Statusable" do 
