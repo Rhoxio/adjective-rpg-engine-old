@@ -22,18 +22,21 @@ module Adjective
     end
 
     def apply_buff(status, &block)
-      affected_attributes = status.affected_attributes.map{|a| ("@"+a.to_s).to_sym }
-      invalids = affected_attributes.select {|a| !instance_variable_defined?(a) }
-      # Should be a warning, not an exception. 
-      # I think I have been making this mistake in a few other places. I need to review them. 
-      # raise RuntimeError, "Attempted to apply buff to model that does not have instance variables of: #{invalids}" if invalids.length > 0
-
-      @buff_stack.push(status)
+      affected_attributes = status.affected_attributes
+      invalid = affected_attributes.select {|a| !instance_variable_defined?(a) }
+      warn_about_attributes if invalid.length > 0
       yield(self) if block_given?
+      @buff_stack.push(status)
+      return @buff_stack
     end
 
-    def apply_debuff
-
+    def apply_debuff(status, &block)
+      affected_attributes = status.affected_attributes
+      invalid = affected_attributes.select {|a| !instance_variable_defined?(a) }
+      warn_about_attributes if invalid.length > 0
+      yield(self) if block_given?
+      @debuff_stack.push(status)
+      return @debuff_stack
     end
 
     def tick_buffs
@@ -44,8 +47,10 @@ module Adjective
 
     end
 
-    def validate_response
+    private
 
+    def warn_about_attributes
+      warn("Gave affected_attributes in a Buff that are not present on #{self.class.name}: #{invalids}. This is normally not an issue, but may expose underlying problems.")
     end
 
   end

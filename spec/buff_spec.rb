@@ -8,11 +8,11 @@ RSpec.describe Adjective::Buff do
 
   describe "when buff initializes" do 
     it "will take in @attributes as an array" do 
-      expect(@buff.affected_attributes).to eq([:hitpoints])
+      expect(@buff.affected_attributes).to eq([:@hitpoints])
     end
 
     it "will take a single symbol for @attributes" do 
-      expect(Adjective::Buff.new("Renew", @single_attribute_opts).affected_attributes).to eq([:hitpoints])
+      expect(Adjective::Buff.new("Renew", @single_attribute_opts).affected_attributes).to eq([:@hitpoints])
     end
   end
 

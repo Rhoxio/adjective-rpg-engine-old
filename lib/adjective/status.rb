@@ -13,7 +13,7 @@ module Adjective
       # Applying to?
       @value = opts[:value]
       @affected_attributes = Array(opts[:affected_attributes])
-
+      convert_attributes
       # Timekeeping
       @initialized_at = Time.now
 
@@ -51,6 +51,13 @@ module Adjective
     def over_time?
       @duration > 1 || @duration == :unlimited
     end
+
+    private
+
+    def convert_attributes
+      @affected_attributes = @affected_attributes.map{|a| ("@"+a.to_s).to_sym }
+    end
+
 
   end
 

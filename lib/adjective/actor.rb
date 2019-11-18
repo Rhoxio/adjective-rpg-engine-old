@@ -17,7 +17,6 @@ module Adjective
 
     def heal_for(healing)
       @hitpoints += healing
-
     end
 
     def alive?

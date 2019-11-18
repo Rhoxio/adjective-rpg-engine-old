@@ -1,12 +1,14 @@
 # This is a potentially nested inventory type of system. 
-class SurrogateInventory < Adjective::Inventory
+class SurrogateInventory
   attr_reader :name, :id
-  attr_reader :pocket
 
-  def initialize(name, id, items = [])
+  include Adjective::Storable
+
+  def initialize(name = "", id = 2 , items = [], opts = {})
     @id = id
     @name = name
-    super(items)
+
+    initialize_storage_data(items, opts)
   end
 
   def sort
