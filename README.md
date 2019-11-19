@@ -14,58 +14,25 @@ It will include modules for usage such as:
  - Equipment
  - Inventory
  - Items
- - Effects (Buffs/Debuffs)
+ - Stauses (Buffs/Debuffs)
  - Experience
- - Actors (Characters)
- - Encounters
- - Locations
  
 ### Ideation
 #### Notes on how to implement and sync up the appropriate models to one another
-
-##### Actor
-This model will hold and control the values and transformations for itself. The top-level functionality set is as follows:
-Base Data:
-   - Name
-   - Level
-   - EXP
-   - Metadata (custom values)
-
-Related Data:
-   - Inventory
-   - Skills
-   - Equipment
-   - Effects
-   - Locations
    
 ## Global Management
 This project will also include a global management system and auto-incrementing instance ids on a per-model basis. Essentially, you can set globals at startup and have important adjective-specific ones be automatically managed in runtime.
 
-#### Effect
-Parent class for an Effect. 
-Effects are categorized as things that modify (buff or debuff) Items and their dynamic attributes.
-
-#### Status
-Parent class for a Status.
-Statuses are categorized as things that modify an Actor or added when a Skill is used. 
-
-#### Effect::Actor
-Effects will need to be applied to Actors:
-- Applies to specific attribute(s)
-- Execute arbitrary code against attribute specified (proc block something?)
-- Have general types that are able to be changed in init (not after, specifically)
-- Establish top-end duration, if no top-end, specify :unlimited
-- Designate condition for removal
-  - Time-based
-  - Effect-based
-
+### Modules
 #### Statusable
 Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes.
 
-#### Affectable
-Intermediary class that will contain intermediary logic between Effects < Effects::Actors, ::Items, ::Skills etc. 
+#### Imbibable
+Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. 
 
-First we need a base Effect class.
+#### Storable
+Module that takes responsibility for inventory. Anything can potentially have inventory slots - like a weapon with enchanted jewels or a backpack of infinite holding. Includes utility methods to help with filtering and CRUD.
 
-Each class will probably need 
+#### Vulnerable
+Module that takes responsibility for hitpoint values. Includes methods that allow for the ability to take damage and heal. 
 

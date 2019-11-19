@@ -1,17 +1,15 @@
 module Adjective
 
-  class Inventory
+  module Storable
 
-    attr_reader :initialized_at, :max_size
-    attr_accessor :items, :default_sort
-
-    def initialize(items = [], opts = {}) 
+    def initialize_storage_data(items = [], opts = {})
       @items = items
       @initialized_at = Time.now
       @max_size = opts[:max_size] ||= :unlimited
       @default_sort_method = opts[:default_sort_method] ||= :created_at
       validate_inventory_capacity
       validate_attribute(opts[:default_sort_method]) if opts[:default_sort_method]
+      [:items, :initialized_at, :max_size, :default_sort_method].each {|attribute| self.class.send(:attr_reader, attribute) }
     end
 
     # Utility Methods
@@ -38,6 +36,7 @@ module Adjective
     def query(term, scope = :all)
       matches = []
       @items.each do |item|
+        raise ArugmentError, "Please ensure that #query_string returns a String in #{self.class.name}" if !item.respond_to?(:query_string)
         matches << item if item.query_string(scope).include?(term)
       end
       return matches
@@ -82,11 +81,13 @@ module Adjective
 
     # Sorting
     def sort
-      @items.sort_by { |item| item.send(@default_sort_method) }
+      @items.sort_by { |item| item.send(@default_sort) }
+      return @items
     end
 
     def sort!
       @items = @items.sort_by { |item| item.created_at }
+      return @items
     end    
 
     def sort_by(attribute, order = :asc)
@@ -121,12 +122,14 @@ module Adjective
     end
 
     def validate_attribute(attribute)
-      raise RuntimeError, "#{Time.now}]: #{attribute} is not present on an object " if @items.any? {|item| !item.respond_to?(attribute) } 
+      raise RuntimeError, "#{Time.now}]: #{self.class.name} does not respond to: #{attribute} " if @items.any? {|item| !item.respond_to?(attribute) } 
     end
 
     def validate_sort_direction(order)
       raise ArgumentError, "#{Time.now}]: argument 'order' parameter must be :asc or :desc" if ![:asc, :desc].include?(order)
-    end
+    end    
+
 
   end
+
 end

@@ -15,25 +15,26 @@ module Adjective
   module Statusable
 
     def initialize_status_data
-      @buff_stack = []
-      @debuff_stack = []
-      self.class.send(:attr_reader, :buff_stack)
-      self.class.send(:attr_reader, :debuff_stack)      
+      @buffs = []
+      @debuffs = []
+      self.class.send(:attr_reader, :buffs)
+      self.class.send(:attr_reader, :debuffs)      
     end
 
     def apply_buff(status, &block)
-      affected_attributes = status.affected_attributes.map{|a| ("@"+a.to_s).to_sym }
-      invalids = affected_attributes.select {|a| !instance_variable_defined?(a) }
-      # Should be a warning, not an exception. 
-      # I think I have been making this mistake in a few other places. I need to review them. 
-      # raise RuntimeError, "Attempted to apply buff to model that does not have instance variables of: #{invalids}" if invalids.length > 0
-
-      @buff_stack.push(status)
+      affected_attributes = status.affected_attributes
+      check_attributes(affected_attributes)
       yield(self) if block_given?
+      @buffs.push(status)
+      return @buffs
     end
 
-    def apply_debuff
-
+    def apply_debuff(status, &block)
+      affected_attributes = status.affected_attributes
+      check_attributes(affected_attributes)
+      yield(self) if block_given?
+      @debuffs.push(status)
+      return @debuffs
     end
 
     def tick_buffs
@@ -44,8 +45,19 @@ module Adjective
 
     end
 
-    def validate_response
+    def tick_all(first = :buffs)
 
+    end
+
+    private
+
+    def check_attributes(affected_attributes)
+      invalid = affected_attributes.select {|att| !instance_variable_defined?(att) }
+      warn_about_attributes if invalid.length > 0
+    end
+
+    def warn_about_attributes
+      warn("Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}. This may expose underlying problems and explain errant functionality.")
     end
 
   end
