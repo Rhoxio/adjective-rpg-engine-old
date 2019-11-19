@@ -1,23 +1,22 @@
 module Adjective
   class Status
-    attr_reader :name, :duration, :initialized_at, :affected_attributes, :value
+    attr_reader :name, :duration, :initialized_at, :affected_attributes, :modifiers
     attr_accessor :remaining
 
     def initialize(name, opts = {})
       @name = name || nil
-
-      # Tracking
       @duration = opts[:duration] ||= 0
       @remaining = opts[:remaining] ||= @duration
-
-      # Applying to?
-      @value = opts[:value]
-      @affected_attributes = Array(opts[:affected_attributes])
-      convert_attributes
-      # Timekeeping
       @initialized_at = Time.now
 
-      post_initialize(opts)
+      attribute_names = opts[:affected_attributes].map{|entry| entry[0] }
+      @modifiers = opts[:affected_attributes]
+      @affected_attributes = attribute_names
+      
+      # Turns normally input symbols into :@attribute for consumption as instance variables.
+      # This may turn out to be unnecessary, but it cleans up the input process for the end-user.
+      convert_attributes
+    
     end
 
     # Tick functionality
@@ -29,10 +28,6 @@ module Adjective
     end
 
     # Utility methods
-
-    def post_initialize(opts)
-      raise NotImplementedError, "Attempting to initialize from inintended superclass of 'Status'. Use 'Buff' or 'Debuff' instead."
-    end
 
     def expired?
       @remaining == 0

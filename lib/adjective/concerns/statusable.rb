@@ -15,28 +15,26 @@ module Adjective
   module Statusable
 
     def initialize_status_data
-      @buff_stack = []
-      @debuff_stack = []
-      self.class.send(:attr_reader, :buff_stack)
-      self.class.send(:attr_reader, :debuff_stack)      
+      @buffs = []
+      @debuffs = []
+      self.class.send(:attr_reader, :buffs)
+      self.class.send(:attr_reader, :debuffs)      
     end
 
     def apply_buff(status, &block)
       affected_attributes = status.affected_attributes
-      invalid = affected_attributes.select {|a| !instance_variable_defined?(a) }
-      warn_about_attributes if invalid.length > 0
+      check_attributes(affected_attributes)
       yield(self) if block_given?
-      @buff_stack.push(status)
-      return @buff_stack
+      @buffs.push(status)
+      return @buffs
     end
 
     def apply_debuff(status, &block)
       affected_attributes = status.affected_attributes
-      invalid = affected_attributes.select {|a| !instance_variable_defined?(a) }
-      warn_about_attributes if invalid.length > 0
+      check_attributes(affected_attributes)
       yield(self) if block_given?
-      @debuff_stack.push(status)
-      return @debuff_stack
+      @debuffs.push(status)
+      return @debuffs
     end
 
     def tick_buffs
@@ -47,10 +45,19 @@ module Adjective
 
     end
 
+    def tick_all(first = :buffs)
+
+    end
+
     private
 
+    def check_attributes(affected_attributes)
+      invalid = affected_attributes.select {|att| !instance_variable_defined?(att) }
+      warn_about_attributes if invalid.length > 0
+    end
+
     def warn_about_attributes
-      warn("Gave affected_attributes in a Buff that are not present on #{self.class.name}: #{invalids}. This is normally not an issue, but may expose underlying problems.")
+      warn("Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}. This may expose underlying problems and explain errant functionality.")
     end
 
   end

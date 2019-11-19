@@ -1,14 +1,8 @@
 RSpec.describe Adjective::Statusable do
   before(:example) do
-    @renew = Adjective::Buff.new("Renew", { affected_attributes: :hitpoints })
-    @agony = Adjective::Debuff.new("Agony", { duration: 12, affected_attributes: :hitpoints })
+    @renew = Adjective::Buff.new("Renew", { affected_attributes: { hitpoints: 5 }})
+    @agony = Adjective::Debuff.new("Agony", { duration: 12, affected_attributes: { hitpoints: -3 }})
     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) 
-  end
-
-  describe "when status initializes" do
-    it "should throw a NotImplementedError if attempting to initialize superclass Status alone" do 
-      expect{Adjective::Status.new("Surprise")}.to raise_error(NotImplementedError)
-    end
   end
 
   describe "when utility methods are called" do 

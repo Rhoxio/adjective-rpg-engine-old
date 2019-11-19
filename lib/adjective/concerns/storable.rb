@@ -1,17 +1,5 @@
 module Adjective
 
-  # I plan on having this module handle the messier side of handling buff/debuff processing
-  # It will need to include a way to manage the coupling between Status and the target model.
-  # It will need to be able to process and return values that can be easily passed into other
-  # methods. 
-
-  # This means that it should only know about:
-  # Static: duration, remaining
-  # Dynamic: attributes to amend on the thing being 'statused'.
-  # 
-  # And should retain internal variables of:
-  # Static: application_time
-  # 
   module Storable
 
     def initialize_storage_data(items = [], opts = {})
@@ -48,6 +36,7 @@ module Adjective
     def query(term, scope = :all)
       matches = []
       @items.each do |item|
+        raise ArugmentError, "Please ensure that #query_string returns a String in #{self.class.name}" if !item.respond_to?(:query_string)
         matches << item if item.query_string(scope).include?(term)
       end
       return matches
@@ -133,7 +122,7 @@ module Adjective
     end
 
     def validate_attribute(attribute)
-      raise RuntimeError, "#{Time.now}]: #{attribute} is not present on an object " if @items.any? {|item| !item.respond_to?(attribute) } 
+      raise RuntimeError, "#{Time.now}]: #{self.class.name} does not respond to: #{attribute} " if @items.any? {|item| !item.respond_to?(attribute) } 
     end
 
     def validate_sort_direction(order)
