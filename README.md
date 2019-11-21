@@ -10,15 +10,17 @@ The included functionality will have the ability to change multipliers, add cond
 It will include modules for usage such as:
  - Skills
  - Equipment
- - Inventory
- - Items
- - Stauses (Buffs/Debuffs)
- - Experience
+ - Inventory *
+ - Items *
+ - Stauses (Buffs/Debuffs) -
+ - Experience *
  
 ### Ideation
-#### Notes on how to implement and sync up the appropriate models to one another
+This project has shifted the design principles quite a lot since the beginning, and after more research it seems like most of the functionality can be pulled out into modules rather than using inheritance. 
+
+I found it funny that the name of the project was somewhat synonymous with what type of code I had to write. 
    
-## Global Management
+### Global Management
 This project will also include a global management system and auto-incrementing instance ids on a per-model basis. Essentially, you can set globals at startup and have important adjective-specific ones be automatically managed in runtime.
 
 ### Modules

@@ -8,13 +8,8 @@ module Adjective
       @duration = opts[:duration] ||= 0
       @remaining = opts[:remaining] ||= @duration
       @initialized_at = Time.now
-
-      attribute_names = opts[:affected_attributes].map{|entry| entry[0] }
       @modifiers = opts[:affected_attributes]
-      @affected_attributes = attribute_names
-      
-      # Turns normally input symbols into :@attribute for consumption as instance variables.
-      # This may turn out to be unnecessary, but it cleans up the input process for the end-user.
+      @affected_attributes = opts[:affected_attributes].map{|entry| entry[0] }
       convert_attributes
     
     end
@@ -51,35 +46,6 @@ module Adjective
 
     def convert_attributes
       @affected_attributes = @affected_attributes.map{|a| ("@"+a.to_s).to_sym }
-    end
-
-
-  end
-
-  # Hybrid statuses should be extrapolated out into two different statuses.
-
-  class Buff < Status
-
-    def post_initialize(opts = {})
-      # Will only take positive integers.
-
-      # For each attribute on the target model, the buff will increase the value for a set
-      # number of turns. @duration on the superclass Status will control this.
-
-      # This is going to turn out to be more of a data model, but will be linkable to 
-      # other actions in the Battle system, Actors, Items, and potentially inventories through Statusable.
-      # It should handle and contain utility methods for other pieces to get a grasp on its state.
-
-      # Eventually, these will need to go in some order in an array to be checked. (Probably order of application)
-      # I am thinking that the buff will need to maintain its own state, as it is simply in association wth a particular model.
-
-    end
-
-  end
-
-  class Debuff < Status
-    def post_initialize(opts = {})
-
     end
   end
 end

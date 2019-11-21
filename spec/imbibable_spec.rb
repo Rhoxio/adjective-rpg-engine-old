@@ -1,7 +1,5 @@
 RSpec.describe Adjective::Imbibable do
   before(:example) do
-    # Using an actor class as it should work like any other class Imbibable is included in. 
-
     # Level Key:
     #  0  1   2   3   4   5   6   7   8     9    10
     # [0,200,300,400,500,600,700,800,900, 1000, 1200]
@@ -71,7 +69,6 @@ RSpec.describe Adjective::Imbibable do
       expect(@default_actor.experience_to_next_level).to eq(nil)
     end
   end
-
 
   context "when experience is gained" do 
     it "will properly grant experience" do 

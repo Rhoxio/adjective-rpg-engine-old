@@ -15,38 +15,30 @@ module Adjective
   module Statusable
 
     def initialize_status_data
-      @buffs = []
-      @debuffs = []
-      self.class.send(:attr_reader, :buffs)
-      self.class.send(:attr_reader, :debuffs)      
+      @statuses = []
+      self.class.send(:attr_accessor, :buffs)
+      self.class.send(:attr_accessor, :debuffs)      
     end
 
-    def apply_buff(status, &block)
+    def apply_status(status, &block)
+      validate_modifier_existence(status)
       affected_attributes = status.affected_attributes
       check_attributes(affected_attributes)
-      yield(self) if block_given?
-      @buffs.push(status)
-      return @buffs
+      yield(self, status) if block_given?
+      @statuses.push(status)
+      return @statuses
     end
 
-    def apply_debuff(status, &block)
-      affected_attributes = status.affected_attributes
-      check_attributes(affected_attributes)
-      yield(self) if block_given?
-      @debuffs.push(status)
-      return @debuffs
-    end
-
-    def tick_buffs
-
-    end
-
-    def tick_debuffs
-
-    end
-
-    def tick_all(first = :buffs)
-
+    def tick_all(&block)
+      @statuses.each do |status|
+        validate_modifier_existence(status)
+        status.modifiers.each do |key, value|
+          attribute = key.to_s
+          eval("self.#{attribute} += #{value}") if self.respond_to?(attribute+"=")
+        end
+      end
+      yield(self, @statuses) if block_given?
+      return @statuses
     end
 
     private
@@ -54,6 +46,10 @@ module Adjective
     def check_attributes(affected_attributes)
       invalid = affected_attributes.select {|att| !instance_variable_defined?(att) }
       warn_about_attributes if invalid.length > 0
+    end
+
+    def validate_modifier_existence(status)
+      raise RuntimeError, "Given status in #tick_all or #apply_status does not respond to #modifiers." if !status.respond_to?(:modifiers)
     end
 
     def warn_about_attributes

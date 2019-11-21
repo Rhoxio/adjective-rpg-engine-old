@@ -105,15 +105,7 @@ RSpec.describe Adjective::Storable do
         @diverse_inventory.sort!
         expect(@diverse_inventory.items[0].instance_id).to eq(1)
         expect(@diverse_inventory.items[-1].instance_id).to eq(3)
-      end
-
-      it "will throw a RuntimeError if the given attribute/method is not present in the item set" do 
-        expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
-      end
-
-      it "will throw an ArgumentError if there is an invalid order argument" do 
-         expect{@diverse_inventory.sort_by(:name, :arbitrary)}.to raise_error(ArgumentError)
-      end      
+      end    
 
     end
 
@@ -126,12 +118,8 @@ RSpec.describe Adjective::Storable do
         expect(@diverse_inventory.items[-1].name).to eq("Wool")
       end
 
-      it "will throw a RuntimeError if the given attribute/method is not present in the item set" do 
-        expect{@diverse_inventory.sort_by!(:arbitrary)}.to raise_error(RuntimeError)
-      end
-
-      it "will throw an ArgumentError if there is an invalid order argument" do 
-         expect{@diverse_inventory.sort_by!(:name, :arbitrary)}.to raise_error(ArgumentError)
+      it "will throw a NoMethodError if the given attribute/method is not present in the item set" do 
+        expect{@diverse_inventory.sort_by!(:arbitrary)}.to raise_error(NoMethodError)
       end
 
     end
@@ -159,10 +147,6 @@ RSpec.describe Adjective::Storable do
         expect(ordered_inventory[-1].name).to eq("Stick")
       end
 
-      it "will throw an error if value for default_sort_method does not exist on all items" do 
-        expect{SurrogateInventory.new("Pack", 6, [@item, @item, @quiver, @stick, @full_health_potion], {default_sort_method: :arbitrary})}.to raise_error(RuntimeError)
-      end
-
     end
 
     context "when calling #sort_by" do 
@@ -178,13 +162,9 @@ RSpec.describe Adjective::Storable do
         expect(@diverse_inventory.items[2].instance_id).to eq(3)
       end    
 
-      it "will raise a RuntimeError if the item does not respond to the given method/attribute" do  
-        expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(RuntimeError)
-      end 
-
-      it "will throw an ArgumentError if there is an invalid order argument" do 
-         expect{@diverse_inventory.sort_by(:name, :arbitrary)}.to raise_error(ArgumentError)
-      end      
+      it "will raise a NoMethodError if the item does not respond to the given method/attribute" do  
+        expect{@diverse_inventory.sort_by(:arbitrary)}.to raise_error(NoMethodError)
+      end   
 
     end
   end

@@ -4,7 +4,7 @@ module Adjective
     def initialize_vulnerability(hitpoints = 1, max_hitpoints = 10)
       @hitpoints = hitpoints
       @max_hitpoints = max_hitpoints
-      self.class.send(:attr_reader, :hitpoints)
+      self.class.send(:attr_accessor, :hitpoints)
       self.class.send(:attr_accessor, :max_hitpoints)
     end
 
