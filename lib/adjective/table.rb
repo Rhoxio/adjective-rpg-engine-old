@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Adjective
   class Table
     attr_accessor :name
