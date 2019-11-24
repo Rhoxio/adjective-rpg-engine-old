@@ -52,7 +52,7 @@ Adjective::GlobalManager.initialize do |settings|
   }
 end
 $key #=> 0
-$other_global => 0
+$other_global #=> 0
 
 Adjective::GlobalManager.get_globals #=> {"key" => "0", "other_global" => "0", "item_instance_ref"=>"1", "actor_instance_ref"=>"1", "inventory_instance_ref"=>"1"}
 
