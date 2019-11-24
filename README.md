@@ -29,7 +29,7 @@ _Completed so far_
 #### Item
 Provides a good skeleton class for Storable to use immediately. Nothing too complex - but it does include default instance_id incrementation at the moment. 
 ```Ruby
-item = Adjective::Item.new({ id: 54, name: "Potato"})
+item = Adjective::Item.new({ name: "Potato"})
 ```
 
 #### Status
