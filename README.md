@@ -57,7 +57,7 @@ $other_global #=> 0
 Adjective::GlobalManager.get_globals #=> {"key" => "0", "other_global" => "0", "item_instance_ref"=>"1", "actor_instance_ref"=>"1", "inventory_instance_ref"=>"1"}
 
 Adjective::GlobalManager.initialize
-Adjective::GlobalManager.load_globals({data: enemies_killed: 10})
+Adjective::GlobalManager.load_globals({data: {enemies_killed: 10}})
 Adjective::GlobalManager.get_globals #=> {"item_instance_ref"=>"1", "actor_instance_ref"=>"1", "inventory_instance_ref"=>"1", "enemies_killed" => 10}
 ```
 
