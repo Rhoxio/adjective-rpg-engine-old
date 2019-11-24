@@ -65,13 +65,13 @@ actor.hitpoints #=> 6
 ```
 
 #### Imbibable
-Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. This is purely index-based, meaning the code below assumes 'actor' is level 1 and has 200 experience by default from the table given to the exp_table option. This actor would need 200 exp to go from level 0 to 1.
+Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. This is purely index-based, meaning the code below assumes 'actor' is level 1 and has 200 experience by default from the table given to the exp_table option. This actor would need 200 exp to go from level 0 to 1, but only 100 to go from 1 to 2.
 
 ```Ruby
 actor = Actor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) # Has Imbibable included
 actor.level #=> 1
 actor.experience #=> 200
-actor.grant_experience(101)
+actor.grant_experience(100)
 actor.level #=> 2
 ```
 
