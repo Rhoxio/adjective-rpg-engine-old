@@ -83,7 +83,7 @@ Module that takes responsibility for inventory. Anything can potentially have in
 mana_potion = SurrogateItem.new({name: "Mana Potion", uses: 2, potency: 8})
 health_potion = SurrogateItem.new({name: "Health Potion", uses: 2, potency: 8})
 speed_potion = SurrogateItem.new({name: "Speed Potion", uses: 1, potency: 12})
-seed = SurrogateItem.new({name: "Grass Seed", effect: "grow"})
+seed = SurrogateItem.new({name: "Grass Seed", uses: 1, effect: "grow"})
 
 inventory = Inventory.new("Backpack", [mana_potion, mana_potion, health_potion, speed_potion]) # Has Storable included
 inventory.sort! #=> [health_potion, mana_potion, mana_potion, speed_potion]
@@ -91,8 +91,9 @@ inventory.sort! #=> [health_potion, mana_potion, mana_potion, speed_potion]
 inventory.store(seed)
 inventory.items #=> [seed, health_potion, mana_potion, mana_potion, speed_potion]
 
-inventory.query("uses") #=> [health_potion, mana_potion, mana_potion, speed_potion]
-inventory.search("grass") #=> [seed]
+inventory.search("uses") #=> [seed, health_potion, mana_potion, mana_potion, speed_potion] Will look at both attributes and values
+inventory.search("potion", :values) #=> [health_potion, mana_potion, mana_potion, speed_potion] Will only look at values
+inventory.search("effect", :attributes) #=> [seed] Will only look at attributes
 
 inventory.dump #=> [seed, health_potion, mana_potion, mana_potion, speed_potion]
 inventory.empty? #=> true
