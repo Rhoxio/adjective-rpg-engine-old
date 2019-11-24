@@ -60,15 +60,44 @@ actor = Actor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,
 actor.hitpoints #=> 1
 actor.apply_status(@renew)
 actor.tick_all
-actor.hipoints #=> 6
+actor.hitpoints #=> 6
 
 ```
 
 #### Imbibable
 Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. 
 
+```Ruby
+actor = Actor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) # Has Imbibable included
+actor.level #=> 1
+actor.experience #=> 200
+actor.grant_experience(101)
+actor.level #=> 2
+```
+
 #### Storable
 Module that takes responsibility for inventory. Anything can potentially have inventory slots - like a weapon with enchanted jewels or a backpack of infinite holding. Includes utility methods to help with filtering and CRUD.
+
+```Ruby
+# Some example cases...
+mana_potion = SurrogateItem.new({name: "Mana Potion", uses: 2, potency: 8})
+health_potion = SurrogateItem.new({name: "Health Potion", uses: 2, potency: 8})
+speed_potion = SurrogateItem.new({name: "Speed Potion", uses: 1, potency: 12})
+seed = SurrogateItem.new({name: "Grass Seed", effect: "grow"})
+
+inventory = Inventory.new("Backpack", [mana_potion, mana_potion, health_potion, speed_potion]) # Has Storable included
+inventory.sort! #=> [health_potion, mana_potion, mana_potion, speed_potion]
+
+inventory.store(seed)
+inventory.items #=> [seed, health_potion, mana_potion, mana_potion, speed_potion]
+
+inventory.query("uses") #=> [health_potion, mana_potion, mana_potion, speed_potion]
+inventory.search("grass") #=> [seed]
+
+inventory.dump #=> [seed, health_potion, mana_potion, mana_potion, speed_potion]
+inventory.empty? #=> true
+inventory.items #=> []
+```
 
 #### Vulnerable
 Module that takes responsibility for hitpoint values. Includes methods that allow for the ability to take damage and heal. 
