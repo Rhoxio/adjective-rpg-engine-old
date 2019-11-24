@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.email       = 'rhoxiodbc@gmail.com'
   s.files       = ["lib/adjective.rb", "lib/adjective/actor.rb"]
   s.homepage    =
-    'http://rubygems.org/gems/adhective-rpg-engine'
+    'http://rubygems.org/gems/adjective-rpg-engine'
   s.license       = 'MIT'
 
   s.add_development_dependency "awesome_print"

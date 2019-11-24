@@ -53,7 +53,7 @@ module Adjective
     end
 
     def warn_about_attributes
-      warn("Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}. This may expose underlying problems and explain errant functionality.")
+      warn("Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}.")
     end
 
   end
