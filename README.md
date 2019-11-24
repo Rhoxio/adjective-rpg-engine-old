@@ -56,7 +56,7 @@ end
 Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes.
 ```Ruby
 renew = Adjective::Status.new("Renew", { affected_attributes: { hitpoints: 5 }})
-actor = Actor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) # has Statusable and Vulnerable included
+actor = Actor.new("DefaultDude") # has Statusable and Vulnerable included
 actor.hitpoints #=> 1
 actor.apply_status(@renew)
 actor.tick_all
@@ -102,6 +102,26 @@ inventory.items #=> []
 
 #### Vulnerable
 Module that takes responsibility for hitpoint values. Includes methods that allow for the ability to take damage and heal. 
+
+```Ruby
+actor = SurrogateActor.new("DefaultDude") # Has Vulnerable included
+actor.hitpoints #=> 1
+actor.alive? #=> true
+
+actor.heal_to_full
+actor.hipoints #=> 10
+
+actor.take_damage(10) #=> 0
+actor.dead? #=> true
+
+# Also has overflow and underflow checks by default
+actor.heal_for(9999) #=> 10
+actor.hitpoints #=> 10
+
+actor.take_damage(9999) #=> 0
+actor.hitpoints #=> 0
+
+```
 
 _In the Works_
 
