@@ -31,7 +31,7 @@ Provides a good skeleton class for Storable to use immediately. Nothing too comp
 
 #### Status
 A flexible class that has simple utility methods and allows for direct integration with Statusable. Ex:
-  Adjective::Status.new("Renew", { affected_attributes: { hitpoints: 5 }})
+    Adjective::Status.new("Renew", { affected_attributes: { hitpoints: 5 }})
 
 This will increment the hitpoints of the receiver by 5. 
 
