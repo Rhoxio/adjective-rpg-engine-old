@@ -109,7 +109,7 @@ actor.hitpoints #=> 1
 actor.alive? #=> true
 
 actor.heal_to_full
-actor.hipoints #=> 10
+actor.hitpoints #=> 10
 
 actor.take_damage(10) #=> 0
 actor.dead? #=> true
