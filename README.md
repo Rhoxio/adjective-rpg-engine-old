@@ -28,6 +28,9 @@ _Completed so far_
 ### Classes
 #### Item
 Provides a good skeleton class for Storable to use immediately. Nothing too complex - but it does include default instance_id incrementation at the moment. 
+```Ruby
+item = Adjective::Item.new({ id: 54, name: "Potato"})
+```
 
 #### Status
 A flexible class that has simple utility methods and allows for direct integration with Statusable. Ex:
@@ -40,9 +43,26 @@ This will increment the hitpoints of the receiver by 5.
 ### Modules
 ### Global Management
 This project will include a global management system and auto-incrementing instance ids on a per-model basis. Essentially, you can set globals at startup and have important adjective-specific ones be automatically managed in runtime.
+```Ruby
+Adjective::GlobalManager.initialize do |settings|
+  settings[:custom] = {
+    key: 0,
+    other_global: 0
+  }
+end
+```
 
 #### Statusable
 Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes.
+```Ruby
+renew = Adjective::Status.new("Renew", { affected_attributes: { hitpoints: 5 }})
+actor = Actor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) # has Statusable and Vulnerable included
+actor.hitpoints #=> 1
+actor.apply_status(@renew)
+actor.tick_all
+actor.hipoints #=> 6
+
+```
 
 #### Imbibable
 Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. 
