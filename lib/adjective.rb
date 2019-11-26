@@ -5,16 +5,11 @@ module Adjective
     def self.initialize
       # Adjective-specific variables.
       $item_instance_ref = 1
-      $actor_instance_ref = 1
-      $inventory_instance_ref = 1
       @@globals = []
-
 
       settings = {
         adjective: {
-          item_instance_ref: $item_instance_ref,
-          actor_instance_ref: $actor_instance_ref,
-          inventory_instance_ref: $inventory_instance_ref,
+          item_instance_ref: $item_instance_ref
         },
         custom: {}
       }
@@ -27,7 +22,7 @@ module Adjective
 
     end
 
-    def self.load_globals(opts = {})
+    def self.load_globals(opts = {}, &block)
       globals = Hash.new
       globals.merge!(opts[:data]) if opts.key?(:data)
       yield(globals) if block_given? 
@@ -59,15 +54,7 @@ module Adjective
 
     def self.increment_items
       $item_instance_ref += 1
-    end
-
-    def self.increment_actors
-      $actor_instance_ref += 1
-    end
-
-    def self.increment_inventories
-      $inventory_instance_ref += 1
-    end    
+    end  
 
   end
 

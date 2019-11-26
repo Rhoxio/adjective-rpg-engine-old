@@ -11,7 +11,6 @@ module Adjective
       @modifiers = opts[:affected_attributes]
       @affected_attributes = opts[:affected_attributes].map{|entry| entry[0] }
       convert_attributes
-    
     end
 
     # Tick functionality
@@ -45,7 +44,7 @@ module Adjective
     private
 
     def convert_attributes
-      @affected_attributes = @affected_attributes.map{|a| ("@"+a.to_s).to_sym }
+      @affected_attributes.map!{|a| ("@"+a.to_s).to_sym }
     end
   end
 end
