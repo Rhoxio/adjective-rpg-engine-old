@@ -1,12 +1,9 @@
 RSpec.describe Adjective::Storable do
 
   before(:example) do
-    # Clear globals as we need to track specific items by their instance_id to test them appropriately.
-    reset_adj_globals
-
-    @item = Adjective::Item.new({ id: 54, name: "Potato"}) #1
-    @stick = Adjective::Item.new({ id: 67, name: "Stick"}) #2
-    @wool = Adjective::Item.new({ id: 89, name: "Wool"}) #3
+    @item = SurrogateItem.new({ id: 54, name: "Potato"}) #1
+    @stick = SurrogateItem.new({ id: 67, name: "Stick"}) #2
+    @wool = SurrogateItem.new({ id: 89, name: "Wool"}) #3
 
     @full_health_potion = SurrogateItem.new({id: 1,  name: "Healing Potion"}) #4
     @full_mana_potion = SurrogateItem.new({id: 2,  name: "Mana Potion", uses: 2, potency: 8}) #5
@@ -30,7 +27,7 @@ RSpec.describe Adjective::Storable do
     end
 
     it "methods should be able to be overidden" do 
-      expect(@child_inventory.sort.map {|item| item.instance_id}).to eq([4, 6, 7, 2, 3])
+      expect(@child_inventory.sort.map {|item| item.name }).to eq(["Healing Potion", "Healing Potion", "Quiver", "Stick", "Wool"])
     end
   end
 
@@ -65,10 +62,6 @@ RSpec.describe Adjective::Storable do
   end
 
   context "when items are retrieved" do 
-    it "will #retrieve using instance_id" do 
-      sample = @extended_inventory.items.sample
-      expect(@extended_inventory.retrieve(sample.instance_id)).to eq(sample)
-    end
 
     it "will #retrieve_by an attribute and value" do 
       expect(@diverse_inventory.retrieve_by(:name, "Stick").length).to eq(2)
@@ -78,18 +71,8 @@ RSpec.describe Adjective::Storable do
       expect(@diverse_inventory.retrieve_by(:arbitrary, "Stick")).to eq([])
     end
 
-    it "will correctly use alias method get" do 
-      sample = @extended_inventory.items.sample
-      expect(@extended_inventory.get(sample.instance_id)).to eq(sample)      
-    end
-
     it "will correctly use alias method get_by" do 
       expect(@diverse_inventory.get_by(:name, "Stick").length).to eq(2)
-    end
-
-    it "will correctly use alias method find" do 
-      sample = @extended_inventory.items.sample
-      expect(@extended_inventory.find(sample.instance_id)).to eq(sample)      
     end
 
     it "will correctly use alias method find_by" do 
@@ -98,16 +81,6 @@ RSpec.describe Adjective::Storable do
   end
 
   context "when sorting items destructively" do 
-
-    context "when calling #sort!" do 
-      it "will sort items by created_at by default" do 
-        @diverse_inventory.items.shuffle!
-        @diverse_inventory.sort!
-        expect(@diverse_inventory.items[0].instance_id).to eq(1)
-        expect(@diverse_inventory.items[-1].instance_id).to eq(3)
-      end    
-
-    end
 
     context "when calling #sort_by!" do 
 
@@ -130,13 +103,13 @@ RSpec.describe Adjective::Storable do
     context "when calling #sort" do 
       it "will #sort by #created_at by default" do 
         @diverse_inventory.items.shuffle!
-        expect(@diverse_inventory.sort[0].instance_id).to eq(1)
-        expect(@diverse_inventory.sort[-1].instance_id).to eq(3)
+        expect(@diverse_inventory.sort[0].name).to eq("Potato")
+        expect(@diverse_inventory.sort[-1].name).to eq("Wool")
       end
 
       it "#sort will not amend the original item set" do 
         @diverse_inventory.sort
-        expect(@diverse_inventory.items[2].instance_id).to eq(3)
+        expect(@diverse_inventory.items[2].name).to eq("Wool")
       end
 
       it "will sort by default_sort attribute" do 
@@ -159,7 +132,7 @@ RSpec.describe Adjective::Storable do
 
       it "will not amend the original item set" do 
         @diverse_inventory.sort_by(:name)
-        expect(@diverse_inventory.items[2].instance_id).to eq(3)
+        expect(@diverse_inventory.items[2].name).to eq("Wool")
       end    
 
       it "will raise a NoMethodError if the item does not respond to the given method/attribute" do  
@@ -247,7 +220,7 @@ RSpec.describe Adjective::Storable do
   context "when querying for items" do 
     it "will return results" do 
       expect(@child_inventory.query("Wool").length).to eq(1)
-      expect(@child_inventory.query("100").length).to eq(3)
+      expect(@child_inventory.query("100").length).to eq(5)
     end
 
     it "will return no results if no matches are made" do 
@@ -260,7 +233,7 @@ RSpec.describe Adjective::Storable do
 
     it "will correctly interpret alias method of search" do 
       expect(@child_inventory.search("Wool").length).to eq(1)
-      expect(@child_inventory.search("100").length).to eq(3)
+      expect(@child_inventory.search("100").length).to eq(5)
     end
   end
 

@@ -103,12 +103,12 @@ RSpec.configure do |config|
 =end
 end
 
-def reset_adj_globals
-  Adjective::GlobalManager.load_globals({
-    data:{
-      "item_instance_ref": 1, 
-      "actor_instance_ref": 1,
-      "inventory_instance_ref": 1
-    }
-  })
-end
+# def reset_adj_globals
+#   Adjective::GlobalManager.load_globals({
+#     data:{
+#       "item_instance_ref": 1, 
+#       "actor_instance_ref": 1,
+#       "inventory_instance_ref": 1
+#     }
+#   })
+# end

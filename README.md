@@ -135,8 +135,8 @@ actor.hitpoints #=> 0
 _In the Works_
 
 #### Confrontable
-Base combat module. I imagine this taking two main supporting modules - Agressable and Defensible. 
- - Agressable will contain logic for calculating attacks and damage output types.
+Base combat module. I imagine this taking two main supporting modules - Aggressible and Defensible. 
+ - Aggressible will contain logic for calculating attacks and damage output types.
  - Defensible will include damage reduction and immunity check mechanics.
 
 #### Comprehensible

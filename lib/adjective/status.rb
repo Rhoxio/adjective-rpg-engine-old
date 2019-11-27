@@ -11,14 +11,13 @@ module Adjective
       @modifiers = opts[:affected_attributes]
       @affected_attributes = opts[:affected_attributes].map{|entry| entry[0] }
       convert_attributes
-    
     end
 
     # Tick functionality
 
     def tick(&block)
       # This method is meant to be overridden if you want other 'tick' functionality.
-      yield(self) if block_given? 
+      yield(self) if block_given?
       return expired? ? false : true
     end
 
@@ -45,7 +44,7 @@ module Adjective
     private
 
     def convert_attributes
-      @affected_attributes = @affected_attributes.map{|a| ("@"+a.to_s).to_sym }
+      @affected_attributes.map!{|a| ("@"+a.to_s).to_sym }
     end
   end
 end
