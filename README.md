@@ -26,11 +26,6 @@ I found it funny that the name of the project was somewhat synonymous with what 
 _Completed so far_
 
 ### Classes
-#### Item
-Provides a good skeleton class for Storable to use immediately. Nothing too complex - but it does include default instance_id incrementation at the moment. 
-```Ruby
-item = Adjective::Item.new({ name: "Potato"})
-```
 
 #### Status
 A flexible class that has simple utility methods and allows for direct integration with Statusable. Ex:
