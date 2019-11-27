@@ -112,14 +112,14 @@ module Adjective
 
     def validate_query_scope(scope)
       raise ArgumentError, "#{Time.now}]: Please provide :full, :attributes, or :values to the scope parameter: given #{scope}" if ![:all, :attributes, :values].include?(scope)
-    end      
+    end
 
-    def construct_query_data(attribute, item)
+    def construct_query_data(attribute, val)
       # Delimiting with &: to avoid issues with intermingled data
       return {
-        all: attribute + "&:" + item + "&:",
+        all: attribute + "&:" + val + "&:",
         attributes: attribute + "&:",
-        values: item + "&:"
+        values: val + "&:"
       }
     end      
 
