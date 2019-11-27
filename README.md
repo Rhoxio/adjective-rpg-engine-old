@@ -41,25 +41,6 @@ Adjective::Status.new("Renew", { affected_attributes: { hitpoints: 5 }})
 This will increment the hitpoints of the receiver by 5. 
 
 ### Modules
-### Global Management
-This project will include a global management system and auto-incrementing instance ids on a per-model basis. Essentially, you can set globals at startup and have important adjective-specific ones be automatically managed in runtime.
-```Ruby
-Adjective::GlobalManager.initialize do |settings|
-  # Will automatically include and increment adjective-specific entries that will need distinguination
-  settings[:custom] = {
-    key: 0,
-    other_global: 0
-  }
-end
-$key #=> 0
-$other_global #=> 0
-
-Adjective::GlobalManager.get_globals #=> {"key" => "0", "other_global" => "0", "item_instance_ref"=>"1", "actor_instance_ref"=>"1", "inventory_instance_ref"=>"1"}
-
-Adjective::GlobalManager.initialize
-Adjective::GlobalManager.load_globals({data: enemies_killed: 10})
-Adjective::GlobalManager.get_globals #=> {"item_instance_ref"=>"1", "actor_instance_ref"=>"1", "inventory_instance_ref"=>"1", "enemies_killed" => 10}
-```
 
 #### Statusable
 Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes.
