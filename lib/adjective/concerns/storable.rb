@@ -6,7 +6,7 @@ module Adjective
       @items = items
       @initialized_at = Time.now
       @max_size = opts[:max_size] ||= :unlimited
-      @default_sort_method = opts[:default_sort_method] ||= :created_at
+      @default_sort_method = opts[:default_sort_method] ||= :object_id
       validate_inventory_capacity
       [:items, :initialized_at, :max_size, :default_sort_method].each {|attribute| self.class.send(:attr_accessor, attribute) }
     end
@@ -33,9 +33,15 @@ module Adjective
     # Simple Search
     # options for scope are: :all, :attributes, :values
     def query(term, scope = :all)
+      validate_query_scope(scope)
       matches = []
       @items.each do |item|
-        matches << item if item.query_string(scope).include?(term)
+        chunks = []
+        attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
+        attributes.each do |attribute|
+          chunks.push(construct_query_data(attribute.to_s, item.send(attribute).to_s)[scope])
+        end
+        matches << item if chunks.join.include?(term)
       end
       return matches
     end  
@@ -52,11 +58,7 @@ module Adjective
       end
     end
 
-    # Retrieval - Get
-    def retrieve(instance_id)
-      @items.find {|item| item.instance_id == instance_id }
-    end
-
+    # retrieve_by - Get
     def retrieve_by(attribute, value)
       @items.select do |item| 
         item if item.respond_to?(attribute) && item.send(attribute) === value 
@@ -79,12 +81,12 @@ module Adjective
 
     # Sorting
     def sort
-      @items.sort_by { |item| item.send(@default_sort) }
+      @items.sort_by { |item| item.send(@default_sort_method) }
       return @items
     end
 
     def sort!
-      @items = @items.sort_by { |item| item.created_at }
+      @items = @items.sort_by { |item| item.send(@default_sort_method) }
       return @items
     end    
 
@@ -99,9 +101,7 @@ module Adjective
     end
 
     alias_method :deposit, :store
-    alias_method :put, :store
-    alias_method :get, :retrieve
-    alias_method :find, :retrieve  
+    alias_method :put, :store  
     alias_method :get_by, :retrieve_by
     alias_method :find_by, :retrieve_by        
     alias_method :clear, :dump
@@ -109,6 +109,19 @@ module Adjective
     alias_method :search, :query
 
     private  
+
+    def validate_query_scope(scope)
+      raise ArgumentError, "#{Time.now}]: Please provide :full, :attributes, or :values to the scope parameter: given #{scope}" if ![:all, :attributes, :values].include?(scope)
+    end      
+
+    def construct_query_data(attribute, item)
+      # Delimiting with &: to avoid issues with intermingled data
+      return {
+        all: attribute + "&:" + item + "&:",
+        attributes: attribute + "&:",
+        values: item + "&:"
+      }
+    end      
 
     def validate_inventory_capacity
       return true if @max_size == :unlimited
