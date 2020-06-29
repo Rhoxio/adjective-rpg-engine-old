@@ -1,12 +1,15 @@
 module Adjective
 
   module Imbibable
+    # Able to be enhanced by experience
 
     def initialize_experience(opts)
       @level = opts[:level] ||= 1
       @experience = opts[:initial_exp] ||= 0
+      # This may throw an error if the user decides to instantiate a class without a table present.
       @active_exp_set = opts[:exp_table]
-      [:active_exp_set, :experience, :level].each {|attribute| self.class.send(:attr_reader, attribute)}
+      [:active_exp_set, :level].each {|attribute| self.class.send(:attr_reader, attribute)}
+      self.class.send(:attr_accessor, :experience)
       set_experience_to_level_minimum
     end
 
@@ -27,7 +30,6 @@ module Adjective
     end        
 
     def max_level
-      # Essentially dropping the 0 index so we can access directly with an integer, not int - 1
       @active_exp_set.length - 1
     end  
 
@@ -43,7 +45,7 @@ module Adjective
     def grant_experience(exp, opts = {})
       return false if max_level?
       @experience += exp
-      level_up if !opts[:suppress_levels]      
+      level_up if !opts[:suppress_level_up]      
     end
 
     def set_level(num, opts = {})
@@ -59,7 +61,8 @@ module Adjective
     def experience_to_next_level
       return nil if max_level?
       return @active_exp_set[@level+1] - @experience
-    end  
+    end 
+
 
   end
 

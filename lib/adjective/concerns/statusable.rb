@@ -22,18 +22,21 @@ module Adjective
 
     def apply_status(status, &block)
       validate_modifier_existence(status)
-      affected_attributes = status.affected_attributes
-      check_attributes(affected_attributes)
+      check_attributes(status.affected_attributes)
       yield(self, status) if block_given?
       @statuses.push(status)
       return @statuses
     end
 
     def tick_all(&block)
+      # Provides baseline functionality to + or - values from a given status - as this is
+      # more-or-less the most common of implementations.
+      # Yielding to an arbitrary block helps curcumvent any issues with extension, hopefully. 
       @statuses.each do |status|
         validate_modifier_existence(status)
         status.modifiers.each do |key, value|
           attribute = key.to_s
+          # If it has an accessor for the provided value...
           eval("self.#{attribute} += #{value}") if self.respond_to?(attribute+"=")
         end
       end
