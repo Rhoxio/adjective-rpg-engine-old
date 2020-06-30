@@ -2,6 +2,11 @@ RSpec.describe Adjective::Statusable do
   before(:example) do
     @heal = Adjective::Status.new("heal", { affected_attributes: { hitpoints: 5 }})
     @agony = Adjective::Status.new("Agony", { duration: 12, affected_attributes: { hitpoints: -3 }})
+    @gender_bender = Adjective::Status.new("Gender Bender", {affected_attributes: {gender: "male"}})
+
+    @bind = Adjective::Status.new("bind", { duration: 1, affected_attributes: { hitpoints: -1 }})
+    @sap = Adjective::Status.new("sap", {duration: 5, affected_attributes: {hitpoints: 0} })
+
     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
   end
 
@@ -34,6 +39,16 @@ RSpec.describe Adjective::Statusable do
     end
   end
 
+  describe "when statuses are cleared" do 
+    it "will keep unexpired statuses" do 
+      @actor.apply_status(@bind)
+      @actor.apply_status(@sap)
+      @actor.tick_all
+      @actor.tick_all
+      ap @actor.statuses
+    end
+  end
+
   describe "when statuses tick" do 
     it "will accept a block" do 
       @actor.apply_status(@heal)
@@ -44,11 +59,17 @@ RSpec.describe Adjective::Statusable do
       end
     end
 
-    it "will tick all statuses" do 
+    it "will tick all numeric statuses" do 
       @actor.apply_status(@heal)
       @actor.apply_status(@agony)
       @actor.tick_all
       expect(@actor.hitpoints).to eq(3)
+    end
+
+    it "will amend non-numeric attributes" do 
+      @actor.apply_status(@gender_bender)
+      @actor.tick_all
+      expect(@actor.gender).to eq("male")
     end
   end
 

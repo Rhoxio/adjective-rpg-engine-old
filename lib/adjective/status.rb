@@ -17,7 +17,11 @@ module Adjective
 
     def tick(&block)
       # This method is meant to be overridden if you want other 'tick' functionality.
-      yield(self) if block_given?
+      if block_given?
+        yield(self) 
+      else
+        @duration += 1
+      end
       return expired? ? false : true
     end
 
