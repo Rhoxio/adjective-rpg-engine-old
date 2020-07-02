@@ -1,0 +1,9 @@
+lib/adjective.rb ad8529693dfda888e0eaf55044b76cd91482eea0
+lib/adjective/item.rb da39a3ee5e6b4b0d3255bfef95601890afd80709
+lib/adjective/table.rb 94f2376b9835614a5dc72af0fe1d43594f976199
+lib/adjective/status.rb 985bde021ab79719fb41d72bbfb816ccfb195b05
+lib/adjective/concerns/storable.rb ee18bbb9bca0e42e62b62420b51b6213b9c629aa
+lib/adjective/concerns/imbibable.rb 2ab45733998f5116361c9469167a6877bc3836eb
+lib/adjective/concerns/statusable.rb c8415eae1b5613cab1cd59c28581c8154438ea80
+lib/adjective/concerns/temporable.rb dd542c9bcf3e2128131346db39c3968c38d94422
+lib/adjective/concerns/vulnerable.rb 3e3f64cd291fdb994fdef473a0b1cd77533dc650
