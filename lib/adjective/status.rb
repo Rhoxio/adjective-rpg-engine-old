@@ -1,74 +1,57 @@
 module Adjective
   module Status
 
+    include Adjective::Temporable
+
     # Status is different from something like an attack in that it applies
-    # to things that afflict the actor for more than one turn.
-    # An attack would be instant the moment it resolves, but can leave a status effect.
+    # to things that afflict the actor for one or more turns.
 
-    # What if the status is applied initially and can stack higher than initial application? (#DONE)
+    def initialize_status(opts = {}) 
+      attributes = opts[:affected_attributes] 
+      @modifiers = attributes ||= {}
+      @affected_attributes = attributes.map{|entry| entry[0] }
 
-    def initialize_status(name, opts = {})
-      @name = name || nil
-  
-      @duration = opts[:duration] ||= 0
-      @max_duration = opts[:max_duration] ||= opts[:duration]
-      @remaining_duration = opts[:remaining_duration] ||= opts[:duration]
+      # Can be used to track simple object intantation if class is created when status is applied.
+      # If held in memory, opts will need to be given a :timestamp with a value comparable with a Time object. 
+      # (Maybe... might not work with Statusable as a default option without ergregious fenagaling)
+      @applied_at = opts[:timestamp] ||= Time.now
 
-      @initialized_at = Time.now
-
-      @modifiers = opts[:affected_attributes]
-      @affected_attributes = opts[:affected_attributes].map{|entry| entry[0] }
-
-      self.class.send(:attr_accessor, :remaining_duration)
-      [:name, :duration, :initialized_at, :affected_attributes, :modifiers].each do |attribute| 
+      [:initialized_at, :affected_attributes, :modifiers].each do |attribute| 
         self.class.send(:attr_reader, attribute)
       end
       
-      #converts the attributes over to instance variable form (@thing) for easier consumption elsewhere
-      convert_attributes
+      initialize_temporality(opts)
+      normalize_remaining_duration
+      assign_affected_attributes
     end
 
     # Tick functionality
 
     def tick(&block)
-      # Reduce duration
-      # Allow for block to modify
-      # return list of things ticked so they can be applied with Statusable
-      # This method is meant to be overridden if you want other 'tick' functionality.
       if block_given? 
         yield(self) 
       else
-        # Default functionality.
-        @duration -= 1
+        # Default
+        @remaining_duration -= 1
       end
       return self
     end
 
-    def extend_by(extension)
-      @remaining_duration += extension
-      normalize_remaining_duration
-    end    
-
-    def normalize_remaining_duration
-      @remaining_duration = @max_duration if @remaining_duration > @max_duration
-      @remaining_duration = 0 if @remaining_duration < 0
-    end    
-
-    # # Utility methods
-
-    def expired?
-      @remaining_duration == 0
-    end
-
-    def expiring?
-      # This method seems like a meme, but I think it makes sense
-      @remaining_duration == 1
-    end
+    def add_attribute(attribute, value)
+      if !@modifiers.key?(attribute)
+        @modifiers.store(attribute, value)
+        assign_affected_attributes
+        return @modifiers
+      else
+        warn("Attempted to add duplicate attribute: #{attribute}. The new value has not been set. (Currently '#{@modifiers[attribute]}'.")
+        return false
+      end
+    end 
 
     private
 
-    def convert_attributes
-      @affected_attributes.map!{|a| ("@"+a.to_s).to_sym }
+    def assign_affected_attributes
+      @affected_attributes.map!{|attribute| ("@"+attribute.to_s).to_sym }
     end
   end
 end
