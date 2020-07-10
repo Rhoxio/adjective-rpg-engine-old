@@ -9,10 +9,8 @@ module Adjective
     # but have different durations linked to them. 
 
     # Initialize module data for Temporable
-    #
     # @param opts [Hash]
     # @return [Object]
-    #
     # @example
     #   initialize_temporality({max_duration: 5, remaining_duration: 4})
     def initialize_temporality(opts={})
@@ -29,29 +27,23 @@ module Adjective
     end
 
     # Checks if the status is at it's maximum duration
-    # 
     # @return [Boolean]
-    #
     # @example
     #   SurrogateClass.max_duration? #=> True/False
     def max_duration?
       @max_duration == @remaining_duration
     end
 
-    # Checks if @remaining_duration is at 0.
-    # 
+    # Checks if remaining_duration is at 0.
     # @return [Boolean]
-    #
     # @example
     #   SurrogateClass.expired? #=> True/False
     def expired?
       @remaining_duration == 0
     end
 
-    # Checks if @remaining_duration is at 1.
-    # 
+    # Checks if remaining_duration is at 1.
     # @return [Boolean]
-    #
     # @example
     #   SurrogateClass.expired? #=> True/False
     def expiring?
@@ -60,9 +52,7 @@ module Adjective
     end
 
     # Checks and sets remaining_duration if it is out of bounds.
-    # 
     # @return [Integer]
-    #
     # @example
     #   SurrogateClass.normalize_remaining_duration
     def normalize_remaining_duration
@@ -71,10 +61,8 @@ module Adjective
     end   
 
     # Extends the duration and keeps it within bounds.
-    #
     # @param extension [Integer]
     # @return [Integer]
-    #
     # @example
     #   SurrogateClass.extend_by(2)
     def extend_by(extension)
@@ -86,7 +74,6 @@ module Adjective
     private
 
     # Triggers error to the thrown is thesholds are exceeed on initialization.
-    # 
     # @return [Boolean]
     # @private
     # @example
@@ -96,9 +83,7 @@ module Adjective
     end
 
     # Checks if initial durations are valid.
-    # 
     # @return [Boolean]
-    #
     # @example
     #   SurrogateClass.invalid_durations?
     def invalid_durations?

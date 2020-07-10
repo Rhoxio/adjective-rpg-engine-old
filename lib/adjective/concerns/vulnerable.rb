@@ -5,11 +5,7 @@ module Adjective
       @hitpoints = hitpoints
       @max_hitpoints = max_hitpoints
       self.class.send(:attr_accessor, :hitpoints)
-      self.class.send(:attr_accessor, :max_hitpoints)
-    end
-
-    def initialize(name, params = {})
-      @hitpoints = 1
+      self.class.send(:attr_accessor, :max_hitpoints)     
     end
 
     def take_damage(damage)
@@ -39,7 +35,7 @@ module Adjective
     def normalize_hitpoints
       @hitpoints = 0 if @hitpoints < 0
       @hitpoints = @max_hitpoints if @hitpoints > @max_hitpoints
-    end    
+    end  
   end
 
 end

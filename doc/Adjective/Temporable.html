@@ -121,7 +121,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Checks if @remaining_duration is at 0.</p>
+<p>Checks if remaining_duration is at 0.</p>
 </div></span>
   
 </li>
@@ -145,7 +145,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Checks if @remaining_duration is at 1.</p>
+<p>Checks if remaining_duration is at 1.</p>
 </div></span>
   
 </li>
@@ -268,7 +268,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Checks if @remaining_duration is at 0.</p>
+<p>Checks if remaining_duration is at 0.</p>
 
 
   </div>
@@ -303,12 +303,12 @@
       <pre class="lines">
 
 
-47
-48
-49</pre>
+41
+42
+43</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_expired?'>expired?</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>==</span> <span class='int'>0</span>
@@ -330,7 +330,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Checks if @remaining_duration is at 1.</p>
+<p>Checks if remaining_duration is at 1.</p>
 
 
   </div>
@@ -365,13 +365,13 @@
       <pre class="lines">
 
 
-57
-58
-59
-60</pre>
+49
+50
+51
+52</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 57</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 49</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_expiring?'>expiring?</span>
   <span class='comment'># This method seems like a meme, but I think it makes sense
@@ -444,14 +444,14 @@
       <pre class="lines">
 
 
-80
-81
-82
-83
-84</pre>
+68
+69
+70
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 80</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 68</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extend_by'>extend_by</span><span class='lparen'>(</span><span class='id identifier rubyid_extension'>extension</span><span class='rparen'>)</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>+=</span> <span class='id identifier rubyid_extension'>extension</span>
@@ -527,6 +527,8 @@
       <pre class="lines">
 
 
+16
+17
 18
 19
 20
@@ -536,12 +538,10 @@
 24
 25
 26
-27
-28
-29</pre>
+27</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 18</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 16</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize_temporality'>initialize_temporality</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@max_duration</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:max_duration</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='int'>1</span>
@@ -607,12 +607,12 @@
       <pre class="lines">
 
 
-37
-38
-39</pre>
+33
+34
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 33</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_max_duration?'>max_duration?</span>
   <span class='ivar'>@max_duration</span> <span class='op'>==</span> <span class='ivar'>@remaining_duration</span>
@@ -669,13 +669,13 @@
       <pre class="lines">
 
 
-68
-69
-70
-71</pre>
+58
+59
+60
+61</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 68</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_remaining_duration'>normalize_remaining_duration</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>=</span> <span class='ivar'>@max_duration</span> <span class='kw'>if</span> <span class='ivar'>@remaining_duration</span> <span class='op'>&gt;</span> <span class='ivar'>@max_duration</span>
@@ -691,7 +691,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Jul  2 02:28:11 2020 by
+  Generated on Wed Jul  8 03:09:32 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.6.0).
 </div>
