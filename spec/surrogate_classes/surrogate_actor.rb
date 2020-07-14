@@ -1,5 +1,5 @@
 class SurrogateActor
-  attr_reader :gender, :name
+  attr_accessor :gender, :name
 
   include Adjective::Statusable
   include Adjective::Imbibable

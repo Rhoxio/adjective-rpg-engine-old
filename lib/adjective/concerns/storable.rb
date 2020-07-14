@@ -111,7 +111,7 @@ module Adjective
     private  
 
     def validate_query_scope(scope)
-      raise ArgumentError, "#{Time.now}]: Please provide :full, :attributes, or :values to the scope parameter: given #{scope}" if ![:all, :attributes, :values].include?(scope)
+      raise ArgumentError, "[#{Time.now}]: Please provide :full, :attributes, or :values to the scope parameter: given #{scope}" if ![:all, :attributes, :values].include?(scope)
     end
 
     def construct_query_data(attribute, val)

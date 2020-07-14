@@ -15,6 +15,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require_relative "../lib/adjective.rb"
 Dir[File.join(__dir__, 'surrogate_classes', '*.rb')].each { |file| require file }
+Dir[File.join(__dir__, 'interdependents', '*.rb')].each { |file| require file }
 require 'awesome_print'
 
 RSpec.configure do |config|

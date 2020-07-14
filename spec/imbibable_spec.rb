@@ -54,8 +54,8 @@ RSpec.describe Adjective::Imbibable do
       expect(@default_actor.experience).to eq(1200)
     end
 
-    it "will not level up if :suppress_levels is passed" do 
-      @default_actor.grant_experience(1000, {suppress_levels: true})
+    it "will not level up if :suppress_level_up option is passed" do 
+      @default_actor.grant_experience(1000, {suppress_level_up: true})
       expect(@default_actor.level).to eq(1)
     end
 
@@ -66,6 +66,7 @@ RSpec.describe Adjective::Imbibable do
       @default_actor.grant_experience(849)
       expect(@default_actor.experience_to_next_level).to eq(1)
       @default_actor.grant_experience(1)
+      # Max level for the table
       expect(@default_actor.experience_to_next_level).to eq(nil)
     end
   end
@@ -75,6 +76,13 @@ RSpec.describe Adjective::Imbibable do
       @default_actor.grant_experience(10)
       expect(@default_actor.experience).to eq(210)
     end   
+  end
+
+  context "when experience is set" do 
+    it "will properly set the experience value" do 
+      @default_actor.experience = 10
+      expect(@default_actor.experience).to eq(10)
+    end
   end
 
 

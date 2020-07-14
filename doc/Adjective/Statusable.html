@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: Adjective::Statusable
+  
+    &mdash; Documentation by YARD 0.9.25
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Adjective::Statusable";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Adjective.html" title="Adjective (module)">Adjective</a></span></span>
+     &raquo; 
+    <span class="title">Statusable</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: Adjective::Statusable
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/adjective/concerns/statusable.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>I plan on having this module handle the messier side of buff/debuff processing It will need to include a way to manage the coupling between Status and the target model. It will need to be able to process and return values that can be easily passed into other methods.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#apply_status-instance_method" title="#apply_status (instance method)">#<strong>apply_status</strong>(status) {|_self, status| ... } &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#clear_expired_statuses-instance_method" title="#clear_expired_statuses (instance method)">#<strong>clear_expired_statuses</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize_status_data-instance_method" title="#initialize_status_data (instance method)">#<strong>initialize_status_data</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tick_all-instance_method" title="#tick_all (instance method)">#<strong>tick_all</strong> {|_self, @statuses| ... } &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="apply_status-instance_method">
+  
+    #<strong>apply_status</strong>(status) {|_self, status| ... } &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>_self</tt>, <tt>status</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Yield Parameters:</p>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='name'>_self</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Adjective::Statusable (module)">Adjective::Statusable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the object that the method was called on</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+17
+18
+19
+20
+21
+22
+23</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/statusable.rb', line 17</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_status'>apply_status</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_validate_modifier_existence'>validate_modifier_existence</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_check_attributes'>check_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_affected_attributes'>affected_attributes</span><span class='rparen'>)</span>
+  <span class='kw'>yield</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+  <span class='ivar'>@statuses</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='ivar'>@statuses</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="clear_expired_statuses-instance_method">
+  
+    #<strong>clear_expired_statuses</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+46
+47
+48
+49
+50
+51</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/statusable.rb', line 46</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_clear_expired_statuses'>clear_expired_statuses</span>
+  <span class='id identifier rubyid_unexpired'>unexpired</span> <span class='op'>=</span> <span class='ivar'>@statuses</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_status'>status</span><span class='op'>|</span> <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_duration'>duration</span> <span class='op'>!=</span> <span class='int'>0</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_diff'>diff</span> <span class='op'>=</span> <span class='ivar'>@statuses</span> <span class='op'>-</span> <span class='id identifier rubyid_unexpired'>unexpired</span>
+  <span class='ivar'>@statuses</span> <span class='op'>=</span> <span class='id identifier rubyid_unexpired'>unexpired</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_diff'>diff</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="initialize_status_data-instance_method">
+  
+    #<strong>initialize_status_data</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+10
+11
+12
+13
+14
+15</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/statusable.rb', line 10</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize_status_data'>initialize_status_data</span>
+  <span class='ivar'>@statuses</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='symbol'>:attr_accessor</span><span class='comma'>,</span> <span class='symbol'>:buffs</span><span class='rparen'>)</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='symbol'>:attr_accessor</span><span class='comma'>,</span> <span class='symbol'>:debuffs</span><span class='rparen'>)</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='symbol'>:attr_accessor</span><span class='comma'>,</span> <span class='symbol'>:statuses</span><span class='rparen'>)</span>    
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tick_all-instance_method">
+  
+    #<strong>tick_all</strong> {|_self, @statuses| ... } &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>_self</tt>, <tt>@statuses</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Yield Parameters:</p>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='name'>_self</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Adjective::Statusable (module)">Adjective::Statusable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the object that the method was called on</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/statusable.rb', line 25</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tick_all'>tick_all</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='comment'># Provides baseline functionality to + or - values from a given status, as this is
+</span>  <span class='comment'># the most common of implementations.
+</span>  <span class='comment'># Strings and other values are simply set.
+</span>  <span class='comment'># Yielding to an arbitrary block should curcumvent any issues with extension and post-effect hooks. 
+</span>  <span class='ivar'>@statuses</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_status'>status</span><span class='op'>|</span>
+    <span class='id identifier rubyid_validate_modifier_existence'>validate_modifier_existence</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_modifiers'>modifiers</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
+      <span class='id identifier rubyid_attribute'>attribute</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+      <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Float</span><span class='rparen'>)</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_eval'>eval</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>self.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_attribute'>attribute</span><span class='embexpr_end'>}</span><span class='tstring_content'> += </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_value'>value</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>=</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_attribute'>attribute</span><span class='embexpr_end'>}</span><span class='tstring_content'>=</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>=</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span>
+  <span class='kw'>end</span>
+  <span class='kw'>yield</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='ivar'>@statuses</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+  <span class='kw'>return</span> <span class='ivar'>@statuses</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Wed Jul  8 03:09:32 2020 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.25 (ruby-2.6.0).
+</div>
+
+    </div>
+  </body>
+</html>
