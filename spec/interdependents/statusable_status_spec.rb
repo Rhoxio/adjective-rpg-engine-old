@@ -3,6 +3,8 @@ RSpec.describe "Statusable and Status integration" do
     @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5})
     @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10})
     @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3})
+    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: 5, badly_poisoned: true}})
+    @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: -0.5 }})
 
     # Actor has Adjective::Statusable included
     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
@@ -49,6 +51,31 @@ RSpec.describe "Statusable and Status integration" do
 
   describe "when #tick_all is called" do 
     describe "when default functionality is used" do 
+
+      it "will strictly set NON-integer or float values with =" do 
+        @actor.apply_status(@toxic)
+        @actor.tick_all
+        expect(@actor.badly_poisoned).to eq(true)
+      end 
+
+      it "will amend Float and Integer values with +=" do 
+        @actor.heal_to_full
+        @actor.apply_status(@rend)
+        @actor.apply_status(@cripple)
+        @actor.tick_all
+        expect(@actor.hitpoints).to eq(9)
+        expect(@actor.crit_multiplier).to eq(1.5)
+      end
+
+      it "will allow for a block argument to amend values" do 
+        @actor.apply_status(@toxic) 
+        @actor.tick_all do |actor, statuses|
+          expect(@actor.badly_poisoned).to eq(true)
+          actor.badly_poisoned = false
+        end
+        expect(@actor.badly_poisoned).to eq(false)
+      end     
+       
       it "will reduce the duration of each status by 1" do 
         @actor.apply_status(@renew)
         @actor.apply_status(@agony)
@@ -58,7 +85,8 @@ RSpec.describe "Statusable and Status integration" do
         expect(@actor.statuses[1].remaining_duration).to eq(9)
         expect(@actor.statuses[2].remaining_duration).to eq(2)
       end
-    end
+    end   
   end
+
 
 end

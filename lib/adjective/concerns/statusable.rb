@@ -20,6 +20,12 @@ module Adjective
       return @statuses
     end
 
+    def sort_by(order = :remaining_duration)
+      # max_duration
+      # attribute name
+      # remaining_duration
+    end
+
     # Actually has three cases
     # 1: has and responds to given method PERIOD
     def has_status?(attribute, match)
@@ -62,15 +68,15 @@ module Adjective
     private
 
     def validate_initial_attributes(affected_attributes)
-      invalid = affected_attributes.select {|att| !instance_variable_defined?(att) }
-      warn_about_attributes if invalid.length > 0
+      invalids = affected_attributes.select {|att| !instance_variable_defined?(att) }
+      warn_about_attributes(invalids) if invalids.length > 0
     end
 
     def validate_modifier_existence(status)
       raise RuntimeError, "Given status does not respond to #modifiers." if !status.respond_to?(:modifiers)
     end
 
-    def warn_about_attributes
+    def warn_about_attributes(invalids)
       warn("[#{Time.now}]: Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}.")
     end
 

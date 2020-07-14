@@ -41,6 +41,6 @@ RSpec.describe "Temporable integration with Status" do
     it "#max_duration? will correctly tell if the status is at max duration" do 
       expect(@rend.max_duration?).to eq(true)
     end
-  end  
+  end 
 
 end
