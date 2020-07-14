@@ -9,17 +9,26 @@ module Adjective
 
     def initialize_status_data
       @statuses = []
-      self.class.send(:attr_accessor, :buffs)
-      self.class.send(:attr_accessor, :debuffs)
-      self.class.send(:attr_accessor, :statuses)    
+      self.class.send(:attr_accessor, :statuses)
     end
 
     def apply_status(status, &block)
       validate_modifier_existence(status)
-      check_attributes(status.affected_attributes)
+      validate_initial_attributes(status.affected_attributes)
       yield(self, status) if block_given?
       @statuses.push(status)
       return @statuses
+    end
+
+    # Actually has three cases
+    # 1: has and responds to given method PERIOD
+    def has_status?(attribute, match)
+      @statuses.each do |status|
+        if status.respond_to?(attribute)
+          return true if status.send(attribute) == match
+        end
+      end
+      return false
     end
 
     def tick_all(&block)
@@ -52,17 +61,17 @@ module Adjective
 
     private
 
-    def check_attributes(affected_attributes)
+    def validate_initial_attributes(affected_attributes)
       invalid = affected_attributes.select {|att| !instance_variable_defined?(att) }
       warn_about_attributes if invalid.length > 0
     end
 
     def validate_modifier_existence(status)
-      raise RuntimeError, "Given status in #tick_all or #apply_status does not respond to #modifiers." if !status.respond_to?(:modifiers)
+      raise RuntimeError, "Given status does not respond to #modifiers." if !status.respond_to?(:modifiers)
     end
 
     def warn_about_attributes
-      warn("Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}.")
+      warn("[#{Time.now}]: Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}.")
     end
 
   end

@@ -4,7 +4,7 @@ module Adjective
 
     # This is to be used to emulate turn-based interactions or to emulate basic time within the context of a parent class. 
 
-    # The idea behind setting an initial_duration is so you can see what the status started out as
+    # The idea behind setting an initial_duration is so you can see what the subject started out as
     # instead of making an assumption. This could matter if multiple same-identity classes have the same attributes,
     # but have different durations linked to them. 
 

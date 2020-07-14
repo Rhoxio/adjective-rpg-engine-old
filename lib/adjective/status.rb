@@ -6,7 +6,6 @@ module Adjective
 
     include Adjective::Temporable
 
-
     # Initialize module data for Status
     # @param opts [Hash]
     # @return [Object]
@@ -15,7 +14,7 @@ module Adjective
     #     include Adjective::Status
     #     initialize_status({affected_attributes: { hitpoints: 3}, max_duration: 5})
     #   end
-    def initialize_status(opts = {}) 
+    def initialize_status(opts = {})
       attributes = opts[:affected_attributes] 
       @modifiers = attributes ||= {}
       @affected_attributes = attributes.map{|entry| entry[0]}
@@ -86,7 +85,7 @@ module Adjective
         @modifiers[attribute] = value
         assign_affected_attributes
       else
-        warn("Attmepted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
+        warn("[#{Time.now}]: Attempted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
       end
       return @modifiers
     end
@@ -102,7 +101,7 @@ module Adjective
         @modifiers.store(attribute, value)
         assign_affected_attributes
       else
-        warn("Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}'.")
+        warn("[#{Time.now}]: Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}'.")
       end
       return @modifiers
     end 
@@ -118,7 +117,7 @@ module Adjective
         temp = {}.store(attribute, modifiers[attribute])
         @modifiers.delete(attribute)
       else
-        warn("Attempted to remove modifier that does not exist: #{attribute}")
+        warn("[#{Time.now}]: Attempted to remove modifier that does not exist: #{attribute}")
       end
       return temp
     end
