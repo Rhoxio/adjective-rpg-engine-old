@@ -101,7 +101,7 @@ module Adjective
         @modifiers.store(attribute, value)
         assign_affected_attributes
       else
-        warn("[#{Time.now}]: Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}'.")
+        warn("[#{Time.now}]: Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}').")
       end
       return @modifiers
     end 

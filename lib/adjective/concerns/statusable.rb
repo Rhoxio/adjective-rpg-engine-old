@@ -12,22 +12,22 @@ module Adjective
       self.class.send(:attr_accessor, :statuses)
     end
 
-    def apply_status(status, &block)
-      validate_modifier_existence(status)
-      validate_initial_attributes(status.affected_attributes)
-      yield(self, status) if block_given?
-      @statuses.push(status)
+    def apply_status(status_collection, &block)
+      status_collection = [status_collection].flatten
+      validate_modifier_existence(status_collection)
+      validate_initial_attributes(status_collection)
+      yield(self, status_collection) if block_given?
+      @statuses = @statuses.concat(status_collection).flatten
       return @statuses
     end
 
-    def sort_by(order = :remaining_duration)
-      # max_duration
-      # attribute name
-      # remaining_duration
+    def sort_statuses!(attribute = :remaining_duration)
+      valid = @statuses.all? {|status| status.respond_to?(attribute)}
+      warn_about_missing_attribute(attribute, "#sort_statuses") if !valid
+      @statuses = @statuses.sort_by { |status| status.send(attribute) } if valid
+      return @statuses
     end
 
-    # Actually has three cases
-    # 1: has and responds to given method PERIOD
     def has_status?(attribute, match)
       @statuses.each do |status|
         if status.respond_to?(attribute)
@@ -38,12 +38,8 @@ module Adjective
     end
 
     def tick_all(&block)
-      # Provides baseline functionality to + or - values from a given status, as this is
-      # the most common of implementations.
-      # Strings and other values are simply set.
-      # Yielding to an arbitrary block should curcumvent any issues with extension and post-effect hooks. 
       @statuses.each do |status|
-        validate_modifier_existence(status)
+        validate_modifier_existence([status])
         status.modifiers.each do |key, value|
           attribute = key.to_s
           if (value.is_a?(Integer) || value.is_a?(Float))
@@ -52,6 +48,7 @@ module Adjective
             send("#{attribute}=", value) if self.respond_to?(attribute+"=")
           end
         end
+        # status.tick will reduce the remaining_duration by 1 by default.
         status.tick
       end
       yield(self, @statuses) if block_given?
@@ -67,16 +64,20 @@ module Adjective
 
     private
 
-    def validate_initial_attributes(affected_attributes)
-      invalids = affected_attributes.select {|att| !instance_variable_defined?(att) }
-      warn_about_attributes(invalids) if invalids.length > 0
+    def validate_initial_attributes(given_statuses)
+      invalids = given_statuses.map{|status| status.affected_attributes }.flatten.select {|att| !instance_variable_defined?(att) }
+      warn_about_invalid_initial_attributes(invalids) if invalids.length > 0
     end
 
-    def validate_modifier_existence(status)
-      raise RuntimeError, "Given status does not respond to #modifiers." if !status.respond_to?(:modifiers)
+    def validate_modifier_existence(mods)
+      raise RuntimeError, "Given status does not respond to #modifiers." if !mods.any? {|status| status.respond_to?(:modifiers)}
+    end    
+
+    def warn_about_missing_attribute(attribute, method_name)
+      warn("#{Time.now}]: Supplied an attribute to #{method_name} that doesn't exist on all statuses: #{attribute}")
     end
 
-    def warn_about_attributes(invalids)
+    def warn_about_invalid_initial_attributes(invalids)
       warn("[#{Time.now}]: Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}.")
     end
 

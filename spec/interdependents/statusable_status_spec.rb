@@ -3,7 +3,7 @@ RSpec.describe "Statusable and Status integration" do
     @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5})
     @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10})
     @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3})
-    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: 5, badly_poisoned: true}})
+    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: 5, badly_poisoned: true}, max_duration: 1})
     @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: -0.5 }})
 
     # Actor has Adjective::Statusable included
@@ -22,16 +22,28 @@ RSpec.describe "Statusable and Status integration" do
     end
 
     it "#has_status? will correctly check if a status is present" do
-      @actor.apply_status(@rend)
-      @actor.apply_status(@agony)
+      @actor.apply_status([@rend, @agony])
       expect(@actor.has_status?(:name, "Rend")).to eq(true)
       expect(@actor.has_status?(:name, "Agony")).to eq(true)
     end
 
     it "#has_status will correctly check if a status is NOT present" do
-      @actor.apply_status(@rend)
-      @actor.apply_status(@agony)
+      @actor.apply_status([@rend, @agony])
       expect(@actor.has_status?(:name, "Slow")).to eq(false)
+    end
+
+    it "will #sort_statuses! by remaining_duration by default" do 
+      @actor.apply_status([@rend, @renew, @toxic])
+      @actor.sort_statuses!
+      expect(@actor.statuses.first.remaining_duration).to eq(1)
+      expect(@actor.statuses.last.remaining_duration).to eq(5)
+    end
+
+    it "will #sort_statuses! by the provided attribute" do 
+      @actor.apply_status([@rend, @toxic, @cripple])
+      @actor.sort_statuses!(:name)
+      expect(@actor.statuses.first.name).to eq("Cripple")
+      expect(@actor.statuses.last.name).to eq("Toxic")
     end
 
   end
@@ -42,11 +54,18 @@ RSpec.describe "Statusable and Status integration" do
     end 
 
     it "will allow for a block argument" do 
-      @actor.apply_status(@renew) do |model, status|
+      @actor.apply_status(@renew) do |model, statuses|
         expect(model.name).to eq("DefaultDude")
-        expect(status.name).to eq("Renew")
+        expect(statuses[0].name).to eq("Renew")
       end
     end
+
+    it "will allow an array of statuses to be applied" do 
+      @actor.apply_status([@renew, @agony])
+      expect(@actor.statuses.length).to eq(2)
+      expect(@actor.statuses.first.name).to eq("Renew")
+      expect(@actor.statuses.last.name).to eq("Agony")
+    end 
   end
 
   describe "when #tick_all is called" do 
@@ -74,12 +93,20 @@ RSpec.describe "Statusable and Status integration" do
           actor.badly_poisoned = false
         end
         expect(@actor.badly_poisoned).to eq(false)
-      end     
+      end 
+
+      it "will allow you to amend child statuses through a block" do 
+        @actor.apply_status(@rend)
+        @actor.tick_all do |actor, statuses|
+          actor.statuses.each do |status|
+            status.remaining_duration = status.max_duration
+          end
+        end
+        expect(@actor.statuses[0].remaining_duration).to eq(3)
+      end    
        
       it "will reduce the duration of each status by 1" do 
-        @actor.apply_status(@renew)
-        @actor.apply_status(@agony)
-        @actor.apply_status(@rend)
+        @actor.apply_status([@renew, @agony, @rend])
         @actor.tick_all
         expect(@actor.statuses[0].remaining_duration).to eq(4)
         expect(@actor.statuses[1].remaining_duration).to eq(9)
