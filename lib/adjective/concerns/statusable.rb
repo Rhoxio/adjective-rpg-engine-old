@@ -12,10 +12,17 @@ module Adjective
       self.class.send(:attr_accessor, :statuses)
     end
 
-    def apply_status(status_collection, &block)
+    def apply_statuses(status_collection, &block)
       status_collection = [status_collection].flatten
-      validate_modifier_existence(status_collection)
-      validate_initial_attributes(status_collection)
+
+      # These methods may not he so useful after all.
+      # If the user applies a status and the class doesn't respond to it,
+      # it should potentially do nothing and accept it due to it just not affecting the
+      # target in any way. 
+      # I will add them back in later if I see a use for them. 
+      # validate_modifier_existence(status_collection)
+      # validate_initial_attributes(status_collection)
+
       yield(self, status_collection) if block_given?
       @statuses = @statuses.concat(status_collection).flatten
       return @statuses
@@ -26,6 +33,16 @@ module Adjective
       warn_about_missing_attribute(attribute, "#sort_statuses") if !valid
       @statuses = @statuses.sort_by { |status| status.send(attribute) } if valid
       return @statuses
+    end
+
+    def find_statuses(attribute = :remaining_duration, value = nil)
+      results = []
+      if value
+        results = @statuses.select { |status| status.send(attribute) == value }
+      else
+        results = @statuses.select { |status| status.respond_to?(attribute) }
+      end
+      return results
     end
 
     def has_status?(attribute, match)
@@ -39,7 +56,9 @@ module Adjective
 
     def tick_all(&block)
       @statuses.each do |status|
-        validate_modifier_existence([status])
+        # It should potentially just skip the whole operation. Will add back later or amed
+        # if issues crop up because of no validation.
+        # validate_modifier_existence([status])
         status.modifiers.each do |key, value|
           attribute = key.to_s
           if (value.is_a?(Integer) || value.is_a?(Float))
@@ -64,14 +83,14 @@ module Adjective
 
     private
 
-    def validate_initial_attributes(given_statuses)
-      invalids = given_statuses.map{|status| status.affected_attributes }.flatten.select {|att| !instance_variable_defined?(att) }
-      warn_about_invalid_initial_attributes(invalids) if invalids.length > 0
-    end
+    # def validate_initial_attributes(given_statuses)
+    #   invalids = given_statuses.map{|status| status.affected_attributes }.flatten.select {|att| !instance_variable_defined?(att) }
+    #   warn_about_invalid_initial_attributes(invalids) if invalids.length > 0
+    # end
 
-    def validate_modifier_existence(mods)
-      raise RuntimeError, "Given status does not respond to #modifiers." if !mods.any? {|status| status.respond_to?(:modifiers)}
-    end    
+    # def validate_modifier_existence(mods)
+    #   raise RuntimeError, "Given status does not respond to #modifiers." if !mods.any? {|status| status.respond_to?(:modifiers)}
+    # end    
 
     def warn_about_missing_attribute(attribute, method_name)
       warn("#{Time.now}]: Supplied an attribute to #{method_name} that doesn't exist on all statuses: #{attribute}")
