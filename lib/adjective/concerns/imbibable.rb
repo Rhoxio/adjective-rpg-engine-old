@@ -45,7 +45,8 @@ module Adjective
     def grant_experience(exp, opts = {})
       return false if max_level?
       @experience += exp
-      level_up if !opts[:suppress_level_up]      
+      level_up if !opts[:suppress_level_up]
+      return @experience     
     end
 
     def set_level(num, opts = {})

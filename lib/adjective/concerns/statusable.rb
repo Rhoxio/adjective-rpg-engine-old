@@ -12,16 +12,37 @@ module Adjective
       self.class.send(:attr_accessor, :statuses)
     end
 
-    def apply_status(status, &block)
-      validate_modifier_existence(status)
-      validate_initial_attributes(status.affected_attributes)
-      yield(self, status) if block_given?
-      @statuses.push(status)
+    def apply_statuses(status_collection, &block)
+      status_collection = [status_collection].flatten
+      yield(self, status_collection) if block_given?
+      @statuses = @statuses.concat(status_collection).flatten
       return @statuses
     end
 
-    # Actually has three cases
-    # 1: has and responds to given method PERIOD
+    def sort_statuses!(attribute = :remaining_duration)
+      responds = @statuses.select {|status| status.respond_to?(attribute)}
+      does_not_respond = @statuses.select {|status| !status.respond_to?(attribute)}
+      @statuses = responds.sort_by { |status| status.send(attribute) } + does_not_respond
+      return @statuses
+    end
+
+    def remove_status(attribute = :remaining_duration, value = nil)
+      to_remove = find_statuses(attribute, value)
+      @statuses = @statuses.reject{|status| to_remove.include?(status)}
+      return to_remove
+    end
+
+    def find_statuses(attribute = :remaining_duration, value = nil)
+      results = []
+      if value
+        responds = @statuses.select {|status| status.respond_to?(attribute)}
+        results = responds.select { |status| status.send(attribute) == value }
+      else
+        results = @statuses.select { |status| status.respond_to?(attribute) }
+      end
+      return results
+    end
+
     def has_status?(attribute, match)
       @statuses.each do |status|
         if status.respond_to?(attribute)
@@ -31,13 +52,8 @@ module Adjective
       return false
     end
 
-    def tick_all(&block)
-      # Provides baseline functionality to + or - values from a given status, as this is
-      # the most common of implementations.
-      # Strings and other values are simply set.
-      # Yielding to an arbitrary block should curcumvent any issues with extension and post-effect hooks. 
+    def tick_all(opts = {clear_expired: true}, &block)
       @statuses.each do |status|
-        validate_modifier_existence(status)
         status.modifiers.each do |key, value|
           attribute = key.to_s
           if (value.is_a?(Integer) || value.is_a?(Float))
@@ -46,32 +62,19 @@ module Adjective
             send("#{attribute}=", value) if self.respond_to?(attribute+"=")
           end
         end
+        # status.tick will reduce the remaining_duration by 1 by default.
         status.tick
       end
       yield(self, @statuses) if block_given?
+      clear_expired_statuses! if opts[:clear_expired]
       return @statuses
     end
 
-    def clear_expired_statuses
-      unexpired = @statuses.select { |status| status.duration != 0 }
+    def clear_expired_statuses!
+      unexpired = @statuses.select { |status| status.remaining_duration > 0 }
       diff = @statuses - unexpired
       @statuses = unexpired
       return diff
-    end
-
-    private
-
-    def validate_initial_attributes(affected_attributes)
-      invalid = affected_attributes.select {|att| !instance_variable_defined?(att) }
-      warn_about_attributes if invalid.length > 0
-    end
-
-    def validate_modifier_existence(status)
-      raise RuntimeError, "Given status does not respond to #modifiers." if !status.respond_to?(:modifiers)
-    end
-
-    def warn_about_attributes
-      warn("[#{Time.now}]: Gave affected_attributes in a Status that are not present on #{self.class.name}: #{invalids}.")
     end
 
   end
