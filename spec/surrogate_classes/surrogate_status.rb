@@ -20,11 +20,11 @@ class SurrogateStatusTwo
   include Adjective::Status
   include Adjective::Statusable
 
-  def initialize(name, affected_attributes)
+  def initialize(name, affected_attributes, description)
     @name = name
     @effect = :burn
     @power = 3
-    @description = "Description"
+    @description = description
 
     initialize_status_data
     initialize_status(affected_attributes)
