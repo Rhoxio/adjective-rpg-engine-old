@@ -1,5 +1,6 @@
 class SurrogateActor
   attr_accessor :gender, :name, :badly_poisoned, :crit_multiplier
+  attr_reader :baseline_crit_multiplier
 
   include Adjective::Statusable
   include Adjective::Imbibable

@@ -2,6 +2,13 @@ module Adjective
 
   # Status is different from something like an attack in that it applies
   # to things that afflict the subject for one or more turns.
+
+    # Need to set this up so it checks the specific status to see
+    # if its :linear, :cumulative, :static 
+    # If :linear, it does += until @remaining_duration is 0. 
+    # If :static, it applies in the first turn and only decrements @remaining_duration past that. 
+    # If :cumulative, it applies and compounds like Toxic in Pokemon until @remaining_duration is 0. Will need to accept a @compounding_factor.
+    # After effects will have to be handled with the block.
   module Status
 
     include Adjective::Temporable
@@ -18,13 +25,17 @@ module Adjective
       attributes = opts[:affected_attributes] 
       @modifiers = attributes ||= {}
       @affected_attributes = attributes.map{|entry| entry[0]}
+      
+      @tick_type = opts[:tick_type] ||= :linear
+      @compounding_factor = opts[:compounding_factor] ||= 2.0
+      @reset_references = opts[:reset_references] ||= {}
 
       # @applied_at Can be used to track simple object intantation if class is created when status is applied.
       # TODO: If held in memory, opts will need to be given a :timestamp with a value comparable with a Time object. (Custom values should help?)
       # If the user wishes to sort by a specific attribute in Statusable, then they should pass a block and do so there. (Maybe?)
       @applied_at = opts[:timestamp] ||= Time.now
 
-      [:initialized_at, :affected_attributes, :modifiers].each do |attribute| 
+      [:initialized_at, :affected_attributes, :modifiers, :tick_type, :compounding_factor, :reset_references].each do |attribute| 
         self.class.send(:attr_reader, attribute)
       end
       

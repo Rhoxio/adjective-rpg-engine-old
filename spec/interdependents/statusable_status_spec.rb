@@ -1,13 +1,13 @@
 RSpec.describe "Statusable and Status integration" do
   before(:example) do
-    @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5})
-    @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10})
-    @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3})
-    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: 5, badly_poisoned: true}, max_duration: 1})
-    @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: -0.5 }})
-
-    @round = SurrogateStatusTwo.new("Round", {affected_attributes: {hitpoints: 3, fear: 4}, max_duration: 10 }, "Description")
-    @twiddle = SurrogateStatusTwo.new("Twiddle", {affected_attributes: {hitpoints: 3, fear: 6}, max_duration: 12 }, "A magic spell")
+    @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5, tick_type: :linear})
+    @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10, tick_type: :linear})
+    @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3, tick_type: :linear})
+    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: 5}, max_duration: 1, tick_type: :compounding})
+    @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
+    @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: 1.5})
+    @round = SurrogateStatusTwo.new("Round", {affected_attributes: {hitpoints: 3, fear: 4}, max_duration: 10, tick_type: :static }, "Description")
+    @twiddle = SurrogateStatusTwo.new("Twiddle", {affected_attributes: {hitpoints: 3, fear: 6}, max_duration: 12, tick_type: :static }, "A magic spell")
     # Actor has Adjective::Statusable included
     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
   end
@@ -122,31 +122,19 @@ RSpec.describe "Statusable and Status integration" do
   end
 
   describe "when #tick_all is called" do 
-    describe "when default functionality is used" do 
 
-      it "will strictly set NON-integer or float values with =" do 
-        @actor.apply_statuses(@toxic)
-        @actor.tick_all
-        expect(@actor.badly_poisoned).to eq(true)
-      end 
-
-      it "will amend Float and Integer values with +=" do 
-        @actor.heal_to_full
-        @actor.apply_statuses(@rend)
-        @actor.apply_statuses(@cripple)
-        @actor.tick_all
-        expect(@actor.hitpoints).to eq(9)
-        expect(@actor.crit_multiplier).to eq(1.5)
-      end
-
+    describe "when a block argument is used" do 
       it "will allow for a block argument to amend values" do 
         @actor.apply_statuses(@toxic) 
         @actor.tick_all do |actor, statuses|
-          expect(@actor.badly_poisoned).to eq(true)
-          actor.badly_poisoned = false
+          expect(@actor.badly_poisoned).to eq(false)
+          # Emulating what might happen in this block...
+          actor.find_statuses(:name, "Toxic")[0].remaining_duration -= 1
+          actor.badly_poisoned = true
         end
-        expect(@actor.badly_poisoned).to eq(false)
-      end 
+        expect(@actor.badly_poisoned).to eq(true)
+        expect(@actor.find_statuses(:name, "Toxic").length).to eq(0)
+      end
 
       it "will allow you to amend child statuses through a block" do 
         @actor.apply_statuses(@rend)
@@ -156,22 +144,66 @@ RSpec.describe "Statusable and Status integration" do
           end
         end
         expect(@actor.statuses[0].remaining_duration).to eq(3)
-      end    
-       
-      it "will reduce the duration of each status by 1" do 
-        @actor.apply_statuses([@renew, @agony, @rend])
+      end 
+    end
+
+    describe "when default functionality is used" do 
+
+      it "will correctly amend parent class against :compounding status types" do 
+        @actor.heal_to_full
+        @actor.apply_statuses(@decay)
         @actor.tick_all
-        expect(@actor.statuses[0].remaining_duration).to eq(4)
-        expect(@actor.statuses[1].remaining_duration).to eq(9)
-        expect(@actor.statuses[2].remaining_duration).to eq(2)
+        expect(@actor.hitpoints).to eq(9)
+        @actor.tick_all
+        expect(@actor.hitpoints).to eq(7)
+        @actor.tick_all
+        expect(@actor.hitpoints).to eq(4)
+        @actor.tick_all
+        expect(@actor.dead?).to eq(true)
       end
 
-      it "will not clear expired statuses if clear opt is passed as true" do 
-        @actor.apply_statuses([@renew, @agony, @rend])
-        10.times {@actor.tick_all({clear_expired: false})}
-        expect(@actor.statuses.length).to eq(3)
+      it "will correctly amend parent class against :linear status types" do 
+        @actor.heal_to_full
+        @actor.apply_statuses(@agony)
+        @actor.tick_all
+        expect(@actor.hitpoints).to eq(7)
+        @actor.tick_all
+        expect(@actor.hitpoints).to eq(4)
+        @actor.tick_all
+        expect(@actor.hitpoints).to eq(1)        
       end
-    end   
+
+      it "will correctly reset the parent class after a :static status expires" do 
+        @actor.apply_statuses(@cripple)
+        @actor.tick_all
+        expect(@actor.crit_multiplier).to eq(1.0)
+        4.times { @actor.tick_all }
+        expect(@actor.crit_multiplier).to eq(2.0)
+      end
+
+      it "will correctly amend parent class against :static status types" do 
+        @actor.apply_statuses(@cripple)
+        expect(@actor.crit_multiplier).to eq(2.0)
+        @actor.tick_all
+        expect(@actor.crit_multiplier).to eq(1.0)
+      end
+
+    end
+
+    describe "when a proc is passed" do 
+      it "will allow you to access and amend singular statuses through a proc" do 
+        @actor.apply_statuses(@cripple)
+        s_proc = Proc.new do |status| 
+          if status.name == "Cripple"
+            # Will persist forever if some outside condition is met, for example.
+            status.remaining_duration = status.max_duration
+          end
+        end
+        @actor.tick_all({clear_expired: true}, s_proc)
+        expect(@actor.find_status(:name, "Cripple").remaining_duration).to eq(5)
+      end
+    end
+
   end
 
 
