@@ -115,19 +115,9 @@ module Adjective
       return false
     end   
 
-    # Will cycle through all entries of @statuses and apply default tick functionality to each.
-    # 
-    # If default functionality is to be overridden, you can pass a block to bypass all default functionality.
-    # 
-    # It also accepts a proc object to be evoked after each status is ticked, allowing for specific one-off modification. 
-    # 
-    # The default functionality depends on what #tick_type the status itself has been assigned and defaults to :linear.
-    # 
-    # :linear tick_type will simply do "+=" to the affected-attribute, meaning positive and negative numbers work
-    # 
-    # :static tick_type will apply the status using attribute= on the first turn it is active and remain until the remaining_duration reaches 0 or the status is removed with #clear_expired_statuses! or #remove_status(es)
-    # 
-    # :compounding tick_type will use "+=" to the affected attribute on the first turn, then multiply itself according to how long the status has been applied by a factor applied through a status's compounding_factor
+    # Will cycle through all entries of @statuses and apply default tick functionality to each. 
+    # You can pass a block to bypass all default functionality. It also accepts a proc object to be evoked before 
+    # each status is ticked, allowing for specific one-off modification. 
     # @param opts [Hash]
     # @param status_proc [Proc]
     # @param block [Block]
@@ -142,22 +132,20 @@ module Adjective
         yield(self, @statuses)
       else
         @statuses.each do |status|
-          status.modifiers.each do |key, value|
-            attribute = key.to_s
+          status_data = status.tick(status_proc)
+          # Will need to collect all of the total values from each tick.
+          status_data.each do |attribute, value|
+            attribute = attribute.to_s
             if self.respond_to?(attribute+"=")
               if status.tick_type == :linear
                 eval("self.#{attribute} += #{value}")
-              elsif status.tick_type == :static && (status.max_duration == status.remaining_duration)
+              elsif status.tick_type == :static
                 public_send("#{attribute}=", value)
               elsif status.tick_type == :compounding
-                compounded_value = value * ((status.max_duration - status.remaining_duration) + 1)
-                compounded_value = value if status.max_duration == status.remaining_duration
-                eval("self.#{attribute} += #{compounded_value}")
+                eval("self.#{attribute} += #{value}")
               end
-            end
+            end            
           end
-          status.tick
-          status_proc.call(status) if status_proc
         end
       end 
       clear_expired_statuses! if opts[:clear_expired]

@@ -1,9 +1,9 @@
 lib/adjective.rb ad8529693dfda888e0eaf55044b76cd91482eea0
 lib/adjective/item.rb da39a3ee5e6b4b0d3255bfef95601890afd80709
 lib/adjective/table.rb 94f2376b9835614a5dc72af0fe1d43594f976199
-lib/adjective/status.rb fbe4fa34a5a913b152b27925068d43aea1844ed2
+lib/adjective/status.rb 69c70069352778a2469251048a497f80490b887f
 lib/adjective/concerns/storable.rb 90168ea9ce2d52a23f51cfd8bd1b693a51017b77
 lib/adjective/concerns/imbibable.rb 89f6c57b96d4b7e4fe22b1abecf3660bdd7e8262
-lib/adjective/concerns/statusable.rb b064ab7a0a96955232fdb1141c65e7e0e72e90a4
+lib/adjective/concerns/statusable.rb ba606b3989733ee951a98ae20aeda8614c0675be
 lib/adjective/concerns/temporable.rb 4f9a9aed1f89ce68d43ec96951a4c908b7acfa8c
 lib/adjective/concerns/vulnerable.rb b2ed23347c367533e67d0f16760049745e09e98b

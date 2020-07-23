@@ -3,6 +3,8 @@ RSpec.describe Adjective::Status do
     @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5})
     @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10})
     @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: 1}})
+    @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
+    @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
   end
 
   describe "when CRUD operations are performed" do
@@ -56,13 +58,6 @@ RSpec.describe Adjective::Status do
         @renew.update_modifier(:hitpoints, 9)
         expect(@renew.modifiers).to eq({hitpoints: 9})
       end         
-
-      # May implement warning checks later, but it doesn't seem necessary right this second
-      # due to the setup overhead.
-      # it "will warn them if they try to update a modifier that isnt present" do
-      #   attribute = :bunk
-      #   expect{@renew.update_modifier(:bunk, 1)}.warn("Attmepted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
-      # end
     end
   end
 
@@ -87,9 +82,32 @@ RSpec.describe Adjective::Status do
       expect(@renew.remaining_duration).to eq(8)
     end
 
-    it "will return an amended version of the parent object" do 
-      klass = @renew.tick
-      expect(klass.remaining_duration).to eq(4)
+    it "will return a hash with the amended tick_type specific values" do 
+      output = @renew.tick
+      expect(output).to be_a(Hash)
+      expect(output.key?(:hitpoints)).to eq(true)
+    end
+
+    it "will correctly process :linear tick_types" do 
+      output = @renew.tick
+      expect(output[:hitpoints]).to eq(3)
+    end
+
+    it "will correctly process a :static tick_type" do 
+      output = @cripple.tick
+      expect(@cripple.remaining_duration).to eq(4)
+      expect(output[:crit_multiplier]).to eq(1.0)
+      empty_output = @cripple.tick
+      expect(empty_output.empty?).to be(true)
+    end
+
+    it "will correctly process a :compounding tick_type" do 
+      output = @decay.tick
+      expect(output[:hitpoints]).to eq(-5)
+      output = @decay.tick
+      expect(output[:hitpoints]).to eq(-8)
+      output = @decay.tick
+      expect(output[:hitpoints]).to eq(-11)
     end
   end
 

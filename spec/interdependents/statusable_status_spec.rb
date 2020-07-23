@@ -5,7 +5,7 @@ RSpec.describe "Statusable and Status integration" do
     @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3, tick_type: :linear})
     @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: -5}, max_duration: 1, tick_type: :compounding})
     @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
-    @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: 1.5})
+    @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: Proc.new {|value, turns| value * 2}})
     @round = SurrogateStatusTwo.new("Round", {affected_attributes: {hitpoints: 3, fear: 4}, max_duration: 10, tick_type: :static }, "Description")
     @twiddle = SurrogateStatusTwo.new("Twiddle", {affected_attributes: {hitpoints: 3, fear: 6}, max_duration: 12, tick_type: :static }, "A magic spell")
     # Actor has Adjective::Statusable included
@@ -171,8 +171,9 @@ RSpec.describe "Statusable and Status integration" do
         @actor.tick_all
         expect(@actor.hitpoints).to eq(7)
         @actor.tick_all
-        expect(@actor.hitpoints).to eq(4)
+        expect(@actor.hitpoints).to eq(3)
         @actor.tick_all
+        @actor.normalize_hitpoints
         expect(@actor.dead?).to eq(true)
       end
 
