@@ -19,10 +19,15 @@ module Adjective
       return @statuses
     end
 
-    # Needs explicit singular/multiple version
-    def remove_status(attribute = :remaining_duration, value = nil)
+    def remove_statuses(attribute = :remaining_duration, value = nil)
       to_remove = find_statuses(attribute, value)
       @statuses = @statuses.reject{|status| to_remove.include?(status)}
+      return to_remove
+    end
+
+    def remove_status(attribute = :remaining_duration, value = nil)
+      to_remove = find_statuses(attribute, value).first
+      @statuses = @statuses.reject{|status| status == to_remove }
       return to_remove
     end
 
@@ -30,14 +35,13 @@ module Adjective
       results = []
       responds = @statuses.select {|status| status.respond_to?(attribute)}
       if value
-        results = responds.select { |status| status.send(attribute) == value }
+        results = responds.select { |status| status.public_send(attribute) == value }
       else
         results = responds
       end
       return results
     end
 
-    # Needs tests
     def find_status(attribute = :remaining_duration, value)
       return find_statuses(attribute, value).first
     end    
@@ -45,26 +49,18 @@ module Adjective
     def sort_statuses!(attribute = :remaining_duration)
       responds = @statuses.select {|status| status.respond_to?(attribute)}
       does_not_respond = @statuses.select {|status| !status.respond_to?(attribute)}
-      @statuses = responds.sort_by { |status| status.send(attribute) } + does_not_respond
+      @statuses = responds.sort_by { |status| status.public_send(attribute) } + does_not_respond
       return @statuses
     end
 
     def has_status?(attribute, match)
       @statuses.each do |status|
         if status.respond_to?(attribute)
-          return true if status.send(attribute) == match
+          return true if status.public_send(attribute) == match
         end
       end
       return false
-    end
-
-    def reset_amended_attributes(status_collection)
-      status_collection.each do |status|
-        status.reset_references.each do |attribute, method|
-          send("#{attribute}=", send(method))
-        end
-      end
-    end    
+    end   
 
     def tick_all(opts = {clear_expired: true}, status_proc = nil, &block)
       if block_given? 
@@ -77,7 +73,7 @@ module Adjective
               if status.tick_type == :linear
                 eval("self.#{attribute} += #{value}")
               elsif status.tick_type == :static && (status.max_duration == status.remaining_duration)
-                send("#{attribute}=", value)
+                public_send("#{attribute}=", value)
               elsif status.tick_type == :compounding
                 compounded_value = value * ((status.max_duration - status.remaining_duration) + 1)
                 compounded_value = value if status.max_duration == status.remaining_duration
@@ -101,6 +97,16 @@ module Adjective
       @statuses = unexpired
       return diff
     end
+
+    private
+
+    def reset_amended_attributes(status_collection)
+      status_collection.each do |status|
+        status.reset_references.each do |attribute, method|
+          public_send("#{attribute}=", public_send(method))
+        end
+      end
+    end     
 
   end
 

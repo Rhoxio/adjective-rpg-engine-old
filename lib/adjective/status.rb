@@ -25,9 +25,9 @@ module Adjective
       attributes = opts[:affected_attributes] 
       @modifiers = attributes ||= {}
       @affected_attributes = attributes.map{|entry| entry[0]}
-      
+
       @tick_type = opts[:tick_type] ||= :linear
-      @compounding_factor = opts[:compounding_factor] ||= 2.0
+      @compounding_factor = opts[:compounding_factor] ||= 0
       @reset_references = opts[:reset_references] ||= {}
 
       # @applied_at Can be used to track simple object intantation if class is created when status is applied.
