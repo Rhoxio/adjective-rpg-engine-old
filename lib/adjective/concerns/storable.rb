@@ -39,7 +39,7 @@ module Adjective
         chunks = []
         attributes = item.instance_variables.map {|ivar| ivar.to_s.gsub("@", "").to_sym}
         attributes.each do |attribute|
-          chunks.push(construct_query_data(attribute.to_s, item.send(attribute).to_s)[scope])
+          chunks.push(construct_query_data(attribute.to_s, item.public_send(attribute).to_s)[scope])
         end
         matches << item if chunks.join.include?(term)
       end
@@ -61,7 +61,7 @@ module Adjective
     # retrieve_by - Get
     def retrieve_by(attribute, value)
       @items.select do |item| 
-        item if item.respond_to?(attribute) && item.send(attribute) === value 
+        item if item.respond_to?(attribute) && item.public_send(attribute) === value 
       end
     end  
 
@@ -81,12 +81,12 @@ module Adjective
 
     # Sorting
     def sort
-      @items.sort_by { |item| item.send(@default_sort_method) }
+      @items.sort_by { |item| item.public_send(@default_sort_method) }
       return @items
     end
 
     def sort!
-      @items = @items.sort_by { |item| item.send(@default_sort_method) }
+      @items = @items.sort_by { |item| item.public_send(@default_sort_method) }
       return @items
     end    
 

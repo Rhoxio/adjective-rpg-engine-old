@@ -3,7 +3,7 @@ RSpec.describe "Statusable and Status integration" do
     @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5, tick_type: :linear})
     @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10, tick_type: :linear})
     @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3, tick_type: :linear})
-    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: 5}, max_duration: 1, tick_type: :compounding})
+    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: -5}, max_duration: 1, tick_type: :compounding})
     @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
     @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: 1.5})
     @round = SurrogateStatusTwo.new("Round", {affected_attributes: {hitpoints: 3, fear: 4}, max_duration: 10, tick_type: :static }, "Description")
@@ -56,7 +56,7 @@ RSpec.describe "Statusable and Status integration" do
       expect(@actor.statuses[2..-1].map{|s| s.name}).to eq(["Rend", "Toxic", "Cripple"])
     end
 
-    it "will #find_statuses that match the given attribute and value" do 
+    it "will #find_statuses (plural) that match the given attribute and value" do 
       @actor.apply_statuses([@rend, @agony, @cripple, @toxic])
       statuses = @actor.find_statuses(:remaining_duration, 3)
       expect(statuses.length).to eq(1)
@@ -69,6 +69,12 @@ RSpec.describe "Statusable and Status integration" do
       expect(statuses.length).to eq(1)
       expect(statuses[0].name).to eq("Round")
     end   
+
+    it "will #find_status (singular) and return the first matching" do
+      @actor.apply_statuses([@rend, @agony, @cripple, @toxic, @round])
+      cripple = @actor.find_status(:name, "Cripple")
+      expect(cripple.name).to eq("Cripple")
+    end
 
   end
 
@@ -93,23 +99,31 @@ RSpec.describe "Statusable and Status integration" do
   end
 
   describe "when statuses are removed" do 
-    it "will remove the correct status" do 
+    it "will remove the correct statuses" do 
       @actor.apply_statuses([@renew, @agony, @rend])
-      removed = @actor.remove_status(:name, "Rend")
+      removed = @actor.remove_statuses(:name, "Rend")
       expect(removed[0].name).to eq("Rend")
       expect(@actor.has_status?(:name, "Rend")).to eq(false)
       expect(@actor.statuses.length).to eq(2)
     end
 
-    it "will remove status by given attribute and matching value" do
+    it "will remove statuses by given attribute and matching value" do
       rend2 = @rend.dup
       rend3 = @rend.dup
       @actor.apply_statuses([@rend, rend2, rend3])
       @actor.statuses[0].remaining_duration = 1
       expect(@actor.statuses[0].remaining_duration).to eq(1)
-      removed = @actor.remove_status(:remaining_duration, 1)
+      removed = @actor.remove_statuses(:remaining_duration, 1)
       expect(removed.length).to eq(1)
       expect(@actor.has_status?(:name, "Rend")).to eq(true)
+      expect(@actor.statuses.length).to eq(2)
+    end
+
+    it "will remove a single status with #remove_status" do
+      agony2 = @agony.dup
+      agony3 = @agony.dup 
+      @actor.apply_statuses([@agony, agony2, agony3])
+      @actor.remove_status(:name, "Agony")
       expect(@actor.statuses.length).to eq(2)
     end
 
@@ -191,7 +205,7 @@ RSpec.describe "Statusable and Status integration" do
     end
 
     describe "when a proc is passed" do 
-      it "will allow you to access and amend singular statuses through a proc" do 
+      it "will allow you to access and amend statuses through a proc" do 
         @actor.apply_statuses(@cripple)
         s_proc = Proc.new do |status| 
           if status.name == "Cripple"
