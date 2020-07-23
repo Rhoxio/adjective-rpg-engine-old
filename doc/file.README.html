@@ -57,10 +57,12 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'><p><img src="https://i.ibb.co/vLkwSgy/adjective-logo1.png" alt="" /></p>
+      <div id="content"><div id='filecontents'>
+<p><img src="https://i.ibb.co/vLkwSgy/adjective-logo1.png"></p>
 
-<h1 id="adjective">Adjective</h1>
-<p>## A utility that can be used to help ease the creation of RPG games</p>
+<h1 id="label-Adjective">Adjective</h1>
+
+<h2 id="label-A+utility+that+can+be+used+to+help+ease+the+creation+of+RPG+games">A utility that can be used to help ease the creation of RPG games</h2>
 
 <p><em>This is currently in-development. Only the blank repo is available on rubygems at the moment</em></p>
 
@@ -68,118 +70,97 @@
 
 <p>The included functionality will have the ability to change multipliers, add conditions, and generally save time by modifying values as opposed to hard-coding values. This will make for quick customization and the ability to turn out encounters quickly so you can rapidly prototype and test new ideas.</p>
 
-<p>It will include modules for usage such as:
- - Confrontable (Battle)
- - Skills
- - Equipment
- - Inventory *
- - Items *
- - Stauses (Buffs/Debuffs) -
- - Experience *</p>
+<p>It will include modules for usage such as:  - Confrontable (Battle)  - Skills  - Equipment  - Inventory *  - Items *  - Stauses (Buffs/Debuffs) -  - Experience *</p>
 
-<h3 id="ideation">Ideation</h3>
+<h3 id="label-Ideation">Ideation</h3>
+
 <p>This project has shifted the design principles quite a lot since the beginning, and after more research it seems like most of the functionality can be pulled out into modules rather than using inheritance.</p>
 
 <p>I found it funny that the name of the project was somewhat synonymous with what type of code I had to write.</p>
 
 <p><em>Completed so far</em></p>
 
-<h3 id="classes">Classes</h3>
+<h3 id="label-Classes">Classes</h3>
 
-<h4 id="status">Status</h4>
-<p>A flexible class that has simple utility methods and allows for direct integration with Statusable. Ex:
-<code>Ruby
-Adjective::Status.new("Renew", { affected_attributes: { hitpoints: 5 }})
-</code></p>
+<h4 id="label-Status">Status</h4>
+
+<p>A flexible class that has simple utility methods and allows for direct integration with Statusable. Ex: <code>Ruby Adjective::Status.new(&quot;Renew&quot;, { affected_attributes: { hitpoints: 5 }}) </code></p>
 
 <p>This will increment the hitpoints of the receiver by 5.</p>
 
-<h3 id="modules">Modules</h3>
+<h3 id="label-Modules">Modules</h3>
 
-<h4 id="statusable">Statusable</h4>
-<p>Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes.
-```Ruby
-renew = Adjective::Status.new(“Renew”, { affected_attributes: { hitpoints: 5 }})
-actor = Actor.new(“DefaultDude”) # has Statusable and Vulnerable included
-actor.hitpoints #=&gt; 1
-actor.apply_status(@renew)
-actor.tick_all
-actor.hitpoints #=&gt; 6</p>
+<h4 id="label-Statusable">Statusable</h4>
 
-<p>```</p>
+<p>Intermediary class that contains application of debuff and buff logic including type checking and flexible (attribute-based) processing of data for health modifiers (healing/damage) and stat changes. “`Ruby renew = Adjective::Status.new(“Renew”, { affected_attributes: { hitpoints: 5 }}) actor = Actor.new(“DefaultDude”) # has Statusable and Vulnerable included actor.hitpoints #=&gt; 1 actor.apply_status(@renew) actor.tick_all actor.hitpoints #=&gt; 6</p>
 
-<h4 id="imbibable">Imbibable</h4>
-<p>Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. This is purely index-based, meaning the code below assumes ‘actor’ is level 1 and has 200 experience by default from the table given to the exp_table option. This actor would need 200 exp to go from level 0 to 1, but only 100 to go from 1 to 2.</p>
+<pre class="code ruby"><code class="ruby">
+#### Imbibable
+Module that takes resonsibility for experience tracking. Includes options to constrain experience and supress level-ups for event-based gating for other code to be run. This is purely index-based, meaning the code below assumes &#39;actor&#39; is level 1 and has 200 experience by default from the table given to the exp_table option. This actor would need 200 exp to go from level 0 to 1, but only 100 to go from 1 to 2.
+</code></pre>
 
-<p><code>Ruby
-actor = Actor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]}) # Has Imbibable included
-actor.level #=&gt; 1
-actor.experience #=&gt; 200
-actor.grant_experience(100)
-actor.level #=&gt; 2
-</code></p>
+<p>Ruby actor = Actor.new(“DefaultDude”, [0,200,300,400,500,600,700,800,900,1000, 1200]) # Has Imbibable included actor.level #=&gt; 1 actor.experience #=&gt; 200 actor.grant_experience(100) actor.level #=&gt; 2 “`</p>
 
-<h4 id="storable">Storable</h4>
+<h4 id="label-Storable">Storable</h4>
+
 <p>Module that takes responsibility for inventory. Anything can potentially have inventory slots - like a weapon with enchanted jewels or a backpack of infinite holding. Includes utility methods to help with filtering and CRUD.</p>
 
-<p>```Ruby
-# Some example cases…
-mana_potion = SurrogateItem.new(“Mana Potion”, uses: 2, potency: 8)
-health_potion = SurrogateItem.new(“Health Potion”, uses: 2, potency: 8)
-speed_potion = SurrogateItem.new(“Speed Potion”, uses: 1, potency: 12)
-seed = SurrogateItem.new(“Grass Seed”, uses: 1, effect: “grow”)</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Some example cases...
+</span><span class='id identifier rubyid_mana_potion'>mana_potion</span> <span class='op'>=</span> <span class='const'>SurrogateItem</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Mana Potion</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>uses:</span> <span class='int'>2</span><span class='comma'>,</span> <span class='label'>potency:</span> <span class='int'>8</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_health_potion'>health_potion</span> <span class='op'>=</span> <span class='const'>SurrogateItem</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Health Potion</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>uses:</span> <span class='int'>2</span><span class='comma'>,</span> <span class='label'>potency:</span> <span class='int'>8</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_speed_potion'>speed_potion</span> <span class='op'>=</span> <span class='const'>SurrogateItem</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Speed Potion</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>uses:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>potency:</span> <span class='int'>12</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_seed'>seed</span> <span class='op'>=</span> <span class='const'>SurrogateItem</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Grass Seed</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>uses:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>effect:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>grow</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<p>inventory = Inventory.new(“Backpack”, [mana_potion, mana_potion, health_potion, speed_potion]) # Has Storable included
-inventory.sort! #=&gt; [health_potion, mana_potion, mana_potion, speed_potion]</p>
+<span class='id identifier rubyid_inventory'>inventory</span> <span class='op'>=</span> <span class='const'>Inventory</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backpack</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_mana_potion'>mana_potion</span><span class='comma'>,</span> <span class='id identifier rubyid_mana_potion'>mana_potion</span><span class='comma'>,</span> <span class='id identifier rubyid_health_potion'>health_potion</span><span class='comma'>,</span> <span class='id identifier rubyid_speed_potion'>speed_potion</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='comment'># Has Storable included
+</span><span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_sort!'>sort!</span> <span class='comment'>#=&gt; [health_potion, mana_potion, mana_potion, speed_potion]
+</span>
+<span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_store'>store</span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_items'>items</span> <span class='comment'>#=&gt; [seed, health_potion, mana_potion, mana_potion, speed_potion]
+</span>
+<span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_search'>search</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>uses</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'>#=&gt; [seed, health_potion, mana_potion, mana_potion, speed_potion] Will look at both attributes and values
+</span><span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_search'>search</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>potion</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:values</span><span class='rparen'>)</span> <span class='comment'>#=&gt; [health_potion, mana_potion, mana_potion, speed_potion] Will only look at values
+</span><span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_search'>search</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>effect</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:attributes</span><span class='rparen'>)</span> <span class='comment'>#=&gt; [seed] Will only look at attributes
+</span>
+<span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span> <span class='comment'>#=&gt; [seed, health_potion, mana_potion, mana_potion, speed_potion]
+</span><span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='comment'>#=&gt; true
+</span><span class='id identifier rubyid_inventory'>inventory</span><span class='period'>.</span><span class='id identifier rubyid_items'>items</span> <span class='comment'>#=&gt; []
+</span></code></pre>
 
-<p>inventory.store(seed)
-inventory.items #=&gt; [seed, health_potion, mana_potion, mana_potion, speed_potion]</p>
+<h4 id="label-Vulnerable">Vulnerable</h4>
 
-<p>inventory.search(“uses”) #=&gt; [seed, health_potion, mana_potion, mana_potion, speed_potion] Will look at both attributes and values
-inventory.search(“potion”, :values) #=&gt; [health_potion, mana_potion, mana_potion, speed_potion] Will only look at values
-inventory.search(“effect”, :attributes) #=&gt; [seed] Will only look at attributes</p>
-
-<p>inventory.dump #=&gt; [seed, health_potion, mana_potion, mana_potion, speed_potion]
-inventory.empty? #=&gt; true
-inventory.items #=&gt; []
-```</p>
-
-<h4 id="vulnerable">Vulnerable</h4>
 <p>Module that takes responsibility for hitpoint values. Includes methods that allow for the ability to take damage and heal.</p>
 
-<p>```Ruby
-actor = SurrogateActor.new(“DefaultDude”) # Has Vulnerable included
-actor.hitpoints #=&gt; 1
-actor.alive? #=&gt; true</p>
-
-<p>actor.heal_to_full
-actor.hitpoints #=&gt; 10</p>
-
-<p>actor.take_damage(10) #=&gt; 0
-actor.dead? #=&gt; true</p>
-
-<h1 id="also-has-overflow-and-underflow-checks-by-default">Also has overflow and underflow checks by default</h1>
-<p>actor.heal_for(9999) #=&gt; 10
-actor.hitpoints #=&gt; 10</p>
-
-<p>actor.take_damage(9999) #=&gt; 0
-actor.hitpoints #=&gt; 0</p>
-
-<p>```</p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_actor'>actor</span> <span class='op'>=</span> <span class='const'>SurrogateActor</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DefaultDude</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'># Has Vulnerable included
+</span><span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_hitpoints'>hitpoints</span> <span class='comment'>#=&gt; 1
+</span><span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_alive?'>alive?</span> <span class='comment'>#=&gt; true
+</span>
+<span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_heal_to_full'>heal_to_full</span>
+<span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_hitpoints'>hitpoints</span> <span class='comment'>#=&gt; 10
+</span>
+<span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_take_damage'>take_damage</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span> <span class='comment'>#=&gt; 0
+</span><span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_dead?'>dead?</span> <span class='comment'>#=&gt; true
+</span>
+<span class='comment'># Also has overflow and underflow checks by default
+</span><span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_heal_for'>heal_for</span><span class='lparen'>(</span><span class='int'>9999</span><span class='rparen'>)</span> <span class='comment'>#=&gt; 10
+</span><span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_hitpoints'>hitpoints</span> <span class='comment'>#=&gt; 10
+</span>
+<span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_take_damage'>take_damage</span><span class='lparen'>(</span><span class='int'>9999</span><span class='rparen'>)</span> <span class='comment'>#=&gt; 0
+</span><span class='id identifier rubyid_actor'>actor</span><span class='period'>.</span><span class='id identifier rubyid_hitpoints'>hitpoints</span> <span class='comment'>#=&gt; 0
+</span></code></pre>
 
 <p><em>In the Works</em></p>
 
-<h4 id="confrontable">Confrontable</h4>
-<p>Base combat module. I imagine this taking two main supporting modules - Aggressible and Defensible. 
- - Aggressible will contain logic for calculating attacks and damage output types.
- - Defensible will include damage reduction and immunity check mechanics.</p>
+<h4 id="label-Confrontable">Confrontable</h4>
 
-<h4 id="comprehensible">Comprehensible</h4>
+<p>Base combat module. I imagine this taking two main supporting modules - Aggressible and Defensible.  - Aggressible will contain logic for calculating attacks and damage output types.  - Defensible will include damage reduction and immunity check mechanics.</p>
+
+<h4 id="label-Comprehensible">Comprehensible</h4>
+
 <p>Module for skills. Will handle Status objects with a simple paradigm set up around the Skill class.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Jul  8 03:09:32 2020 by
+  Generated on Wed Jul 22 18:16:02 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.6.0).
 </div>

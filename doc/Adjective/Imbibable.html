@@ -422,13 +422,13 @@
       <pre class="lines">
 
 
-61
 62
 63
-64</pre>
+64
+65</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 61</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 62</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_experience_to_next_level'>experience_to_next_level</span>
   <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_max_level?'>max_level?</span>
@@ -458,7 +458,8 @@
 46
 47
 48
-49</pre>
+49
+50</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 45</span>
@@ -466,7 +467,8 @@
 <span class='kw'>def</span> <span class='id identifier rubyid_grant_experience'>grant_experience</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_max_level?'>max_level?</span>
   <span class='ivar'>@experience</span> <span class='op'>+=</span> <span class='id identifier rubyid_exp'>exp</span>
-  <span class='id identifier rubyid_level_up'>level_up</span> <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:suppress_level_up</span><span class='rbracket'>]</span>      
+  <span class='id identifier rubyid_level_up'>level_up</span> <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:suppress_level_up</span><span class='rbracket'>]</span>
+  <span class='kw'>return</span> <span class='ivar'>@experience</span>     
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -488,13 +490,13 @@
       <pre class="lines">
 
 
-56
 57
 58
-59</pre>
+59
+60</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 56</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 57</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_grant_levels'>grant_levels</span><span class='lparen'>(</span><span class='id identifier rubyid_num'>num</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@level</span> <span class='op'>+=</span> <span class='id identifier rubyid_num'>num</span>
@@ -760,13 +762,13 @@
       <pre class="lines">
 
 
-51
 52
 53
-54</pre>
+54
+55</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 51</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/imbibable.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_level'>set_level</span><span class='lparen'>(</span><span class='id identifier rubyid_num'>num</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@level</span> <span class='op'>=</span> <span class='id identifier rubyid_num'>num</span>
@@ -782,7 +784,7 @@
 </div>
 
       <div id="footer">
-  Generated on Wed Jul  8 03:09:32 2020 by
+  Generated on Wed Jul 22 18:16:03 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.6.0).
 </div>
