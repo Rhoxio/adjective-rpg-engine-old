@@ -5,6 +5,8 @@
 
 _This is currently in-development. Only the blank repo is available on rubygems at the moment_
 
+You can view the YARD generated docs here: https://rhoxio.github.io/adjective-rpg-engine/index.html
+
 The intent of this project is to establish core functionality that is found in traditional JRPG games and allows you to extend them and modify initial values and pass in your own modifiers instead of having to write all of the more-or-less boilerplate interaction logic. 
 
 The included functionality will have the ability to change multipliers, add conditions, and generally save time by modifying values as opposed to hard-coding values. This will make for quick customization and the ability to turn out encounters quickly so you can rapidly prototype and test new ideas.
