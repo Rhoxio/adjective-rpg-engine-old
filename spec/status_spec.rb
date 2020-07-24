@@ -1,10 +1,10 @@
 RSpec.describe Adjective::Status do  
   before(:example) do 
-    @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5})
-    @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10})
-    @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: 1}})
-    @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
-    @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
+    @renew = SurrogateStatus.new("Renew", {modifiers: { hitpoints: 3}, max_duration: 5})
+    @agony = SurrogateStatus.new("Agony", {modifiers: { hitpoints: -3}, max_duration: 10})
+    @rend = SurrogateStatus.new("Rend", {modifiers: { hitpoints: 1}})
+    @cripple = SurrogateStatus.new("Cripple", {modifiers: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
+    @decay = SurrogateStatus.new("Decay", {modifiers: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
   end
 
   describe "when CRUD operations are performed" do
@@ -23,12 +23,6 @@ RSpec.describe Adjective::Status do
         expect(@renew.modifiers[:speed]).to eq(2)
       end
 
-    end
-
-    describe "when #assign_affected_attributes is called" do 
-      it "will correctly pull from the keys in @modifiers" do 
-        expect(@renew.affected_attributes).to eq([:@hitpoints])
-      end
     end
 
     describe "when add_modifier is called" do 
@@ -88,6 +82,7 @@ RSpec.describe Adjective::Status do
       expect(output.key?(:hitpoints)).to eq(true)
     end
 
+
     it "will correctly process :linear tick_types" do 
       output = @renew.tick
       expect(output[:hitpoints]).to eq(3)
@@ -108,6 +103,18 @@ RSpec.describe Adjective::Status do
       expect(output[:hitpoints]).to eq(-8)
       output = @decay.tick
       expect(output[:hitpoints]).to eq(-11)
+    end
+
+    it "will take a block and still allow for status_proc to be used" do 
+      status_proc = Proc.new do |status, output|
+        output[:pain] = 2
+      end
+      output = @decay.tick(status_proc) do |status|
+        status.add_modifier(:pain, 4)
+        status.modifiers
+      end
+      expect(output[:pain]).to eq(2)
+      expect(output[:hitpoints]).to eq(-5)
     end
   end
 

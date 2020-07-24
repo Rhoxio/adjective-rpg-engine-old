@@ -1,8 +1,8 @@
 RSpec.describe "Temporable integration with Status" do
   before(:example) do 
-    @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5})
-    @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10})
-    @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: 1}})
+    @renew = SurrogateStatus.new("Renew", {modifiers: { hitpoints: 3}, max_duration: 5})
+    @agony = SurrogateStatus.new("Agony", {modifiers: { hitpoints: -3}, max_duration: 10})
+    @rend = SurrogateStatus.new("Rend", {modifiers: { hitpoints: 1}})
   end
 
   describe "when a status initializes" do 
@@ -17,14 +17,9 @@ RSpec.describe "Temporable integration with Status" do
     end
 
     it "will throw an error if provided @remaining_duration is larger than @max_duration" do
-      expect{SurrogateStatus.new("Deadly Poison", {affected_attributes: { hitpoints: -2}, remaining_duration: 11, max_duration: 10})}
+      expect{SurrogateStatus.new("Deadly Poison", {modifiers: { hitpoints: -2}, remaining_duration: 11, max_duration: 10})}
       .to raise_error(ArgumentError)
     end    
-
-    it "will map to @affected_attributes properly" do
-      expect(@renew.affected_attributes).to include(:@hitpoints)
-      expect(@renew.affected_attributes.length).to eq(1)
-    end
   end
 
   describe "when utility methods are called" do 

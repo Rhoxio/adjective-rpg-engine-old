@@ -165,6 +165,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#fresh%3F-instance_method" title="#fresh? (instance method)">#<strong>fresh?</strong>  &#x21d2; Boolen </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if the status has ever ticked.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#has_modifier%3F-instance_method" title="#has_modifier? (instance method)">#<strong>has_modifier?</strong>(attribute)  &#x21d2; Boolean </a>
     
 
@@ -253,6 +277,30 @@
   
     <span class="summary_desc"><div class='inline'>
 <p>Will perform tick functionality, whose default action is to reduce @remaining_duration (from Temporable) by 1.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tick_count-instance_method" title="#tick_count (instance method)">#<strong>tick_count</strong>  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns how many times the status has ticked.</p>
 </div></span>
   
 </li>
@@ -375,18 +423,18 @@
       <pre class="lines">
 
 
-150
-151
-152
-153
-154
-155
-156
-157
-158</pre>
+175
+176
+177
+178
+179
+180
+181
+182
+183</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 150</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 175</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_modifier'>add_modifier</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_has_modifier?'>has_modifier?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
@@ -475,18 +523,18 @@
       <pre class="lines">
 
 
-118
-119
-120
-121
-122
-123
-124
-125
-126</pre>
+143
+144
+145
+146
+147
+148
+149
+150
+151</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 118</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 143</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_or_update_modifier'>add_or_update_modifier</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_has_modifier?'>has_modifier?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
@@ -496,6 +544,68 @@
   <span class='kw'>end</span>
   <span class='id identifier rubyid_assign_affected_attributes'>assign_affected_attributes</span>
   <span class='kw'>return</span> <span class='ivar'>@modifiers</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="fresh?-instance_method">
+  
+    #<strong>fresh?</strong>  &#x21d2; <tt>Boolen</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if the status has ever ticked</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+      <pre class="example code"><code><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_fresh?'>fresh?</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolen</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+125
+126
+127</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 125</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_fresh?'>fresh?</span>
+  <span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>==</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -549,12 +659,12 @@
       <pre class="lines">
 
 
-108
-109
-110</pre>
+133
+134
+135</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 108</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 133</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_modifier?'>has_modifier?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
   <span class='ivar'>@modifiers</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
@@ -768,18 +878,18 @@
       <pre class="lines">
 
 
-166
-167
-168
-169
-170
-171
-172
-173
-174</pre>
+191
+192
+193
+194
+195
+196
+197
+198
+199</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 166</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 191</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remove_modifier'>remove_modifier</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_has_modifier?'>has_modifier?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
@@ -832,9 +942,18 @@
     <p class="tag_title">Examples:</p>
     
       
-      <pre class="example code"><code><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span>
-<span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span><span class='lparen'>(</span><span class='const'>Proc</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='id identifier rubyid_turn_mod'>turn_mod</span><span class='op'>|</span> <span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span> <span class='op'>+</span> <span class='id identifier rubyid_turn_mod'>turn_mod</span><span class='rparen'>)</span> <span class='op'>**</span> <span class='int'>2</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-<span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_status'>status</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>this can be anything and will override default functionality</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span></code></pre>
+      <pre class="example code"><code><span class='comment'># Default
+</span><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span>
+
+<span class='comment'># With a status_proc
+</span><span class='id identifier rubyid_status_proc'>status_proc</span> <span class='op'>=</span> <span class='const'>Proc</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='id identifier rubyid_output'>output</span><span class='op'>|</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='symbol'>:hitpoints</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='int'>5</span> <span class='rbrace'>}</span>
+<span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span><span class='lparen'>(</span><span class='id identifier rubyid_status_proc'>status_proc</span><span class='rparen'>)</span>
+
+<span class='comment'># With just a block
+</span><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_status'>status</span><span class='op'>|</span> <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_modifiers'>modifiers</span> <span class='rbrace'>}</span>
+
+<span class='comment'># With both a status_proc and a block
+</span><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick'>tick</span><span class='lparen'>(</span><span class='id identifier rubyid_status_proc'>status_proc</span><span class='rparen'>)</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_status'>status</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>this can be anything and will override default functionality, but not the code passed in status_proc as an argument</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -886,15 +1005,6 @@
       <pre class="lines">
 
 
-81
-82
-83
-84
-85
-86
-87
-88
-89
 90
 91
 92
@@ -907,32 +1017,103 @@
 99
 100
 101
-102</pre>
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 81</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 90</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tick'>tick</span><span class='lparen'>(</span><span class='id identifier rubyid_status_proc'>status_proc</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-    <span class='comment'># This needs to be explicitly tested next.
-</span>    <span class='id identifier rubyid_output'>output</span> <span class='op'>=</span> <span class='kw'>yield</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_output'>output</span> <span class='op'>=</span> <span class='kw'>yield</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_status_proc'>status_proc</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_output'>output</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_status_proc'>status_proc</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_output'>output</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_tick_type'>tick_type</span> <span class='op'>==</span> <span class='symbol'>:compounding</span>
       <span class='id identifier rubyid_modifiers'>modifiers</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span> 
-        <span class='id identifier rubyid_turn_modifier'>turn_modifier</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>?</span> <span class='lparen'>(</span><span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>-</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span> <span class='op'>:</span> <span class='lparen'>(</span><span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>-</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span>
+        <span class='id identifier rubyid_turn_modifier'>turn_modifier</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>?</span> <span class='lparen'>(</span><span class='id identifier rubyid_tick_count'>tick_count</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span> <span class='op'>:</span> <span class='lparen'>(</span><span class='id identifier rubyid_tick_count'>tick_count</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span>
         <span class='id identifier rubyid_initial_value'>initial_value</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>?</span> <span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span> <span class='op'>-</span> <span class='id identifier rubyid_turn_modifier'>turn_modifier</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span> <span class='op'>+</span> <span class='id identifier rubyid_turn_modifier'>turn_modifier</span><span class='rparen'>)</span>
         <span class='comment'># Turn 1 exception is necessary (so far)
-</span>        <span class='id identifier rubyid_compounded_value'>compounded_value</span> <span class='op'>=</span> <span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>==</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span> <span class='op'>?</span> <span class='id identifier rubyid_value'>value</span> <span class='op'>:</span> <span class='id identifier rubyid_compounding_factor'>compounding_factor</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_initial_value'>initial_value</span><span class='comma'>,</span> <span class='id identifier rubyid_turn_modifier'>turn_modifier</span><span class='rparen'>)</span>
+</span>        <span class='id identifier rubyid_compounded_value'>compounded_value</span> <span class='op'>=</span> <span class='id identifier rubyid_fresh?'>fresh?</span> <span class='op'>?</span> <span class='id identifier rubyid_value'>value</span> <span class='op'>:</span> <span class='id identifier rubyid_compounding_factor'>compounding_factor</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_initial_value'>initial_value</span><span class='comma'>,</span> <span class='id identifier rubyid_turn_modifier'>turn_modifier</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_output'>output</span><span class='period'>.</span><span class='id identifier rubyid_store'>store</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_compounded_value'>compounded_value</span><span class='period'>.</span><span class='id identifier rubyid_round'>round</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='rparen'>)</span> 
       <span class='kw'>end</span>
-    <span class='kw'>elsif</span> <span class='lparen'>(</span><span class='id identifier rubyid_tick_type'>tick_type</span> <span class='op'>==</span> <span class='symbol'>:static</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>==</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_tick_type'>tick_type</span> <span class='op'>==</span> <span class='symbol'>:linear</span>
+    <span class='kw'>elsif</span> <span class='lparen'>(</span><span class='id identifier rubyid_tick_type'>tick_type</span> <span class='op'>==</span> <span class='symbol'>:static</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_fresh?'>fresh?</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_tick_type'>tick_type</span> <span class='op'>==</span> <span class='symbol'>:linear</span>
       <span class='id identifier rubyid_modifiers'>modifiers</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span> <span class='id identifier rubyid_output'>output</span><span class='period'>.</span><span class='id identifier rubyid_store'>store</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span> <span class='rbrace'>}</span>  
     <span class='kw'>end</span>
     <span class='ivar'>@remaining_duration</span> <span class='op'>-=</span> <span class='int'>1</span>
     <span class='id identifier rubyid_status_proc'>status_proc</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_output'>output</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_status_proc'>status_proc</span>
   <span class='kw'>end</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_output'>output</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tick_count-instance_method">
+  
+    #<strong>tick_count</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns how many times the status has ticked</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+      <pre class="example code"><code><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick_count'>tick_count</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+117
+118
+119</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 117</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tick_count'>tick_count</span>
+  <span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>-</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1012,18 +1193,18 @@
       <pre class="lines">
 
 
-134
-135
-136
-137
-138
-139
-140
-141
-142</pre>
+159
+160
+161
+162
+163
+164
+165
+166
+167</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/status.rb', line 159</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_modifier'>update_modifier</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_has_modifier?'>has_modifier?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
@@ -1044,7 +1225,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Jul 23 04:25:49 2020 by
+  Generated on Fri Jul 24 03:33:35 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.6.0).
 </div>

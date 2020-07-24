@@ -328,7 +328,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#tick_all-instance_method" title="#tick_all (instance method)">#<strong>tick_all</strong>(opts = {clear_expired: true}, status_proc = nil, &amp;block)  &#x21d2; Array </a>
+      <a href="#tick_all-instance_method" title="#tick_all (instance method)">#<strong>tick_all</strong>(status_proc = nil, opts = {clear_expired: true}, &amp;block)  &#x21d2; Array </a>
     
 
     
@@ -1205,7 +1205,7 @@
       <div class="method_details ">
   <h3 class="signature " id="tick_all-instance_method">
   
-    #<strong>tick_all</strong>(opts = {clear_expired: true}, status_proc = nil, &amp;block)  &#x21d2; <tt>Array</tt> 
+    #<strong>tick_all</strong>(status_proc = nil, opts = {clear_expired: true}, &amp;block)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -1321,7 +1321,7 @@
     <td>
       <pre class="code"><span class="info file"># File 'lib/adjective/concerns/statusable.rb', line 130</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_tick_all'>tick_all</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='label'>clear_expired:</span> <span class='kw'>true</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='id identifier rubyid_status_proc'>status_proc</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_tick_all'>tick_all</span><span class='lparen'>(</span><span class='id identifier rubyid_status_proc'>status_proc</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='label'>clear_expired:</span> <span class='kw'>true</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span> 
     <span class='kw'>yield</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='ivar'>@statuses</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
@@ -1355,7 +1355,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Jul 23 04:25:49 2020 by
+  Generated on Fri Jul 24 03:33:35 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.6.0).
 </div>

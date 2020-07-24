@@ -1,13 +1,13 @@
 RSpec.describe "Statusable and Status integration" do
   before(:example) do
-    @renew = SurrogateStatus.new("Renew", {affected_attributes: { hitpoints: 3}, max_duration: 5, tick_type: :linear})
-    @agony = SurrogateStatus.new("Agony", {affected_attributes: { hitpoints: -3}, max_duration: 10, tick_type: :linear})
-    @rend = SurrogateStatus.new("Rend", {affected_attributes: { hitpoints: -1}, max_duration: 3, tick_type: :linear})
-    @toxic = SurrogateStatus.new("Toxic", {affected_attributes: { hitpoints: -5}, max_duration: 1, tick_type: :compounding})
-    @cripple = SurrogateStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
-    @decay = SurrogateStatus.new("Decay", {affected_attributes: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: Proc.new {|value, turns| value * 2}})
-    @round = SurrogateStatusTwo.new("Round", {affected_attributes: {hitpoints: 3, fear: 4}, max_duration: 10, tick_type: :static }, "Description")
-    @twiddle = SurrogateStatusTwo.new("Twiddle", {affected_attributes: {hitpoints: 3, fear: 6}, max_duration: 12, tick_type: :static }, "A magic spell")
+    @renew = SurrogateStatus.new("Renew", {modifiers: { hitpoints: 3}, max_duration: 5, tick_type: :linear})
+    @agony = SurrogateStatus.new("Agony", {modifiers: { hitpoints: -3}, max_duration: 10, tick_type: :linear})
+    @rend = SurrogateStatus.new("Rend", {modifiers: { hitpoints: -1}, max_duration: 3, tick_type: :linear})
+    @toxic = SurrogateStatus.new("Toxic", {modifiers: { hitpoints: -5}, max_duration: 1, tick_type: :compounding})
+    @cripple = SurrogateStatus.new("Cripple", {modifiers: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
+    @decay = SurrogateStatus.new("Decay", {modifiers: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: Proc.new {|value, turns| value * 2}})
+    @round = SurrogateStatusTwo.new("Round", {modifiers: {hitpoints: 3, fear: 4}, max_duration: 10, tick_type: :static }, "Description")
+    @twiddle = SurrogateStatusTwo.new("Twiddle", {modifiers: {hitpoints: 3, fear: 6}, max_duration: 12, tick_type: :static }, "A magic spell")
     # Actor has Adjective::Statusable included
     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
   end
@@ -19,9 +19,6 @@ RSpec.describe "Statusable and Status integration" do
   end
 
   describe "when utility methods are called" do 
-    it "will correctly return instance variable signatures" do 
-      expect(@agony.affected_attributes).to eq([:@hitpoints])
-    end
 
     it "#has_status? will correctly check if a status is present" do
       @actor.apply_statuses([@rend, @agony])
@@ -214,8 +211,46 @@ RSpec.describe "Statusable and Status integration" do
             status.remaining_duration = status.max_duration
           end
         end
-        @actor.tick_all({clear_expired: true}, s_proc)
+        @actor.tick_all(s_proc)
         expect(@actor.find_status(:name, "Cripple").remaining_duration).to eq(5)
+      end
+
+      it "will correctly process default functionality of #tick_all for :linear" do
+        @actor.heal_to_full
+        @actor.apply_statuses([@rend])
+        status_proc = Proc.new do |status, output|
+          output[:hitpoints] = (status.modifiers[:hitpoints] - 3) if status.name == "Rend"
+        end
+        @actor.tick_all(status_proc)
+        expect(@actor.hitpoints).to eq(6)
+      end
+
+      it "will correctly process default functionality of #tick_all for :static" do 
+        @actor.heal_to_full
+        @actor.apply_statuses([@cripple])
+        @actor.tick_all
+        expect(@actor.crit_multiplier).to eq(1.0)
+        status_proc = Proc.new do |status, output|
+          if status.name == "Cripple"
+            output[:crit_multiplier] = 2.5
+          end
+        end
+        @actor.tick_all(status_proc)
+        expect(@actor.crit_multiplier).to eq(2.5)
+        @actor.tick_all
+        expect(@actor.crit_multiplier).to eq(2.5)
+        2.times {@actor.tick_all}
+        expect(@actor.crit_multiplier).to eq(2.0)
+      end
+
+      it "will correctly process default functionality of #tick_all for :compounding" do 
+        @actor.heal_to_full
+        @actor.apply_statuses([@decay])
+        status_proc = Proc.new do |status, output|
+          output[:hitpoints] = -5 if status.name == "Decay"
+        end
+        @actor.tick_all(status_proc)
+        expect(@actor.hitpoints).to eq(5)
       end
     end
 
