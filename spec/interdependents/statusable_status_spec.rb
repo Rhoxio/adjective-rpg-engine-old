@@ -214,8 +214,46 @@ RSpec.describe "Statusable and Status integration" do
             status.remaining_duration = status.max_duration
           end
         end
-        @actor.tick_all({clear_expired: true}, s_proc)
+        @actor.tick_all(s_proc)
         expect(@actor.find_status(:name, "Cripple").remaining_duration).to eq(5)
+      end
+
+      it "will correctly process default functionality of #tick_all for :linear" do
+        @actor.heal_to_full
+        @actor.apply_statuses([@rend])
+        status_proc = Proc.new do |status, output|
+          output[:hitpoints] = (status.modifiers[:hitpoints] - 3) if status.name == "Rend"
+        end
+        @actor.tick_all(status_proc)
+        expect(@actor.hitpoints).to eq(6)
+      end
+
+      it "will correctly process default functionality of #tick_all for :static" do 
+        @actor.heal_to_full
+        @actor.apply_statuses([@cripple])
+        @actor.tick_all
+        expect(@actor.crit_multiplier).to eq(1.0)
+        status_proc = Proc.new do |status, output|
+          if status.name == "Cripple"
+            output[:crit_multiplier] = 2.5
+          end
+        end
+        @actor.tick_all(status_proc)
+        expect(@actor.crit_multiplier).to eq(2.5)
+        @actor.tick_all
+        expect(@actor.crit_multiplier).to eq(2.5)
+        2.times {@actor.tick_all}
+        expect(@actor.crit_multiplier).to eq(2.0)
+      end
+
+      it "will correctly process default functionality of #tick_all for :compounding" do 
+        @actor.heal_to_full
+        @actor.apply_statuses([@decay])
+        status_proc = Proc.new do |status, output|
+          output[:hitpoints] = -5 if status.name == "Decay"
+        end
+        @actor.tick_all(status_proc)
+        expect(@actor.hitpoints).to eq(5)
       end
     end
 

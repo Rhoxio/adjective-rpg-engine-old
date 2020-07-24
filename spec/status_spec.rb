@@ -88,6 +88,7 @@ RSpec.describe Adjective::Status do
       expect(output.key?(:hitpoints)).to eq(true)
     end
 
+
     it "will correctly process :linear tick_types" do 
       output = @renew.tick
       expect(output[:hitpoints]).to eq(3)

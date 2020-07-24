@@ -127,7 +127,7 @@ module Adjective
     #   SurrogateClass.tick_all({clear_expired: false})
     #   SurrogateClass.tick_all({clear_expired: true}, Proc.new {|status| p "do something cool with #{status.name}"})
     #   SurrogateClass.tick_all {|klass, statuses| p "klass is the parent class, and statuses is @statuses"}
-    def tick_all(opts = {clear_expired: true}, status_proc = nil, &block)
+    def tick_all(status_proc = nil, opts = {clear_expired: true}, &block)
       if block_given? 
         yield(self, @statuses)
       else
