@@ -25,9 +25,10 @@ module Adjective
     #   # Or even something with a :compounding @tick_type
     #   decay = MyStatus.new("Decay", {affected_attributes: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
     def initialize_status(opts = {})
-      attributes = opts[:affected_attributes] 
-      @modifiers = attributes ||= {}
-      @affected_attributes = attributes.map{|entry| entry[0]}
+      @modifiers = opts[:modifiers]  ||= {}
+      # Threres a consistency of language problem with #modifiers and #affected_attributes.
+      # It should really just be modifiers in the input args. affected_attributes can be
+      # pulled out into a utility method instead, honestly.
 
       @tick_type = opts[:tick_type] ||= :linear
       @compounding_factor = opts[:compounding_factor] ||= Proc.new { |value| value } 
@@ -44,7 +45,7 @@ module Adjective
       
       initialize_temporality(opts)
       normalize_remaining_duration
-      assign_affected_attributes
+      
       return self
     end
 
@@ -73,32 +74,57 @@ module Adjective
     # and the initial +value+ present on the modifier itself. You can do whatever you want to with this, and as long as it returns a float or integer, you have the power to amend the way the status compounds to your heart's content. 
     # @param status_proc [Proc]
     # @param block [Block]
-    # @return [Object]
+    # @return [Hash]
     # @example
+    #   # Default
     #   MyStatus.tick
-    #   MyStatus.tick(Proc.new{|value, turn_mod| (value + turn_mod) ** 2})
-    #   MyStatus.tick {|status| p "this can be anything and will override default functionality"}
+    # 
+    #   # With a status_proc
+    #   status_proc = Proc.new{|status, output| output[:hitpoints] = 5 }
+    #   MyStatus.tick(status_proc)
+    # 
+    #   # With just a block
+    #   MyStatus.tick {|status| status.modifiers }
+    # 
+    #   # With both a status_proc and a block
+    #   MyStatus.tick(status_proc) {|status| p "this can be anything and will override default functionality, but not the code passed in status_proc as an argument"}
     def tick(status_proc = nil, &block)
       if block_given?
-        # This needs to be explicitly tested next.
         output = yield(self)
+        status_proc.call(self, output) if status_proc
       else
         output = {}
         if tick_type == :compounding
           modifiers.each do |key, value| 
-            turn_modifier = value < 0 ? (max_duration - remaining_duration) - 1 : (max_duration - remaining_duration) + 1
+            turn_modifier = value < 0 ? (tick_count) - 1 : (tick_count) + 1
             initial_value = value < 0 ? (value - turn_modifier) : (value + turn_modifier)
             # Turn 1 exception is necessary (so far)
-            compounded_value = max_duration == remaining_duration ? value : compounding_factor.call(initial_value, turn_modifier)
+            compounded_value = fresh? ? value : compounding_factor.call(initial_value, turn_modifier)
             output.store(key, compounded_value.round.to_i) 
           end
-        elsif (tick_type == :static && (max_duration == remaining_duration)) || tick_type == :linear
+        elsif (tick_type == :static && (fresh?)) || tick_type == :linear
           modifiers.each {|key, value| output.store(key, value) }  
         end
         @remaining_duration -= 1
         status_proc.call(self, output) if status_proc
       end
       return output
+    end
+
+    # Returns how many times the status has ticked
+    # @return [Integer]
+    # @example
+    #   MyStatus.tick_count
+    def tick_count
+      max_duration - remaining_duration
+    end
+
+    # Checks if the status has ever ticked
+    # @return [Boolen]
+    # @example
+    #   MyStatus.fresh?
+    def fresh?
+      max_duration == remaining_duration
     end
 
     # Checks if the status has a modifier present
@@ -121,7 +147,7 @@ module Adjective
       else
         @modifiers.store(attribute, value)
       end
-      assign_affected_attributes
+      
       return @modifiers
     end
 
@@ -134,7 +160,7 @@ module Adjective
     def update_modifier(attribute, value)
       if has_modifier?(attribute)
         @modifiers[attribute] = value
-        assign_affected_attributes
+        
       else
         warn("[#{Time.now}]: Attempted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
       end
@@ -150,7 +176,7 @@ module Adjective
     def add_modifier(attribute, value)
       if !has_modifier?(attribute)
         @modifiers.store(attribute, value)
-        assign_affected_attributes
+        
       else
         warn("[#{Time.now}]: Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}').")
       end
