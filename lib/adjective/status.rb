@@ -11,7 +11,7 @@ module Adjective
     # @param opts [Hash]
     # @return [Object]
     # @example
-    #   options = {affected_attributes: { hitpoints: 3}, max_duration: 5}
+    #   options = {modifiers: { hitpoints: 3}, max_duration: 5}
     #   class MyStatus
     #     include Adjective::Status
     #     def initialize(name, opts = {})
@@ -21,13 +21,13 @@ module Adjective
     #   end
     #   new_status = MyStatus.new("MyStatus", options)
     #   # Or something with a :static @tick_type...
-    #   cripple = MyStatus.new("Cripple", {affected_attributes: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
+    #   cripple = MyStatus.new("Cripple", {modifiers: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
     #   # Or even something with a :compounding @tick_type
-    #   decay = MyStatus.new("Decay", {affected_attributes: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
+    #   decay = MyStatus.new("Decay", {modifiers: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
     def initialize_status(opts = {})
       @modifiers = opts[:modifiers]  ||= {}
-      # Threres a consistency of language problem with #modifiers and #affected_attributes.
-      # It should really just be modifiers in the input args. affected_attributes can be
+      # Threres a consistency of language problem with #modifiers and #modifiers.
+      # It should really just be modifiers in the input args. modifiers can be
       # pulled out into a utility method instead, honestly.
 
       @tick_type = opts[:tick_type] ||= :linear
@@ -39,7 +39,7 @@ module Adjective
       # If the user wishes to sort by a specific attribute in Statusable, then they should pass a block and do so there. (Maybe?)
       @applied_at = opts[:timestamp] ||= Time.now
 
-      [:initialized_at, :affected_attributes, :modifiers, :tick_type, :compounding_factor, :reset_references].each do |attribute| 
+      [:initialized_at, :modifiers, :tick_type, :compounding_factor, :reset_references].each do |attribute| 
         self.class.send(:attr_reader, attribute)
       end
       
@@ -197,17 +197,6 @@ module Adjective
         warn("[#{Time.now}]: Attempted to remove modifier that does not exist: #{attribute}")
       end
       return temp
-    end
-
-    private
-
-    # Converts the modifier hash into a digestable array for other modules to use. Includes '@' in modifier value,
-    # as the format for the metaprogramming in other modules requires the attribute to be called and set explicitly if not publicly writable.
-    # This should most likely be left alone and not called outside of the implementation here.
-    # @private
-    # @return [Hash]
-    def assign_affected_attributes
-      @affected_attributes.map!{|attribute| ("@"+attribute.to_s).to_sym }
     end
 
   end
