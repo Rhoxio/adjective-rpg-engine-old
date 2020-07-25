@@ -78,6 +78,7 @@ RSpec.describe "Statusable and Status integration" do
   describe "when statuses are applied" do 
     it "will add a status to @statuses" do 
       expect(@actor.apply_statuses(@renew).length).to eq(1)
+      expect(@actor.statuses.length).to eq(1)
     end 
 
     it "will allow for a block argument" do 
@@ -237,9 +238,7 @@ RSpec.describe "Statusable and Status integration" do
         end
         @actor.tick_all(status_proc)
         expect(@actor.crit_multiplier).to eq(2.5)
-        @actor.tick_all
-        expect(@actor.crit_multiplier).to eq(2.5)
-        2.times {@actor.tick_all}
+        3.times {@actor.tick_all}
         expect(@actor.crit_multiplier).to eq(2.0)
       end
 

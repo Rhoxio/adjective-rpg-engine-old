@@ -64,6 +64,7 @@ RSpec.describe Adjective::Status do
     it "will allow for a block" do 
       @renew.tick do |status|
         expect(status.max_duration).to eq(5)
+        status.modifiers
       end
     end
 
@@ -71,6 +72,7 @@ RSpec.describe Adjective::Status do
       @renew.tick do |status|
         status.max_duration = 10
         status.remaining_duration = 8
+        status.modifiers
       end
       expect(@renew.max_duration).to eq(10)
       expect(@renew.remaining_duration).to eq(8)
@@ -93,7 +95,7 @@ RSpec.describe Adjective::Status do
       expect(@cripple.remaining_duration).to eq(4)
       expect(output[:crit_multiplier]).to eq(1.0)
       empty_output = @cripple.tick
-      expect(empty_output.empty?).to be(true)
+      expect(empty_output.length).to eq(1)
     end
 
     it "will correctly process a :compounding tick_type" do 
@@ -115,6 +117,16 @@ RSpec.describe Adjective::Status do
       end
       expect(output[:pain]).to eq(2)
       expect(output[:hitpoints]).to eq(-5)
+    end
+
+    it "will give back a :source by default" do 
+      output = @decay.tick
+      expect(output[:source].name).to eq("Decay")
+    end
+
+    it "will assign :source if not present if block is given" do 
+      output = @decay.tick {|status| status.modifiers }
+      expect(output[:source].name).to eq("Decay")
     end
   end
 

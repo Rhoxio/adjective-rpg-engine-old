@@ -91,9 +91,10 @@ module Adjective
     def tick(status_proc = nil, &block)
       if block_given?
         output = yield(self)
+        output.store(:source, self) if !output.key?(:source)
         status_proc.call(self, output) if status_proc
       else
-        output = {}
+        output = {source: self}
         if tick_type == :compounding
           modifiers.each do |key, value| 
             turn_modifier = value < 0 ? (tick_count) - 1 : (tick_count) + 1
