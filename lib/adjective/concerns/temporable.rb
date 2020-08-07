@@ -53,7 +53,21 @@ module Adjective
       @remaining_duration == 1
     end
 
+    # Returns how many times the status has ticked
+    # @return [Integer]
+    # @example
+    #   MyStatus.tick_count
+    def tick_count
+      max_duration - remaining_duration
+    end
 
+    # Checks if the status has ever ticked
+    # @return [Boolen]
+    # @example
+    #   MyStatus.fresh?
+    def fresh?
+      max_duration == remaining_duration
+    end
 
     # Checks and sets remaining_duration if it is out of bounds.
     # @return [Integer]

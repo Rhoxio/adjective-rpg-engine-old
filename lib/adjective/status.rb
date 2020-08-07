@@ -6,6 +6,7 @@ module Adjective
   module Status
 
     include Adjective::Temporable
+    include Adjective::Applicable
 
     # Initialize module data for Status
     # @param opts [Hash]
@@ -25,7 +26,7 @@ module Adjective
     #   # Or even something with a :compounding @tick_type
     #   decay = MyStatus.new("Decay", {modifiers: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
     def initialize_status(opts = {})
-      @modifiers = opts[:modifiers]  ||= {}
+      # @modifiers = opts[:modifiers]  ||= {}
       @tick_type = opts[:tick_type] ||= :linear
       @compounding_factor = opts[:compounding_factor] ||= Proc.new { |value| value } 
       @reset_references = opts[:reset_references] ||= {}
@@ -40,6 +41,7 @@ module Adjective
       end
       
       initialize_temporality(opts)
+      initialize_applicable(opts)
       normalize_remaining_duration
       
       return self
@@ -106,94 +108,6 @@ module Adjective
         status_proc.call(self, output) if status_proc
       end
       return output
-    end
-
-    # Returns how many times the status has ticked
-    # @return [Integer]
-    # @example
-    #   MyStatus.tick_count
-    def tick_count
-      max_duration - remaining_duration
-    end
-
-    # Checks if the status has ever ticked
-    # @return [Boolen]
-    # @example
-    #   MyStatus.fresh?
-    def fresh?
-      max_duration == remaining_duration
-    end
-
-    # Checks if the status has a modifier present
-    # @return [Boolean]
-    # @example
-    #   MyStatus.has_modifier?(:hitpoints)
-    def has_modifier?(attribute)
-      @modifiers.key?(attribute)
-    end
-
-    # Adds or updates the modifier hash. 
-    # @param attribute [Symbol]
-    # @param value [Integer, Float, String]
-    # @return [Hash]
-    # @example
-    #   MyStatus.add_or_update_modifer(:hitpoints, 10)
-    def add_or_update_modifier(attribute, value)
-      if has_modifier?(attribute)
-        @modifiers[attribute] = value
-      else
-        @modifiers.store(attribute, value)
-      end
-      
-      return @modifiers
-    end
-
-    # Updates the modifier in @modifiers. Will warn and NOT amend if modifier does not exist.
-    # @param attribute [Symbol]
-    # @param value [Integer, Float, String]
-    # @return [Hash]
-    # @example
-    #   MyStatus.update_modifier(:hitpoints, 12)
-    def update_modifier(attribute, value)
-      if has_modifier?(attribute)
-        @modifiers[attribute] = value
-        
-      else
-        warn("[#{Time.now}]: Attempted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
-      end
-      return @modifiers
-    end
-
-    # Adds to the modifier to @modifiers. Will warn and NOT amend if modifier already exists.
-    # @param attribute [Symbol]
-    # @param value [Integer, Float, String]
-    # @return [Hash]
-    # @example
-    #   MyStatus.add_modifer(:strength, 20)
-    def add_modifier(attribute, value)
-      if !has_modifier?(attribute)
-        @modifiers.store(attribute, value)
-        
-      else
-        warn("[#{Time.now}]: Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}').")
-      end
-      return @modifiers
-    end 
-
-    # Removes the specified modifier from @modifers. 
-    # @param attribute [Symbol]
-    # @param value [Integer, Float, String]
-    # @return [Hash]
-    # @example
-    #   MyStatus.add_modifer(:strength, 20)
-    def remove_modifier(attribute)
-      if has_modifier?(attribute)
-        temp = {}.store(attribute, modifiers[attribute])
-        @modifiers.delete(attribute)
-      else
-        warn("[#{Time.now}]: Attempted to remove modifier that does not exist: #{attribute}")
-      end
-      return temp
     end
 
   end
