@@ -16,10 +16,11 @@ module Adjective
     def initialize_temporality(opts={})
       @max_duration = opts[:max_duration] ||= 1
       @remaining_duration = opts[:remaining_duration] ||= @max_duration
+      @indefinite = opts[:indefinite] ||= false 
 
       throw_duration_theshold_error if invalid_durations?
 
-      [:max_duration, :remaining_duration].each do |attribute| 
+      [:max_duration, :remaining_duration, :indefinite].each do |attribute| 
         self.class.send(:attr_accessor, attribute)
       end
       normalize_remaining_duration 
@@ -31,7 +32,8 @@ module Adjective
     # @example
     #   SurrogateClass.max_duration? #=> True/False
     def max_duration?
-      @max_duration == @remaining_duration
+      return @max_duration == @remaining_duration if @indefinite == false
+      return true
     end
 
     # Checks if remaining_duration is at 0.
@@ -49,6 +51,22 @@ module Adjective
     def expiring?
       # This method seems like a meme, but I think it makes sense
       @remaining_duration == 1
+    end
+
+    # Returns how many times the status has ticked
+    # @return [Integer]
+    # @example
+    #   MyStatus.tick_count
+    def tick_count
+      max_duration - remaining_duration
+    end
+
+    # Checks if the status has ever ticked
+    # @return [Boolen]
+    # @example
+    #   MyStatus.fresh?
+    def fresh?
+      max_duration == remaining_duration
     end
 
     # Checks and sets remaining_duration if it is out of bounds.
