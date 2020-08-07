@@ -26,10 +26,6 @@ module Adjective
     #   decay = MyStatus.new("Decay", {modifiers: { hitpoints: -5 }, max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
     def initialize_status(opts = {})
       @modifiers = opts[:modifiers]  ||= {}
-      # Threres a consistency of language problem with #modifiers and #modifiers.
-      # It should really just be modifiers in the input args. modifiers can be
-      # pulled out into a utility method instead, honestly.
-
       @tick_type = opts[:tick_type] ||= :linear
       @compounding_factor = opts[:compounding_factor] ||= Proc.new { |value| value } 
       @reset_references = opts[:reset_references] ||= {}
