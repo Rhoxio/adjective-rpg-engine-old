@@ -42,8 +42,7 @@ module Adjective
       
       initialize_temporality(opts)
       initialize_applicable(opts)
-      normalize_remaining_duration
-      
+
       return self
     end
 

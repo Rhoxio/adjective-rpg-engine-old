@@ -76,7 +76,7 @@
   
   <dl>
     <dt>Included in:</dt>
-    <dd><span class='object_link'><a href="Status.html" title="Adjective::Status (module)">Status</a></span></dd>
+    <dd><span class='object_link'><a href="Skill.html" title="Adjective::Skill (module)">Skill</a></span>, <span class='object_link'><a href="Status.html" title="Adjective::Status (module)">Status</a></span></dd>
   </dl>
   
 
@@ -178,6 +178,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#fresh%3F-instance_method" title="#fresh? (instance method)">#<strong>fresh?</strong>  &#x21d2; Boolen </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if the status has ever ticked.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#initialize_temporality-instance_method" title="#initialize_temporality (instance method)">#<strong>initialize_temporality</strong>(opts = {})  &#x21d2; Object </a>
     
 
@@ -247,6 +271,30 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tick_count-instance_method" title="#tick_count (instance method)">#<strong>tick_count</strong>  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns how many times the status has ticked.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -303,12 +351,12 @@
       <pre class="lines">
 
 
-41
-42
-43</pre>
+43
+44
+45</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 41</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_expired?'>expired?</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>==</span> <span class='int'>0</span>
@@ -365,13 +413,13 @@
       <pre class="lines">
 
 
-49
-50
 51
-52</pre>
+52
+53
+54</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 49</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 51</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_expiring?'>expiring?</span>
   <span class='comment'># This method seems like a meme, but I think it makes sense
@@ -444,19 +492,81 @@
       <pre class="lines">
 
 
-68
-69
-70
-71
-72</pre>
+86
+87
+88
+89
+90</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 68</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 86</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extend_by'>extend_by</span><span class='lparen'>(</span><span class='id identifier rubyid_extension'>extension</span><span class='rparen'>)</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>+=</span> <span class='id identifier rubyid_extension'>extension</span>
   <span class='id identifier rubyid_normalize_remaining_duration'>normalize_remaining_duration</span>
   <span class='kw'>return</span> <span class='ivar'>@remaining_duration</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="fresh?-instance_method">
+  
+    #<strong>fresh?</strong>  &#x21d2; <tt>Boolen</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if the status has ever ticked</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+      <pre class="example code"><code><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_fresh?'>fresh?</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolen</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+68
+69
+70</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 68</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_fresh?'>fresh?</span>
+  <span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>==</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -538,7 +648,8 @@
 24
 25
 26
-27</pre>
+27
+28</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 16</span>
@@ -546,10 +657,11 @@
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize_temporality'>initialize_temporality</span><span class='lparen'>(</span><span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@max_duration</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:max_duration</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='int'>1</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:remaining_duration</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='ivar'>@max_duration</span>
+  <span class='ivar'>@indefinite</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:indefinite</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='kw'>false</span> 
 
   <span class='id identifier rubyid_throw_duration_theshold_error'>throw_duration_theshold_error</span> <span class='kw'>if</span> <span class='id identifier rubyid_invalid_durations?'>invalid_durations?</span>
 
-  <span class='lbracket'>[</span><span class='symbol'>:max_duration</span><span class='comma'>,</span> <span class='symbol'>:remaining_duration</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_attribute'>attribute</span><span class='op'>|</span> 
+  <span class='lbracket'>[</span><span class='symbol'>:max_duration</span><span class='comma'>,</span> <span class='symbol'>:remaining_duration</span><span class='comma'>,</span> <span class='symbol'>:indefinite</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_attribute'>attribute</span><span class='op'>|</span> 
     <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='symbol'>:attr_accessor</span><span class='comma'>,</span> <span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_normalize_remaining_duration'>normalize_remaining_duration</span> 
@@ -607,15 +719,17 @@
       <pre class="lines">
 
 
-33
 34
-35</pre>
+35
+36
+37</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_max_duration?'>max_duration?</span>
-  <span class='ivar'>@max_duration</span> <span class='op'>==</span> <span class='ivar'>@remaining_duration</span>
+  <span class='kw'>return</span> <span class='ivar'>@max_duration</span> <span class='op'>==</span> <span class='ivar'>@remaining_duration</span> <span class='kw'>if</span> <span class='ivar'>@indefinite</span> <span class='op'>==</span> <span class='kw'>false</span>
+  <span class='kw'>return</span> <span class='kw'>true</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -669,17 +783,79 @@
       <pre class="lines">
 
 
-58
-59
-60
-61</pre>
+76
+77
+78
+79</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_remaining_duration'>normalize_remaining_duration</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>=</span> <span class='ivar'>@max_duration</span> <span class='kw'>if</span> <span class='ivar'>@remaining_duration</span> <span class='op'>&gt;</span> <span class='ivar'>@max_duration</span>
   <span class='ivar'>@remaining_duration</span> <span class='op'>=</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='ivar'>@remaining_duration</span> <span class='op'>&lt;</span> <span class='int'>0</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tick_count-instance_method">
+  
+    #<strong>tick_count</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns how many times the status has ticked</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+      <pre class="example code"><code><span class='const'>MyStatus</span><span class='period'>.</span><span class='id identifier rubyid_tick_count'>tick_count</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60
+61
+62</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/adjective/concerns/temporable.rb', line 60</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tick_count'>tick_count</span>
+  <span class='id identifier rubyid_max_duration'>max_duration</span> <span class='op'>-</span> <span class='id identifier rubyid_remaining_duration'>remaining_duration</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -691,7 +867,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 24 03:33:35 2020 by
+  Generated on Fri Aug  7 02:54:44 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.6.0).
 </div>
