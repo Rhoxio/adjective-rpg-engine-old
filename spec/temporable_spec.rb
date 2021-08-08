@@ -20,6 +20,7 @@ RSpec.describe Adjective::Temporable do
     it "will see if #max_duration? works with indefinite durations" do 
       expect(@malaise.max_duration?).to eq(true)
     end
+
   end
 
   describe "when durations are amended" do 

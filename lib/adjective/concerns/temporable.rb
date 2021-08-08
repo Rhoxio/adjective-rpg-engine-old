@@ -74,7 +74,7 @@ module Adjective
     # @example
     #   SurrogateClass.normalize_remaining_duration
     def normalize_remaining_duration
-      @remaining_duration = @max_duration if @remaining_duration > @max_duration
+      @remaining_duration = @max_duration if (@remaining_duration > @max_duration)
       @remaining_duration = 0 if @remaining_duration < 0
     end   
 
@@ -87,7 +87,11 @@ module Adjective
       @remaining_duration += extension
       normalize_remaining_duration
       return @remaining_duration
-    end           
+    end 
+
+    def indefinite?
+      @indefinite
+    end          
 
     private
 
