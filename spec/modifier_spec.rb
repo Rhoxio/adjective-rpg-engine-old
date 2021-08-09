@@ -6,7 +6,7 @@ RSpec.describe Adjective::Modifier do
 
   describe "when initialized" do 
     it "will sandbox for me" do 
-      ap @modifier
+      # ap @modifier
     end
 
     it "will accept a name attribute" do 

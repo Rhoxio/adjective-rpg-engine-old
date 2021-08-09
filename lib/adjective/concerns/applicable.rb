@@ -9,7 +9,7 @@ module Adjective
     # Checks if modifier is present
     # @return [Boolean]
     # @example
-    #   MyStatus.has_modifier?(:hitpoints)
+    #   MyStatus.has_modifier?("Healing")
     def has_modifier?(name)
       @modifiers.any?{|mod| mod.name == name }
     end
@@ -25,17 +25,12 @@ module Adjective
     # @param value [Integer, Float, String]
     # @return [Hash]
     # @example
-    #   MyStatus.add_or_update_modifer(:hitpoints, 10)
+    #   MyStatus.add_or_update_modifer("Healing", :hitpoints, 10)
     def add_or_update_modifier(name, attribute, value)
       modifier = find_modifier(name)
-      if modifier
-        modifier.affected_attributes.store(attribute, value)
-      else
-        affected_attributes = {}.store(attribute, value)
-        modifier = Modifier.new(name, affected_attributes)
-        @modifiers.push(modifier)
-      end
-      return modifier
+      return update_modifier(name, attribute, value) if modifier
+      return add_modifier(name, attribute, value) if !modifier 
+      return false
     end
 
     # Updates the modifier in @modifiers. Will warn and NOT amend if modifier does not exist.
@@ -43,15 +38,12 @@ module Adjective
     # @param value [Integer, Float, String]
     # @return [Hash]
     # @example
-    #   MyStatus.update_modifier(:hitpoints, 12)
+    #   MyStatus.update_modifier("Healing", :hitpoints, 10)
     def update_modifier(name, attribute, value)
       modifier = find_modifier(name)
-      if modifier
-        @modifiers[attribute] = value
-      else
-        warn("[#{Time.now}]: Attempted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
-      end
-      return @modifiers
+      return false if !modifier
+      modifier.affected_attributes.store(attribute, value)
+      return modifier
     end
 
     # Adds to the modifier to @modifiers. Will warn and NOT amend if modifier already exists.
@@ -59,14 +51,16 @@ module Adjective
     # @param value [Integer, Float, String]
     # @return [Hash]
     # @example
-    #   MyStatus.add_modifer(:strength, 20)
-    def add_modifier(attribute, value)
-      if !has_modifier?(attribute)
-        @modifiers.store(attribute, value)
+    #   MyStatus.add_modifer("Healing", :hitpoints, 10)
+    def add_modifier(name, attribute, value)
+      if !has_modifier?(name)
+        affected_attributes = {}.store(attribute, value)
+        modifier = Modifier.new(name, affected_attributes)
+        @modifiers.push(modifier)
       else
-        warn("[#{Time.now}]: Attempted to add duplicate modifier: #{attribute}. The new value has NOT been set. (Currently '#{@modifiers[attribute]}').")
+        return false
       end
-      return @modifiers
+      return modifier
     end 
 
     # Removes the specified modifier from @modifers. 
@@ -74,15 +68,15 @@ module Adjective
     # @param value [Integer, Float, String]
     # @return [Hash]
     # @example
-    #   MyStatus.add_modifer(:strength, 20)
-    def remove_modifier(attribute)
-      if has_modifier?(attribute)
-        temp = {}.store(attribute, modifiers[attribute])
-        @modifiers.delete(attribute)
+    #   MyStatus.add_modifer("Healing")
+    def remove_modifier(name)
+      modifier = find_modifier(name)
+      if modifier
+        @modifiers = @modifiers.select {|mod| mod.name != name}
       else
-        warn("[#{Time.now}]: Attempted to remove modifier that does not exist: #{attribute}")
+        return false
       end
-      return temp
+      return modifier
     end    
   end
 end
