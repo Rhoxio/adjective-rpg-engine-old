@@ -133,8 +133,21 @@ module Adjective
       else
         @statuses.each do |status|
           status_data = status.tick(status_proc)
+          source = status_data.delete(:source)
+
           # Will need to collect all of the total values from each tick.
-          status_data.each do |attribute, value|
+          collected_status_data = {}
+          status_data.each do |name, effect|
+            effect.each do |attribute, value|
+              if collected_status_data.key?(attribute)
+                collected_status_data[attribute] += value
+              else
+                collected_status_data[attribute] = value
+              end
+            end
+          end
+
+          collected_status_data.each do |attribute, value|
             attribute = attribute.to_s
             if self.respond_to?(attribute+"=")
               if status.tick_type == :linear

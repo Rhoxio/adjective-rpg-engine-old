@@ -10,7 +10,6 @@ RSpec.describe Adjective::Temporable do
     @agony = SurrogateStatus.new("Agony", {modifiers: [@agony_effect], max_duration: 10})    
     @cripple = SurrogateStatus.new("Cripple", {modifiers: [@cripple_effect], max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
     @decay = SurrogateStatus.new("Decay", {modifiers: [@decay_effect], max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 1.5 }})
-    
     @malaise = SurrogateStatus.new("Malaise", {modifiers: [@malaise_effect], indefinite: true})
   end
 
