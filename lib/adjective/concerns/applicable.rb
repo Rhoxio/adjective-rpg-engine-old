@@ -2,7 +2,7 @@ module Adjective
   module Applicable
     # This module is going to be the home for @modifiers and related logic.
     def initialize_applicable(opts)
-      @modifiers = opts[:modifiers] ||= {}
+      @modifiers = opts[:modifiers] ||= []
       self.class.send(:attr_reader, :modifiers)
     end
 
@@ -10,8 +10,14 @@ module Adjective
     # @return [Boolean]
     # @example
     #   MyStatus.has_modifier?(:hitpoints)
-    def has_modifier?(attribute)
-      @modifiers.key?(attribute)
+    def has_modifier?(name)
+      @modifiers.any?{|mod| mod.name == name }
+    end
+
+    def find_modifier(name)
+      target = @modifiers.select {|mod| mod.name == name }
+      return target[0] if target.length > 0
+      return false
     end
 
     # Adds or updates the modifier hash. 
@@ -20,13 +26,16 @@ module Adjective
     # @return [Hash]
     # @example
     #   MyStatus.add_or_update_modifer(:hitpoints, 10)
-    def add_or_update_modifier(attribute, value)
-      if has_modifier?(attribute)
-        @modifiers[attribute] = value
+    def add_or_update_modifier(name, attribute, value)
+      modifier = find_modifier(name)
+      if modifier
+        modifier.affected_attributes.store(attribute, value)
       else
-        @modifiers.store(attribute, value)
+        affected_attributes = {}.store(attribute, value)
+        modifier = Modifier.new(name, affected_attributes)
+        @modifiers.push(modifier)
       end
-      return @modifiers
+      return modifier
     end
 
     # Updates the modifier in @modifiers. Will warn and NOT amend if modifier does not exist.
@@ -35,8 +44,9 @@ module Adjective
     # @return [Hash]
     # @example
     #   MyStatus.update_modifier(:hitpoints, 12)
-    def update_modifier(attribute, value)
-      if has_modifier?(attribute)
+    def update_modifier(name, attribute, value)
+      modifier = find_modifier(name)
+      if modifier
         @modifiers[attribute] = value
       else
         warn("[#{Time.now}]: Attempted to update a modifier that wasn't present: #{attribute}. Use #add_modifier or #add_or_update_modifier instead.")
