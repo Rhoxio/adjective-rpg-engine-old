@@ -2,7 +2,8 @@ module Adjective
   module Applicable
     # This module is going to be the home for @modifiers and related logic.
     def initialize_applicable(opts)
-      @modifiers = opts[:modifiers]  ||= {}
+      @modifiers = opts[:modifiers] ||= {}
+      self.class.send(:attr_reader, :modifiers)
     end
 
     # Checks if modifier is present
