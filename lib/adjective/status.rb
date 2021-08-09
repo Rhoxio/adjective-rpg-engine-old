@@ -93,15 +93,37 @@ module Adjective
       else
         output = {source: self}
         if tick_type == :compounding
-          modifiers.each do |key, value| 
-            turn_modifier = value < 0 ? (tick_count) - 1 : (tick_count) + 1
-            initial_value = value < 0 ? (value - turn_modifier) : (value + turn_modifier)
-            # Turn 1 exception is necessary (so far)
-            compounded_value = fresh? ? value : compounding_factor.call(initial_value, turn_modifier)
-            output.store(key, compounded_value.round.to_i) 
+          modifiers.each do |modifier|
+
+            modifier_exists = output.key?(modifier.name)
+            output[modifier.name] = {} if !modifier_exists
+
+            modifier.affected_attributes.each do |key, value| 
+              turn_modifier = value < 0 ? (tick_count) - 1 : (tick_count) + 1
+              initial_value = value < 0 ? (value - turn_modifier) : (value + turn_modifier)
+              # Turn 1 exception is necessary (so far)
+              compounded_value = fresh? ? value : compounding_factor.call(initial_value, turn_modifier)
+              if modifier_exists
+                output[modifier.name][key] += compounded_value.round.to_i 
+              else
+                output[modifier.name].store(key, compounded_value.round.to_i) 
+              end
+            end            
           end
         elsif (tick_type == :static && (fresh?)) || tick_type == :linear
-          modifiers.each {|key, value| output.store(key, value) }  
+          modifiers.each do |modifier|
+
+            modifier_exists = output.key?(modifier.name)
+            output[modifier.name] = {} if !modifier_exists
+
+            modifier.affected_attributes.each do |key, value|
+              if modifier_exists
+                output[modifier.name][key] += value
+              else
+                output[modifier.name].store(key, value)
+              end
+            end
+          end
         end
         @remaining_duration -= 1
         status_proc.call(self, output) if status_proc

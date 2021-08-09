@@ -1,8 +1,12 @@
 RSpec.describe "Temporable integration with Status" do
   before(:example) do 
-    @renew = SurrogateStatus.new("Renew", {modifiers: { hitpoints: 3}, max_duration: 5})
-    @agony = SurrogateStatus.new("Agony", {modifiers: { hitpoints: -3}, max_duration: 10})
-    @rend = SurrogateStatus.new("Rend", {modifiers: { hitpoints: 1}})
+    @renew_effect = Adjective::Modifier.new("RenewHealing", {hitpoints: 3})
+    @agony_effect = Adjective::Modifier.new("AgonyEffect", {hitpoints: -3})
+    @rend_effect = Adjective::Modifier.new("RendEffect", { hitpoints: -1 })
+
+    @renew = SurrogateStatus.new("Renew", { modifiers: [@renew_effect], max_duration: 5 })
+    @agony = SurrogateStatus.new("Agony", {modifiers: [@agony_effect], max_duration: 10})    
+    @rend = SurrogateStatus.new("Rend", {modifiers: [@rend_effect], tick_type: :linear})
   end
 
   describe "when a status initializes" do 

@@ -1,13 +1,26 @@
 RSpec.describe "Statusable and Status integration" do
   before(:example) do
-    @renew = SurrogateStatus.new("Renew", {modifiers: { hitpoints: 3}, max_duration: 5, tick_type: :linear})
-    @agony = SurrogateStatus.new("Agony", {modifiers: { hitpoints: -3}, max_duration: 10, tick_type: :linear})
-    @rend = SurrogateStatus.new("Rend", {modifiers: { hitpoints: -1}, max_duration: 3, tick_type: :linear})
-    @toxic = SurrogateStatus.new("Toxic", {modifiers: { hitpoints: -5}, max_duration: 1, tick_type: :compounding})
-    @cripple = SurrogateStatus.new("Cripple", {modifiers: { crit_multiplier: 1.0 }, max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
-    @decay = SurrogateStatus.new("Decay", {modifiers: { hitpoints: -1 }, max_duration: 5, tick_type: :compounding, compounding_factor: Proc.new {|value, turns| value * 2}})
-    @round = SurrogateStatusTwo.new("Round", {modifiers: {hitpoints: 3, fear: 4}, max_duration: 10, tick_type: :static }, "Description")
-    @twiddle = SurrogateStatusTwo.new("Twiddle", {modifiers: {hitpoints: 3, fear: 6}, max_duration: 12, tick_type: :static }, "A magic spell")
+
+    @renew_effect = Adjective::Modifier.new("RenewHealing", {hitpoints: 3})
+    @agony_effect = Adjective::Modifier.new("AgonyEffect", {hitpoints: -3})
+    @decay_effect = Adjective::Modifier.new("DecayEffect", {hitpoints: -1})
+    @cripple_effect = Adjective::Modifier.new("CrippleEffect", { crit_multiplier: 1.0 })
+    @rend_effect = Adjective::Modifier.new("RendEffect", { hitpoints: -1 })
+    @round_damage = Adjective::Modifier.new("RoundHealing", { hitpoints: 3 })
+    @round_fear = Adjective::Modifier.new("RoundFear", { fear: 4 })
+    @twiddle_heal = Adjective::Modifier.new("TwiddleHealing", { hitpoints: 3 })
+    @twiddle_fear = Adjective::Modifier.new("TwiddleFear", { fear: 6 })
+    @toxic_effect = Adjective::Modifier.new("ToxicDamage", { hitpoints: -5 })
+
+    @renew = SurrogateStatus.new("Renew", { modifiers: [@renew_effect], max_duration: 5 })
+    @agony = SurrogateStatus.new("Agony", {modifiers: [@agony_effect], max_duration: 10})    
+    @cripple = SurrogateStatus.new("Cripple", {modifiers: [@cripple_effect], max_duration: 5, tick_type: :static, reset_references: {crit_multiplier: :baseline_crit_multiplier} })
+    @decay = SurrogateStatus.new("Decay", {modifiers: [@decay_effect], max_duration: 10, tick_type: :compounding, compounding_factor: Proc.new {|value, turn_mod| (value - turn_mod) * 2.0 }})
+    @rend = SurrogateStatus.new("Rend", {modifiers: [@rend_effect], max_duration: 3, tick_type: :linear})
+    @toxic = SurrogateStatus.new("Toxic", {modifiers: [@toxic_effect], max_duration: 1, tick_type: :compounding})
+    @round = SurrogateStatusTwo.new("Round", {modifiers: [@round_damage, @round_fear], max_duration: 10, tick_type: :static }, "Description")
+    @twiddle = SurrogateStatusTwo.new("Twiddle", {modifiers: [@twiddle_heal, @twiddle_fear], max_duration: 12, tick_type: :static }, "A magic spell")
+
     # Actor has Adjective::Statusable included
     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
   end
@@ -34,6 +47,7 @@ RSpec.describe "Statusable and Status integration" do
     it "will #sort_statuses! by remaining_duration by default" do 
       @actor.apply_statuses([@rend, @renew, @toxic])
       @actor.sort_statuses!
+      ap @actor.statuses
       expect(@actor.statuses.first.remaining_duration).to eq(1)
       expect(@actor.statuses.last.remaining_duration).to eq(5)
     end
@@ -169,7 +183,7 @@ RSpec.describe "Statusable and Status integration" do
         @actor.tick_all
         expect(@actor.hitpoints).to eq(7)
         @actor.tick_all
-        expect(@actor.hitpoints).to eq(3)
+        expect(@actor.hitpoints).to eq(1)
         @actor.tick_all
         @actor.normalize_hitpoints
         expect(@actor.dead?).to eq(true)
@@ -220,10 +234,10 @@ RSpec.describe "Statusable and Status integration" do
         @actor.heal_to_full
         @actor.apply_statuses([@rend])
         status_proc = Proc.new do |status, output|
-          output[:hitpoints] = (status.modifiers[:hitpoints] - 3) if status.name == "Rend"
+          output["RendEffect"][:hitpoints] = -1
         end
         @actor.tick_all(status_proc)
-        expect(@actor.hitpoints).to eq(6)
+        expect(@actor.hitpoints).to eq(9)
       end
 
       it "will correctly process default functionality of #tick_all for :static" do 
@@ -232,13 +246,11 @@ RSpec.describe "Statusable and Status integration" do
         @actor.tick_all
         expect(@actor.crit_multiplier).to eq(1.0)
         status_proc = Proc.new do |status, output|
-          if status.name == "Cripple"
-            output[:crit_multiplier] = 2.5
-          end
+          output["CrippleEffect"] = {crit_multiplier: 2.5}
         end
         @actor.tick_all(status_proc)
         expect(@actor.crit_multiplier).to eq(2.5)
-        3.times {@actor.tick_all}
+        5.times {@actor.tick_all}
         expect(@actor.crit_multiplier).to eq(2.0)
       end
 
@@ -246,7 +258,7 @@ RSpec.describe "Statusable and Status integration" do
         @actor.heal_to_full
         @actor.apply_statuses([@decay])
         status_proc = Proc.new do |status, output|
-          output[:hitpoints] = -5 if status.name == "Decay"
+          output["DecayEffect"] = {hitpoints: -5}
         end
         @actor.tick_all(status_proc)
         expect(@actor.hitpoints).to eq(5)

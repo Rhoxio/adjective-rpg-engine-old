@@ -1,14 +1,14 @@
-# RSpec.describe Adjective::Statusable do
-#   before(:example) do
-#     @heal = Adjective::Status.new("heal", { affected_attributes: { hitpoints: 5 }})
-#     @agony = Adjective::Status.new("Agony", { duration: 12, affected_attributes: { hitpoints: -3 }})
-#     @gender_bender = Adjective::Status.new("Gender Bender", {affected_attributes: {gender: "male"}})
+RSpec.describe Adjective::Statusable do
+  # before(:example) do
+  #   @heal = Adjective::Status.new("heal", { affected_attributes: { hitpoints: 5 }})
+  #   @agony = Adjective::Status.new("Agony", { duration: 12, affected_attributes: { hitpoints: -3 }})
+  #   @gender_bender = Adjective::Status.new("Gender Bender", {affected_attributes: {gender: "male"}})
 
-#     @bind = Adjective::Status.new("bind", { duration: 1, affected_attributes: { hitpoints: -1 }})
-#     @sap = Adjective::Status.new("sap", {duration: 5, affected_attributes: {hitpoints: 0} })
+  #   @bind = Adjective::Status.new("bind", { duration: 1, affected_attributes: { hitpoints: -1 }})
+  #   @sap = Adjective::Status.new("sap", {duration: 5, affected_attributes: {hitpoints: 0} })
 
-#     @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
-#   end
+  #   @actor = SurrogateActor.new("DefaultDude", {exp_table: [0,200,300,400,500,600,700,800,900,1000, 1200]})     
+  # end
 
 #   describe "when utility methods are called" do 
 #     it "will accurately tell if the status is instant" do 
@@ -73,4 +73,4 @@
 #     end
 #   end
 
-# end
+end

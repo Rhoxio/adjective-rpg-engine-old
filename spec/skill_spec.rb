@@ -5,7 +5,7 @@ RSpec.describe Adjective::Skill do
 
   describe "when created" do 
     it "will sandbox for me" do 
-      ap @skill.modifiers
+      # ap @skill.modifiers
     end
 
     it "will throw an attribute error if no skill_type is supplied" do 
