@@ -8,13 +8,24 @@ RSpec.describe Adjective::Skill do
       # ap @skill.modifiers
     end
 
-    it "will throw an attribute error if no skill_type is supplied" do 
-      expect{SurrogateSkill.new("Basic Attack", {})}.to raise_error(ArgumentError)
+    it "will default skill_type to :universal if no arg is passed for it" do 
+      expect(SurrogateSkill.new("Basic Attack", {}).skill_type).to eq(:universal)
     end
 
-    it "will raise an error if a bad skill type is supplied" do 
-      expect{SurrogateSkill.new("Basic Attack", {skill_type: :bunk})}.to raise_error(ArgumentError)
+    it "will default statuses hash if arg does not exist" do 
+      expect(SurrogateSkill.new("Basic Attack", {}).statuses).to eq({ to_self: [], to_external: [] })
     end
 
+    it "will fill status structure if either of the required keys are missing" do 
+      expect(SurrogateSkill.new("Basic Attack", {to_self: []}).statuses).to eq({ to_self: [], to_external: [] })
+      expect(SurrogateSkill.new("Basic Attack", {to_external: []}).statuses).to eq({ to_self: [], to_external: [] })
+    end
+
+    context "from outside modules" do 
+      it "will initialize modifiers array as empty if no args are passed" do 
+        expect(SurrogateSkill.new("Basic Attack", {}).modifiers).to eq([])
+      end
+    end
+    
   end
 end

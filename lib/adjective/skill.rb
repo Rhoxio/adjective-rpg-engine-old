@@ -13,13 +13,14 @@ module Adjective
     include Adjective::Applicable
     include Adjective::Temporable
 
-    def initialize_skill(name = "Unnamed Skill", opts = {})
+    def initialize_skill(name = "Unnamed Skill", args = {})
       @name = name
-      validate_inputs(opts)
-      @skill_type = opts[:skill_type]
-      @statuses = {
+      @skill_type = args[:skill_type] ||= :universal
+      @statuses = args[:statuses] ||= { to_self: [], to_external: [] }
+      fill_status_structure
 
-      }
+      # @modifiers = args[:modifiers] ||= []
+      
 
       # Modification on a per-skill basis will be handled directly by delegation through applicable.
       # Will need to set up specific delegations for each modifier type and the context in which they will
@@ -31,10 +32,13 @@ module Adjective
       # It might introduce some more DSL, but seems necessary as I can only think of two different conditions
       # (apply number in foreign context, apply number in self context) to elicit the correct mechanics.
 
+      # This was fixed by making a Modifier object with a name. Each modifier may need to be changed individually, 
+      # so aggregating them will be the responsibility of the module using the skill, not here in the base data modeling utlities.
+
       # A set might look like: 
       # @sets = {
       #    name: "Holy Strike",
-      #    statuses: {to_self: [StatusObjects], to_enemies: [StatusObjects]}, 
+      #    statuses: {to_self: [StatusObjects], to_external: [StatusObjects]}, 
       #    modifiers: [Modifiers],
       #    chained_skills: [Skills], 
       #    actions: &block
@@ -44,23 +48,15 @@ module Adjective
         self.class.send(:attr_accessor, attribute)
       end
 
-      initialize_temporality(opts)
-      initialize_applicable(opts)
+      initialize_temporality(args)
+      initialize_applicable(args)
     end
-
-    def invoke
-      # Skill types will include: utility, offensive, defensive 
-    end 
 
     private
 
-    def validate_inputs(opts)
-      raise ArgumentError, "Did not provide a skill_type to Status: #{self}" if !opts.key?(:skill_type)
-      raise ArgumentError, "Provided a bad skill_type of: #{opts[:skill_type]}" if !valid_skill_types.include?(opts[:skill_type])
-    end
-
-    def valid_skill_types
-      [:utility, :offensive, :defensive]
+    def fill_status_structure
+      @statuses.store(:to_self, []) if !@statuses.key?(:to_self)
+      @statuses.store(:to_external, []) if !@statuses.key?(:to_external)
     end
 
   end
