@@ -21,7 +21,7 @@ RSpec.describe "Temporable integration with Status" do
     end
 
     it "will throw an error if provided @remaining_duration is larger than @max_duration" do
-      expect{SurrogateStatus.new("Deadly Poison", {modifiers: { hitpoints: -2}, remaining_duration: 11, max_duration: 10})}
+      expect{SurrogateStatus.new("Deadly Poison", {modifiers: [@rend_effect], remaining_duration: 11, max_duration: 10})}
       .to raise_error(ArgumentError)
     end    
   end
