@@ -13,14 +13,13 @@ module Adjective
     include Adjective::Applicable
     include Adjective::Temporable
 
-    def initialize_skill(name = "Unnamed Skill", args = {})
+    def initialize_skill(name = "Unnamed Skill", args = {}, &block)
       @name = name
       @skill_type = args[:skill_type] ||= :universal
       @statuses = args[:statuses] ||= { to_self: [], to_external: [] }
       fill_status_structure
-
-      # @modifiers = args[:modifiers] ||= []
-      
+      # Modifiers are handled by Applicable
+      @chained_skills = args[:chained_skills] ||= []
 
       # Modification on a per-skill basis will be handled directly by delegation through applicable.
       # Will need to set up specific delegations for each modifier type and the context in which they will
@@ -44,12 +43,15 @@ module Adjective
       #    actions: &block
       # }
 
-      [:name, :skill_type, :statuses].each do |attribute| 
+      [:name, :skill_type, :statuses, :chained_skills].each do |attribute| 
         self.class.send(:attr_accessor, attribute)
       end
 
       initialize_temporality(args)
       initialize_applicable(args)
+
+      # ap self
+      yield(self) if block_given?
     end
 
     private
