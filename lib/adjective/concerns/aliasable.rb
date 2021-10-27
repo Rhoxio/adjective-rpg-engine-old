@@ -1,6 +1,12 @@
 module Adjective
   module Aliasable
 
+    # I think the idea is to be able to translate certain attributes in their own code over to the adjective-acceptable versions
+    # that are set on module initialization.
+
+    # It should allow for the library to use other instance variables when making its calculations. If the AR method
+    # 'name' is called, it would use the 'name' getter from the origin class instead. 
+
     # Take in set of values and check for getters and setters
     #   if setters/getters exist for given alias, use those methods
     #   else, establish getters and setters using instance variables passed in through args
