@@ -120,3 +120,18 @@ Base combat module. I imagine this taking two main supporting modules - Aggressi
 #### Comprehensible
 Module for skills. Will handle Status objects with a simple paradigm set up around the Skill class.
 
+#### Namespaing and Flexibility
+The idea is to have it so classes that include each of the modules have the freedom to allow the lib to 
+modify the values stored in that structure while using their own naming conventions.
+
+For example, @hitpoints in Vulnerable should be able to be aliased to @hp or @health or something. This will clean up integrations with any other lib and theoretically would help with AR integration.
+
+Originally I was thinking about adding namespacing, but having to fiddle with 2 sets of data when single source of truth for variables should be set anyway. That's ho I happened upon the need for a key-value system that points provided variable setters/getters to the version provided by the lib.
+
+So, what needs to happen is 
+  1. each module in the lib that currently sets an instance variable and getters/setters needs to provide a way to pass in initialzable values that line up with the expectations of the lib actions on load
+
+  2. Needs to provide default functionality so that if a certain method is not defined, it defines it and sets up a getter-setter if they do not exist. 
+
+This will need to be implemented in a way that the expectations of the current lib functionality is not overridden, but uses the dynaically created methods and/or the predefined references to getter/setter methods to perform actions.
+
